@@ -2,23 +2,37 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class LotController : MonoBehaviour
+public class LotController : BaseCellBehavior
 {
-    [Header("Debug")]
-    public bool isOccupied;
-    public bool isBlocked;
 
+    [Header("Customized References")]
+    [SerializeField] VehicleController vehiclePrefab;
 
-    public Vector3 GetCenter()
+    [Header("Customized Debug")]
+    [SerializeField] List<LotController> neighborLots;
+
+    public void Initiliaze(LotStatsWrapper lotStatsWrapper)
     {
-        Vector3 centerPos = new Vector3(transform.position.x, transform.position.y, transform.position.z - .2f);
-        return centerPos;
+        if (!lotStatsWrapper.HasVehicle) return;
+
+        SetOccupied(true);
+        VehicleController cloneVehicle = Instantiate(vehiclePrefab, GetCenter(), Quaternion.identity, transform);
+
+        List<StackStatsWrapper> stackStats = lotStatsWrapper.stackStats;
+
+        for (int i = 0; i < stackStats.Count; i++)
+        {
+            cloneVehicle.Initiliaze(stackStats[i].stackColor, i);
+        }
+
     }
 
-    public void SetOccupied(bool state)
+    public void AddNeighbour(LotController neighbor)
     {
-        isOccupied = state;
+        if (neighborLots.Contains(neighbor)) return;
+
+        neighborLots.Add(neighbor);
     }
 
-    
+
 }

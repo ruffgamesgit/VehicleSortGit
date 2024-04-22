@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 3573877552313490025}
   - component: {fileID: 3026951059576258674}
   - component: {fileID: 5315177123956543712}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Lot
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -59,6 +59,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8896ed8b4048dcd41a0e92048078a02f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  verticalCenterOffset: 2
+  IsOccupied: 0
+  vehiclePrefab: {fileID: 8854592403249635882, guid: 8b08a52e63792ac4e87bb7950048fb69,
+    type: 3}
+  neighborLots: []
 --- !u!1 &5772149292841446902
 GameObject:
   m_ObjectHideFlags: 0
@@ -70,7 +75,7 @@ GameObject:
   - component: {fileID: 1285912524579014132}
   - component: {fileID: 4685728698812440871}
   - component: {fileID: 4381662892013163751}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Mesh
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -120,7 +125,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 2086864fe70384741ad5ea5e296a7c88, type: 2}
+  - {fileID: 2100000, guid: 9a5b54194e9a4834bbf53d5343733fd1, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0

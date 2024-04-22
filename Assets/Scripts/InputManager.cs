@@ -1,17 +1,14 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class InputManager : MonoBehaviour
 {
-    [Header("References")]    
+    [Header("References")]
     public LayerMask VehicleLayer;
     public LayerMask LotLayer;
 
     [Header("Debug")]
     [SerializeField] bool blockVehiclePicking;
     [SerializeField] VehicleController selectedVehicle;
-
 
     // Update is called once per frame
     void Update()
@@ -25,21 +22,52 @@ public class InputManager : MonoBehaviour
             {
                 if (hit.collider.TryGetComponent(out VehicleController vehicle))
                 {
-                    if (blockVehiclePicking) return;
+                    if (selectedVehicle != null) selectedVehicle.GetReleased();
+                    if(selectedVehicle == vehicle)
+                    {
+                        selectedVehicle.GetReleased();
+                        ResetParams();
+                        
+                        return;
+                    }
+                    ResetParams();
+
+                    if (vehicle.isPicked)
+                    {
+                        return;
+                    }
+
 
                     selectedVehicle = vehicle;
-                   // vehicle.GetPicked();
-
+                    vehicle.GetPicked();
                     blockVehiclePicking = true;
                 }
             }
-        }
-        else if (Input.GetMouseButtonUp(0))
-        {
-            if (selectedVehicle != null)
+            else if (Physics.Raycast(ray, out hit, 300, LotLayer))
             {
-                selectedVehicle = null;
+                if (hit.collider.TryGetComponent(out LotController lot))
+                {
+                    if (!lot.IsOccupied)
+                    {
+                        if (selectedVehicle == null) return;
+                        lot.SetOccupied(true);
+                        selectedVehicle.GoOtherLot(lot);
+                    }
+                    else
+                    {
+                        if (selectedVehicle == null) return;
+                        selectedVehicle.GetReleased();
+
+                    }
+                    ResetParams();
+
+                }
             }
         }
+    }
+    void ResetParams()
+    {
+        selectedVehicle = null;
+        blockVehiclePicking = false;
     }
 }
