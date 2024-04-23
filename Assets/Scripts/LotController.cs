@@ -1,32 +1,38 @@
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class LotController : BaseCellBehavior
 {
-
     [Header("Customized References")]
     [SerializeField] VehicleController vehiclePrefab;
 
     [Header("Customized Debug")]
+    public bool IsInitializedEmpty;
     [SerializeField] List<LotController> neighborLots;
+    public int receivedStackCount = 0;
+    [HideInInspector] public VehicleController spawnedVehicle;
 
-    public void Initiliaze(LotStatsWrapper lotStatsWrapper)
+
+
+    public void SpawnVehicle(int activePassengerStackCount)
     {
-        if (!lotStatsWrapper.HasVehicle) return;
-
         SetOccupied(true);
+
         VehicleController cloneVehicle = Instantiate(vehiclePrefab, GetCenter(), Quaternion.identity, transform);
+        cloneVehicle.Initiliaze(ColorEnum.RED, activePassengerStackCount);
+        spawnedVehicle = cloneVehicle;
 
-        List<StackStatsWrapper> stackStats = lotStatsWrapper.stackStats;
-
-        for (int i = 0; i < stackStats.Count; i++)
-        {
-            cloneVehicle.Initiliaze(stackStats[i].stackColor, i);
-        }
+        receivedStackCount += activePassengerStackCount;
 
     }
 
+    public void AddPassengerStack(int stackCount)
+    {
+        spawnedVehicle.Initiliaze(ColorEnum.RED, stackCount);
+
+        receivedStackCount += stackCount;
+    }
     public void AddNeighbour(LotController neighbor)
     {
         if (neighborLots.Contains(neighbor)) return;
@@ -34,5 +40,8 @@ public class LotController : BaseCellBehavior
         neighborLots.Add(neighbor);
     }
 
-
+    public void SetIsEmpty(bool isEmpty)
+    {
+        IsInitializedEmpty = isEmpty;
+    }
 }

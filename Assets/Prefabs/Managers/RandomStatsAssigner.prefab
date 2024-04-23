@@ -44,3 +44,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 42a72e3fa2478564db4b201f597f5c69, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  emptyLotCount: 3
+  totalLotCount: 0
+  totalPassengerStackCount: 0
+  parkingLotsHolders: []
+  spawnedLots: []
+  emptyLots: []

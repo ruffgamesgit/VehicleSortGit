@@ -28,3 +28,10 @@ public class PassengerStack : MonoBehaviour
         }
     }
 }
+
+
+[System.Serializable]
+public class PaassengerStackInfo
+{
+    public ColorEnum Color;
+}

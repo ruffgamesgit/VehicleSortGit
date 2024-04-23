@@ -1,4 +1,4 @@
-using DG.Tweening;
+﻿using DG.Tweening;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -10,6 +10,25 @@ public class VehicleController : MonoBehaviour
     [Header("References")]
     [SerializeField] PassengerStack stackPrefab;
     [SerializeField] List<PlacementPoint> placementPoints;
+
+    public void Initiliaze(ColorEnum _color, int passengerStackCount)
+    {
+        currentLot = transform.parent.GetComponent<LotController>();
+
+        for (int i = 0; i < passengerStackCount; i++)
+        {
+            PlacementPoint targetPoint = GetAvailablePoint();
+
+            if (targetPoint == null) break; // If there is no placeable point that
+                                            // indicates the vehicle is full
+
+            Vector3 spawnPos;
+            spawnPos = targetPoint.transform.position;
+            PassengerStack cloneStack = Instantiate(stackPrefab, spawnPos, Quaternion.identity, targetPoint.transform);
+            cloneStack.Initialize(_color);
+            targetPoint.SetOccupied(true);
+        }
+    }
 
     public void GetPicked()
     {
@@ -35,23 +54,34 @@ public class VehicleController : MonoBehaviour
         });
     }
 
-    public void Initiliaze(ColorEnum _color, int stackPlacementIndex)
+    public int GetAvailablePointCount()
     {
-        currentLot = transform.parent.GetComponent<LotController>();
-
-        PlacementPoint targetPoint = placementPoints[stackPlacementIndex];
-        Vector3 spawnPos;
-        if (!targetPoint.IsOccupied)
-            spawnPos = targetPoint.transform.position;
-        else
+        int num = 0;
+        for (int i = 0; i < placementPoints.Count; i++)
         {
-            Debug.LogError("Spawn placement point is mistaken");
-
-            return;
+            if (!placementPoints[i].IsOccupied)
+                num++;
         }
 
-        PassengerStack cloneStack = Instantiate(stackPrefab, spawnPos, Quaternion.identity, targetPoint.transform);
-        cloneStack.Initialize(_color);
-        targetPoint.SetOccupied(true);
+        return num;
+    }
+
+
+    PlacementPoint GetAvailablePoint()
+    {
+        for (int i = 0; i < placementPoints.Count; i++)
+        {
+            PlacementPoint point = placementPoints[i];  
+
+            if (!point.IsOccupied)
+                return point;
+            else
+            {
+                if(i == placementPoints.Count - 1)
+                    break;
+            }
+        }
+
+        return null;
     }
 }
