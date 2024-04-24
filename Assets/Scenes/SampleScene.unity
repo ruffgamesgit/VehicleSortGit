@@ -1369,7 +1369,7 @@ PrefabInstance:
     - target: {fileID: 9186055064451690987, guid: 42a38a0fd29132249b4de7782580a1b5,
         type: 3}
       propertyPath: occupancyRateOfVehicles
-      value: 5
+      value: 6
       objectReference: {fileID: 0}
     - target: {fileID: 9186055064451690987, guid: 42a38a0fd29132249b4de7782580a1b5,
         type: 3}
@@ -1383,18 +1383,23 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 9186055064451690987, guid: 42a38a0fd29132249b4de7782580a1b5,
         type: 3}
+      propertyPath: desiredColorsForLevel.Array.data[0]
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 9186055064451690987, guid: 42a38a0fd29132249b4de7782580a1b5,
+        type: 3}
       propertyPath: desiredColorsForLevel.Array.data[1]
-      value: 1
+      value: 6
       objectReference: {fileID: 0}
     - target: {fileID: 9186055064451690987, guid: 42a38a0fd29132249b4de7782580a1b5,
         type: 3}
       propertyPath: desiredColorsForLevel.Array.data[2]
-      value: 2
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 9186055064451690987, guid: 42a38a0fd29132249b4de7782580a1b5,
         type: 3}
       propertyPath: desiredColorsForLevel.Array.data[3]
-      value: 3
+      value: 7
       objectReference: {fileID: 0}
     - target: {fileID: 9186055064451690987, guid: 42a38a0fd29132249b4de7782580a1b5,
         type: 3}
