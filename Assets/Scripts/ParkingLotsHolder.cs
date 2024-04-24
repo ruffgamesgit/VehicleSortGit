@@ -10,6 +10,8 @@ public class ParkingLotsHolder : MonoBehaviour
     [SerializeField] LotController lotPrefab;
     [SerializeField] float horizontalGap;
     [SerializeField] int desiredLotCount;
+    public int placementOffset;
+    [SerializeField] List<ParkingLotsHolder> neighborParkingLots = new();
 
     [Header("Debug")]
     [HideInInspector] public List<LotController> SpawnedLots = new List<LotController>();
@@ -20,7 +22,8 @@ public class ParkingLotsHolder : MonoBehaviour
     }
     private void Start()
     {
-        //SetLotsNeighbors();
+        SetLotsHorizontalNeighbors();
+        SetLotsVerticalNeighbors();
         RandomStatsAssigner.instance.ModifyTotalLotCount(desiredLotCount);
         RandomStatsAssigner.instance.AddParkingLotsHolder(this);
     }
@@ -39,7 +42,7 @@ public class ParkingLotsHolder : MonoBehaviour
             Vector3 spawnPos = new Vector3(xPos, 1, transform.position.z);
             LotController cloneLot = Instantiate(lotPrefab, spawnPos, Quaternion.identity, transform);
             cloneLot.gameObject.name = "Lot (" + i + ")";
-           
+
             SpawnedLots.Add(cloneLot);
         }
 
@@ -47,15 +50,43 @@ public class ParkingLotsHolder : MonoBehaviour
         transform.position = new Vector3(transform.position.x + initXPos, transform.position.y, transform.position.z);
     }
 
-    private void SetLotsNeighbors()
+
+    void SetLotsVerticalNeighbors()
+    {
+        if (neighborParkingLots.Count == 0)
+            return;
+
+        for (var x = 0; x < SpawnedLots.Count; x++)
+        {
+            for (int i = 0; i < neighborParkingLots.Count; i++)
+            {
+                ParkingLotsHolder parkingHolder = neighborParkingLots[i];
+                var itemCount = parkingHolder.desiredLotCount;
+
+
+                LotController myLot = SpawnedLots[x];
+                var placementIndex = x - parkingHolder.placementOffset + placementOffset;
+                if (placementIndex < 0) break;
+
+                if (placementIndex < parkingHolder.SpawnedLots.Count)
+                {
+                    if (parkingHolder.SpawnedLots[placementIndex] != null)
+                    {
+                        myLot.AddNeighbour(parkingHolder.SpawnedLots[placementIndex]);
+                    }
+                }
+            }
+        }
+    }
+
+
+    private void SetLotsHorizontalNeighbors()
     {
         if (SpawnedLots.Count <= 1)
         {
-            Debug.LogWarning("No horizontal neighbor exists");
+            Debug.LogWarning("No HORIZONTAL neighbor exists");
             return;
         }
-
-
 
         for (int i = 0; i < SpawnedLots.Count; i++)
         {
@@ -81,16 +112,4 @@ public class ParkingLotsHolder : MonoBehaviour
     }
 
 }
-//[System.Serializable]
-//public class LotStatsWrapper
-//{
-//    public bool HasVehicle;
-//    public List<StackStatsWrapper> stackStats;
-//}
-
-//[System.Serializable]
-//public class StackStatsWrapper
-//{
-//    public ColorEnum stackColor;
-//}
 

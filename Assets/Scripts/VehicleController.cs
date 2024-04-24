@@ -5,15 +5,16 @@ using UnityEngine;
 public class VehicleController : MonoBehaviour
 {
     public bool isPicked;
-    LotController currentLot;
+    [HideInInspector] public LotController CurrentLot;
 
     [Header("References")]
     [SerializeField] PassengerStack stackPrefab;
     [SerializeField] List<PlacementPoint> placementPoints;
-
-    public void Initiliaze(ColorEnum _color, int passengerStackCount)
+    public List<PassengerStack> SpawnedPassengerStacks = new();
+    List<ColorEnum> existingColorList = new();
+    public void Initiliaze(int passengerStackCount)
     {
-        currentLot = transform.parent.GetComponent<LotController>();
+        CurrentLot = transform.parent.GetComponent<LotController>();
 
         for (int i = 0; i < passengerStackCount; i++)
         {
@@ -25,7 +26,8 @@ public class VehicleController : MonoBehaviour
             Vector3 spawnPos;
             spawnPos = targetPoint.transform.position;
             PassengerStack cloneStack = Instantiate(stackPrefab, spawnPos, Quaternion.identity, targetPoint.transform);
-            cloneStack.Initialize(_color);
+            SpawnedPassengerStacks.Add(cloneStack);
+            cloneStack.SetCurrentVehicle(this);
             targetPoint.SetOccupied(true);
         }
     }
@@ -44,10 +46,10 @@ public class VehicleController : MonoBehaviour
 
     public void GoOtherLot(LotController targetLot)
     {
-        if (currentLot)
-            currentLot.SetOccupied(false);
+        if (CurrentLot)
+            CurrentLot.SetOccupied(false);
 
-        currentLot = targetLot;
+        CurrentLot = targetLot;
         transform.DOMove(targetLot.GetCenter(), .5f).OnComplete(() =>
         {
             GetReleased();
@@ -65,23 +67,34 @@ public class VehicleController : MonoBehaviour
 
         return num;
     }
+    public List<ColorEnum> GetExistingColor()
+    {
+        return existingColorList;
 
-
+    }
     PlacementPoint GetAvailablePoint()
     {
         for (int i = 0; i < placementPoints.Count; i++)
         {
-            PlacementPoint point = placementPoints[i];  
+            PlacementPoint point = placementPoints[i];
 
             if (!point.IsOccupied)
                 return point;
             else
             {
-                if(i == placementPoints.Count - 1)
+                if (i == placementPoints.Count - 1)
                     break;
             }
         }
 
         return null;
+    }
+    public List<PassengerStack> GetSpawnedStacks()
+    {
+        return SpawnedPassengerStacks;
+    }
+    public void AddExistingStackColors(ColorEnum _color)
+    {
+        existingColorList.Add(_color);
     }
 }

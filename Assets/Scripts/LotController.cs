@@ -10,28 +10,21 @@ public class LotController : BaseCellBehavior
     [Header("Customized Debug")]
     public bool IsInitializedEmpty;
     [SerializeField] List<LotController> neighborLots;
-    public int receivedStackCount = 0;
-    [HideInInspector] public VehicleController spawnedVehicle;
-
-
+    [HideInInspector] public VehicleController CurrentVehicle;
 
     public void SpawnVehicle(int activePassengerStackCount)
     {
         SetOccupied(true);
 
         VehicleController cloneVehicle = Instantiate(vehiclePrefab, GetCenter(), Quaternion.identity, transform);
-        cloneVehicle.Initiliaze(ColorEnum.RED, activePassengerStackCount);
-        spawnedVehicle = cloneVehicle;
-
-        receivedStackCount += activePassengerStackCount;
+        cloneVehicle.Initiliaze(activePassengerStackCount);
+        CurrentVehicle = cloneVehicle;
 
     }
 
     public void AddPassengerStack(int stackCount)
     {
-        spawnedVehicle.Initiliaze(ColorEnum.RED, stackCount);
-
-        receivedStackCount += stackCount;
+        CurrentVehicle.Initiliaze(stackCount);
     }
     public void AddNeighbour(LotController neighbor)
     {
@@ -40,8 +33,23 @@ public class LotController : BaseCellBehavior
         neighborLots.Add(neighbor);
     }
 
+    public List<LotController> GetLotNeighbors()
+    {
+        return neighborLots;    
+    }
+
     public void SetIsEmpty(bool isEmpty)
     {
         IsInitializedEmpty = isEmpty;
+    }
+
+    public List<ColorEnum> GetLotExistingColor()
+    {
+        return CurrentVehicle.GetExistingColor();
+    }
+
+    public VehicleController GetVehicle()
+    {
+        return CurrentVehicle;
     }
 }
