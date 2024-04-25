@@ -10,7 +10,7 @@ public class LotController : BaseCellBehavior
     [Header("Customized Debug")]
     public bool IsInitializedEmpty;
     [SerializeField] List<LotController> neighborLots;
-    [HideInInspector] public VehicleController CurrentVehicle;
+    public VehicleController CurrentVehicle;
 
     public void SpawnVehicle(int activePassengerStackCount)
     {
@@ -35,7 +35,7 @@ public class LotController : BaseCellBehavior
 
     public List<LotController> GetLotNeighbors()
     {
-        return neighborLots;    
+        return neighborLots;
     }
 
     public void SetIsEmpty(bool isEmpty)
@@ -45,11 +45,18 @@ public class LotController : BaseCellBehavior
 
     public List<ColorEnum> GetLotExistingColor()
     {
-        return CurrentVehicle.GetExistingColor();
+        return CurrentVehicle?.GetExistingColors();
     }
 
     public VehicleController GetVehicle()
     {
         return CurrentVehicle;
     }
+
+
+    public void SetVehicle(VehicleController vehicle)
+    {
+        CurrentVehicle = vehicle;
+    }
+
 }

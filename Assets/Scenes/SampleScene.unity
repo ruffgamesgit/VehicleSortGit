@@ -1379,7 +1379,7 @@ PrefabInstance:
     - target: {fileID: 9186055064451690987, guid: 42a38a0fd29132249b4de7782580a1b5,
         type: 3}
       propertyPath: desiredColorsForLevel.Array.size
-      value: 4
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 9186055064451690987, guid: 42a38a0fd29132249b4de7782580a1b5,
         type: 3}
@@ -1389,17 +1389,17 @@ PrefabInstance:
     - target: {fileID: 9186055064451690987, guid: 42a38a0fd29132249b4de7782580a1b5,
         type: 3}
       propertyPath: desiredColorsForLevel.Array.data[1]
-      value: 6
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 9186055064451690987, guid: 42a38a0fd29132249b4de7782580a1b5,
         type: 3}
       propertyPath: desiredColorsForLevel.Array.data[2]
-      value: 4
+      value: 7
       objectReference: {fileID: 0}
     - target: {fileID: 9186055064451690987, guid: 42a38a0fd29132249b4de7782580a1b5,
         type: 3}
       propertyPath: desiredColorsForLevel.Array.data[3]
-      value: 7
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 9186055064451690987, guid: 42a38a0fd29132249b4de7782580a1b5,
         type: 3}

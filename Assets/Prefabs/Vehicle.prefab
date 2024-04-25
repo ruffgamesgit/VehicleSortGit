@@ -129,7 +129,6 @@ GameObject:
   - component: {fileID: 4619724413365178033}
   - component: {fileID: 6594848349176632490}
   - component: {fileID: 8854592403249635882}
-  - component: {fileID: 7553993848557698371}
   m_Layer: 6
   m_Name: Vehicle
   m_TagString: Untagged
@@ -180,6 +179,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isPicked: 0
+  CurrentLot: {fileID: 0}
   stackPrefab: {fileID: 5668831829083497520, guid: 9f5d2a4baee25c94a8586d65ab0eb006,
     type: 3}
   placementPoints:
@@ -187,20 +187,8 @@ MonoBehaviour:
   - {fileID: 8771251132837940986}
   - {fileID: 553771599717683941}
   - {fileID: 5191779408170585929}
---- !u!114 &7553993848557698371
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4619724413365178032}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: cb60c97a0ac14f544b89d054b6cd24f9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  verticalCenterOffset: 0
-  IsOccupied: 0
+  CurrentPassengerStacks: []
+  TargetVehiclesToMove: []
 --- !u!1001 &858981853609498775
 PrefabInstance:
   m_ObjectHideFlags: 0

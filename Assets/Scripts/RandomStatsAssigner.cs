@@ -1,7 +1,12 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Data;
+using System.Linq;
+using System.Reflection;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class RandomStatsAssigner : MonoSingleton<RandomStatsAssigner>
 {
@@ -11,7 +16,7 @@ public class RandomStatsAssigner : MonoSingleton<RandomStatsAssigner>
     [SerializeField] int occupancyRateOfVehicles;
     [SerializeField] List<ColorEnum> desiredColorsForLevel = new List<ColorEnum>();
     [SerializeField] List<int> multipliers = new List<int>();
-    [SerializeField] List<ColorEnum> baseColorPool = new List<ColorEnum>();
+    [SerializeField] Dictionary<ColorEnum, int> baseColorPool = new Dictionary<ColorEnum, int>();
 
     [Header("Debug")]
     [SerializeField] int totalPassengerStackCount;
@@ -22,7 +27,7 @@ public class RandomStatsAssigner : MonoSingleton<RandomStatsAssigner>
     List<LotController> lotsWithVehicle = new List<LotController>();
     List<LotController> emptyLots = new();
     List<ParkingLotsHolder> parkingLotsHolders = new();
-
+    private System.Random _rng = new System.Random();
     IEnumerator Start()
     {
         yield return null;
@@ -30,8 +35,7 @@ public class RandomStatsAssigner : MonoSingleton<RandomStatsAssigner>
         SetEmptyLots();
         SetLotsWithVehicleList();
 
-        HandleRandomizationPlacement();
-        ColorAssign();
+        GenerateLevelRandomly();
     }
     #region List Modify Region 
 
@@ -63,7 +67,7 @@ public class RandomStatsAssigner : MonoSingleton<RandomStatsAssigner>
         {
             if (emptyLotCount == 0) break;
 
-            int randomIndex = Random.Range(0, spawnedLots.Count - 1);
+            int randomIndex = _rng.Next(0, spawnedLots.Count - 1);
             LotController lot = spawnedLots[randomIndex];
 
             if (lot != null && !lot.IsInitializedEmpty)
@@ -95,51 +99,19 @@ public class RandomStatsAssigner : MonoSingleton<RandomStatsAssigner>
     }
 
     #endregion
-    void HandleRandomizationPlacement()
-    {
-        int desiredStacks = desiredPassengerStackCount; // X
-        int lotListCount = lotsWithVehicle.Count; // Y
-        int leftStackCount = desiredStacks - lotsWithVehicle.Count; // Z
 
-
-        for (int i = 0; i < lotListCount; i++)
-        {
-            LotController lot = lotsWithVehicle[i];
-            lot.SpawnVehicle(1);
-        }
-
-        while (leftStackCount != 0)
-        {
-            if (leftStackCount == 0) break;
-
-            for (int i = 0; i < lotListCount; i++)
-            {
-                if (leftStackCount == 0) break;
-
-                LotController lot = lotsWithVehicle[i];
-                int availablePointCount = lot.CurrentVehicle.GetAvailablePointCount();
-                if (availablePointCount < 1) continue;
-
-                int randomStackCount = Random.Range(0, leftStackCount + 1);
-                randomStackCount = Mathf.Min(randomStackCount, 3);
-                randomStackCount = Mathf.Min(randomStackCount, availablePointCount);
-
-                leftStackCount -= randomStackCount;
-                lot.AddPassengerStack(randomStackCount);
-
-            }
-        }
-    }
-
-    void ColorAssign()
+    void GenerateLevelRandomly()
     {
         for (int i = 0; i < desiredColorsForLevel.Count; i++)
         {
             multipliers.Add(1);
-
+            var color = desiredColorsForLevel[i];
+            if (!baseColorPool.TryAdd(color, 4))
+            {
+                Debug.Log("Something wrong with the baseColorPool dictionary, operation add failed.");
+            }
         }
 
-        // SETTING THE MULTIPLIERS LIST BY RANDOM
         int totalMultiplier = (desiredPassengerStackCount / 4) - desiredColorsForLevel.Count;
         while (totalMultiplier > 0)
         {
@@ -149,113 +121,127 @@ public class RandomStatsAssigner : MonoSingleton<RandomStatsAssigner>
             {
                 if (totalMultiplier <= 0) break;
 
-                int randomValue = Random.Range(0, totalMultiplier + 1);
+                int randomValue = _rng.Next(0, totalMultiplier + 1);
                 multipliers[i] += randomValue;
                 totalMultiplier -= randomValue;
+
+                var color = desiredColorsForLevel[i];
+                baseColorPool[color] += randomValue * 4;
+
             }
         }
 
-
-        if (desiredColorsForLevel.Count != desiredPassengerStackCount / 4)
+        List<LotController> lotsWithVehicleShuffled = new List<LotController>(lotsWithVehicle);
+        lotsWithVehicleShuffled.Shuffle();
+        foreach (LotController lot in lotsWithVehicleShuffled)
         {
-            // COMPOSING BASE COLOR POOL LIST USING THE MULTIPLIERS
-            for (int j = 0; j < desiredColorsForLevel.Count; j++)
+            lot.SpawnVehicle(1);
+            VehicleController vehicle = lot.GetVehicle();
+            var neighbors = lot.GetLotNeighbors();
+            var uniqueNeighborColors = GetUniqueColorListFromNeighbors(neighbors);
+            List<ColorEnum> colorsAvailable = new List<ColorEnum>(baseColorPool.Keys);
+            foreach (var color in uniqueNeighborColors)
             {
-                ColorEnum color = desiredColorsForLevel[j];
-                int multiplier = multipliers[j];
-                int totalIterateCount = multiplier * 4;
+                colorsAvailable.Remove(color);
+            }
 
-                for (int i = 0; i < totalIterateCount; i++)
+            if (colorsAvailable.Count > 0)
+            {
+                var randomColorIndex = _rng.Next(0, colorsAvailable.Count - 1);
+                var colorToUse = colorsAvailable[randomColorIndex];
+                vehicle.CurrentPassengerStacks[0].Initialize(colorToUse);
+                baseColorPool[colorToUse] -= 1;
+                if (baseColorPool[colorToUse] <= 0)
                 {
-                    baseColorPool.Add(color);
-
+                    baseColorPool.Remove(colorToUse);
                 }
             }
-        }
-        else
-        {
-            Debug.Log("Every color can only have one stack");
-            for (int i = 0; i < desiredColorsForLevel.Count; i++)
-            {
-                for (int j = 0; j < 4; j++)
-                {
-                    baseColorPool.Add(desiredColorsForLevel[i]);
 
-                }
-            }
         }
 
-        Shuffle(baseColorPool);
+        int fillCount = 0;
+    fillPassengers:
+        lotsWithVehicle.Shuffle();
 
-        // ASSIGNING PASSENGERS' COLOR
-        int iterateCount = 0;
-        List<PassengerStack> stacks = new(GetTotalPassengerStacks());
-        for (int i = 0; i < stacks.Count; i++)
+
+
+        foreach (LotController lot in lotsWithVehicleShuffled)
         {
-            PassengerStack stack = stacks[i];
-            LotController currentLot = stack.GetCurrentLot();
-            ColorEnum assignableColor = baseColorPool[i];
-            List<ColorEnum> neighborStackColorsList = new List<ColorEnum>();
-
-            for (int p = 0; p < currentLot.GetLotNeighbors().Count; p++)
+            VehicleController vehicle = lot.GetVehicle();
+            var neighbors = lot.GetLotNeighbors();
+            var uniqueNeighborColors = GetUniqueColorListFromNeighbors(neighbors);
+            List<ColorEnum> colorsAvailable = new List<ColorEnum>(baseColorPool.Keys);
+            foreach (var color in uniqueNeighborColors)
             {
-                if (currentLot.GetLotNeighbors()[p] == null) continue;
-                LotController neighborLot = currentLot.GetLotNeighbors()[p];
-
-
-                if (neighborLot.CurrentVehicle == null) continue;
-                List<ColorEnum> existingColor = neighborLot.CurrentVehicle.GetExistingColor();
-                neighborStackColorsList.AddRange(existingColor);
+                colorsAvailable.Remove(color);
             }
 
-            if (neighborStackColorsList.Count > 0 && neighborStackColorsList.Contains(assignableColor))
+            if (colorsAvailable.Count > 0)
             {
-                while (neighborStackColorsList.Contains(assignableColor))
+                var randomColorIndex = _rng.Next(0, colorsAvailable.Count - 1);
+                var colorToUse = colorsAvailable[randomColorIndex];
+
+                var existingColorList = vehicle.GetExistingColors();
+                if (vehicle.CurrentPassengerStacks.Count == 3 && existingColorList.Count == 1 && existingColorList[0] == colorToUse)
                 {
-                    if (iterateCount > 20)
-                    {
-                        Debug.LogError("Too many iteration is attempted, this message should never displayed normally");
-                        break;
-                    }
-                    int randomIndex = Random.Range(0, desiredColorsForLevel.Count);
+                    continue;
+                }
+                var randomValue = _rng.Next(0, 2);
+                if (randomValue == 1)
+                {
+                    lot.AddPassengerStack(1);
+                }
+                else
+                {
+                    continue;
+                }
 
-                    assignableColor = desiredColorsForLevel[randomIndex];
-
-                    iterateCount++;
+                vehicle.CurrentPassengerStacks[vehicle.CurrentPassengerStacks.Count - 1].Initialize(colorToUse);
+                baseColorPool[colorToUse] -= 1;
+                if (baseColorPool[colorToUse] <= 0)
+                {
+                    baseColorPool.Remove(colorToUse);
+                }
+                if (baseColorPool.Count == 0)
+                {
+                    return;
                 }
             }
+            else
+            {
+                Debug.Log("");
+            }
 
-            stack.Initialize(assignableColor);
+        }
+
+        fillCount += 1;
+        if (baseColorPool.Count > 0)
+        {
+            if (fillCount < 30)
+                goto fillPassengers;
+        }
+
+        if (baseColorPool.Count > 0)
+        {
+            // Reload Scene
+            SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
         }
     }
-    private List<PassengerStack> GetTotalPassengerStacks()
+
+    private List<ColorEnum> GetUniqueColorListFromNeighbors(List<LotController> neighbors)
     {
-        List<PassengerStack> stacks = new List<PassengerStack>();
+        HashSet<ColorEnum> colorEnums = new HashSet<ColorEnum>();
 
-        for (int i = 0; i < lotsWithVehicle.Count; i++)
+        foreach (var neighbor in neighbors)
         {
-            LotController lotWithVehicle = lotsWithVehicle[i];
-
-            stacks.AddRange(lotWithVehicle.GetVehicle().GetSpawnedStacks());
-
+            var existingColor = neighbor.GetLotExistingColor();
+            if (existingColor == null) continue;
+            foreach (ColorEnum colorEnum in existingColor)
+            {
+                colorEnums.Add(colorEnum);
+            }
         }
-
-        return stacks;
+        return colorEnums.ToList();
     }
-    void Shuffle<T>(List<T> list)
-    {
-        int n = list.Count;
-        System.Random rng = new System.Random();
-
-        while (n > 1)
-        {
-            n--;
-            int k = rng.Next(n + 1);
-            T value = list[k];
-            list[k] = list[n];
-            list[n] = value;
-        }
-    }
-
 }
 

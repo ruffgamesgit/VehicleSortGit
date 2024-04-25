@@ -16,7 +16,7 @@ public class Passenger : MonoBehaviour
 
     void SetMat()
     {
-        int colorIndex = (int)passengerColor;
+        int colorIndex = (int)passengerColor ;
         if (colorIndex >= 0 && colorIndex < materials.Count)
         {
             GetComponent<Renderer>().material = materials[colorIndex];

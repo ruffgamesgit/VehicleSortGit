@@ -98,6 +98,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   passengerColor: 0
   materials:
+  - {fileID: 2100000, guid: 63a28ea884dd64b4a87f2903325b49de, type: 2}
   - {fileID: 2100000, guid: 2086864fe70384741ad5ea5e296a7c88, type: 2}
   - {fileID: 2100000, guid: 7656d920720e13f4bb1593c1021c2c18, type: 2}
   - {fileID: 2100000, guid: 019932c4a028c9b469de9f8ca6324f35, type: 2}
