@@ -18,7 +18,7 @@ public class PassengerStack : MonoBehaviour
     public void Initialize(ColorEnum _color)
     {
         stackColor = _color;
-
+        gameObject.name = gameObject.name + "_" + _color.ToString();
         currentVehicle.AddExistingStackColors(stackColor);
 
 
@@ -57,13 +57,16 @@ public class PassengerStack : MonoBehaviour
         // color unu çıkartman gerekli
         currentVehicle.RemoveStack(this);
         placementPoint.SetOccupied(false);
+        currentVehicle.UpdateExistingColorList();
 
         //////////////////////////////////////////////////////////
         
         transform.SetParent(targetPoint.transform);
         transform.DOMove(targetPoint.transform.position, .2f); 
         placementPoint = targetPoint;
+        placementPoint.SetOccupied(true);
 
+        //////////////////////////////////////////////////////////
         currentVehicle = vehicle;
         currentVehicle.AddExistingStackColors(stackColor);
         currentVehicle.AddStack(this);
