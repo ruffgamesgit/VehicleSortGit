@@ -1,5 +1,3 @@
-using JetBrains.Annotations;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -125,7 +123,7 @@ public class ParkingLotsHolder : MonoBehaviour
         List<ParkingLotsHolder> holdersInMiddle = new List<ParkingLotsHolder>();
         int myIndex = allHolders.IndexOf(this);
 
-        ParkingLotsHolder targetHolder = allHolders[targetHolderIndex];
+        ParkingLotsHolder targetHolderToMove = allHolders[targetHolderIndex];
         int diff = Mathf.Abs(targetHolderIndex - myIndex);
         if (diff <= 1)
             canVehicleMove = true;
@@ -133,20 +131,50 @@ public class ParkingLotsHolder : MonoBehaviour
         {
             if (myIndex < targetHolderIndex)
             {
-
-                for (int i = 1; i <= diff; i++)
+                for (int i = myIndex + 1; i < allHolders.Count; i++)
                 {
-                    if (targetHolder != allHolders[myIndex + i])
-                        holdersInMiddle.Add(allHolders[myIndex + i]);
+                    ParkingLotsHolder holderToCheck = allHolders[i];
+
+                    if (holderToCheck != targetHolderToMove && holderToCheck.AreAllLotsOccupied())
+                    {
+                        canVehicleMove = false;
+                        break;
+                    }
+                    else
+                        canVehicleMove = true;
                 }
+
+
+
+
+                //for (int i = 1; i <= diff; i++)
+                //{
+                //    if (targetHolderToMove != allHolders[myIndex + i])
+                //        holdersInMiddle.Add(allHolders[myIndex + i]);
+                //}
             }
             else
             {
-                for (int i = 1; i <= diff; i++)
+                for (int i = myIndex + 1; i < allHolders.Count; i--)
                 {
-                    if (targetHolder != allHolders[myIndex - i])
-                        holdersInMiddle.Add(allHolders[myIndex - i]);
+                    ParkingLotsHolder holderToCheck = allHolders[i];
+
+                    if (holderToCheck != targetHolderToMove && holderToCheck.AreAllLotsOccupied())
+                    {
+                        canVehicleMove = false;
+                        break;
+                    }
+                    else
+                        canVehicleMove = true;
                 }
+
+
+
+                //for (int i = 1; i <= diff; i++)
+                //{
+                //    if (targetHolderToMove != allHolders[myIndex - i])
+                //        holdersInMiddle.Add(allHolders[myIndex - i]);
+                //}
             }
         }
 
