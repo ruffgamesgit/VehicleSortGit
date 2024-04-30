@@ -9,9 +9,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8665296997656076576}
-  - component: {fileID: 7750878843461514554}
+  - component: {fileID: 7466682094296513427}
   m_Layer: 0
-  m_Name: RandomStatsAssigner
+  m_Name: LevelGenerator
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -32,7 +32,7 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &7750878843461514554
+--- !u!114 &7466682094296513427
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -41,12 +41,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 2181519298754044861}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 42a72e3fa2478564db4b201f597f5c69, type: 3}
+  m_Script: {fileID: 11500000, guid: 8ee568e088f6e114198e09629e75cec1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  emptyLotCount: 3
-  totalLotCount: 0
+  emptyLotCount: 0
+  occupancyRateOfVehicles: 0
+  desiredColorsForLevel: 
+  multipliers: 
   totalPassengerStackCount: 0
-  parkingLotsHolders: []
-  spawnedLots: []
-  emptyLots: []
+  desiredPassengerStackCount: 0

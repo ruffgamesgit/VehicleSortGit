@@ -1,17 +1,13 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Data;
 using System.Linq;
-using System.Reflection;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-public class RandomStatsAssigner : MonoSingleton<RandomStatsAssigner>
+public class LevelGenerator : MonoSingleton<LevelGenerator>
 {
-    [Header("Config")]
-    [SerializeField] int emptyLotCount;
+    [Header("Config")]   
     [Range(1, 10)]
     [SerializeField] int occupancyRateOfVehicles;
     [SerializeField] List<ColorEnum> desiredColorsForLevel = new List<ColorEnum>();
@@ -62,26 +58,6 @@ public class RandomStatsAssigner : MonoSingleton<RandomStatsAssigner>
     }
     void SetInitialParameters()
     {
-        //for (int i = 0; i < spawnedLots.Count; i++)
-        //{
-        //    if (emptyLotCount <= 0) break;
-
-        //    int randomIndex = _rng.Next(0, spawnedLots.Count - 1);
-        //    LotController lot = spawnedLots[randomIndex];
-
-        //    if (lot != null && !lot.IsInitializedEmpty)
-        //    {
-        //        lot.SetIsEmpty(true);
-        //        emptyLots.Add(lot);
-        //        emptyLotCount--;
-        //    }
-        //    else
-        //    {
-        //        continue;
-        //    }
-
-        //}
-
         totalVehiclesCount = (spawnedLots.Count - emptyLots.Count);
         totalPassengerStackCount = totalVehiclesCount * 4;
         desiredPassengerStackCount = (totalPassengerStackCount * occupancyRateOfVehicles) / 10;
@@ -250,10 +226,6 @@ public class RandomStatsAssigner : MonoSingleton<RandomStatsAssigner>
         return colorEnums.ToList();
     }
 
-    public void SetEmptyLotCount(int value)
-    {
-        emptyLotCount += value;
-    }
 
     public void AddEmptyLot(LotController lot)
     {

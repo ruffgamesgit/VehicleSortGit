@@ -22,6 +22,10 @@ public class LotController : BaseCellBehavior
 
     }
 
+    public void OnVehicleArrived()
+    {
+        SortManager.instance.Sort(this, .1f);
+    }
     public void AddPassengerStack(int stackCount)
     {
         CurrentVehicle.Initiliaze(stackCount);

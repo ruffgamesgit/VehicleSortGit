@@ -10,6 +10,7 @@ public class VehicleController : MonoBehaviour
     public bool isPicked;
     public bool IsPerformingTransfer;
     public LotController CurrentLot;
+    [HideInInspector] public bool Disappearing = false;
 
     [Header("References")]
     [SerializeField] PassengerStack stackPrefab;
@@ -17,7 +18,6 @@ public class VehicleController : MonoBehaviour
     public List<PassengerStack> CurrentPassengerStacks = new();
     [SerializeField] List<VehicleController> TargetVehiclesToMove = new();
     [SerializeField] List<ColorEnum> existingColorList = new();
-    bool disappearing = false;
 
     public void Initiliaze(int passengerStackCount)
     {
@@ -39,26 +39,83 @@ public class VehicleController : MonoBehaviour
             targetPoint.SetOccupied(true);
         }
     }
-
+    #region GETTERS
     public void GetPicked()
     {
         isPicked = true;
         transform.DOMoveY(transform.position.y + 1, 0.25f);
     }
+    public List<PassengerStack> GetPassengerStacksBySpecificColor(ColorEnum _color)
+    {
+        List<PassengerStack> stacks = new List<PassengerStack>();
 
+
+        for (int i = 0; i < CurrentPassengerStacks.Count; i++)
+        {
+            if (CurrentPassengerStacks[i].stackColor == _color && !stacks.Contains(CurrentPassengerStacks[i]))
+                stacks.Add(CurrentPassengerStacks[i]);
+        }
+
+        return stacks;
+    }
+    public List<PlacementPoint> GetAllAvailablePoints()
+    {
+        List<PlacementPoint> points = new List<PlacementPoint>();
+
+        for (int i = 0; i < placementPoints.Count; i++)
+        {
+            if (!placementPoints[i].IsOccupied)
+                points.Add(placementPoints[i]);
+        }
+
+        return points;
+    }
+    public List<ColorEnum> GetExistingColors()
+    {
+
+        return existingColorList;
+
+    }
+    PlacementPoint GetFirstAvailablePoint()
+    {
+        for (int i = 0; i < placementPoints.Count; i++)
+        {
+            PlacementPoint point = placementPoints[i];
+
+            if (!point.IsOccupied)
+                return point;
+            else
+            {
+                if (i == placementPoints.Count - 1)
+                    break;
+            }
+        }
+
+        return null;
+    }
+    public List<PassengerStack> GetPassengerStacks()
+    {
+        return CurrentPassengerStacks;
+    }
+
+    #endregion
+    public void Disappear(float duration = .5f)
+    {
+        Disappearing = true;
+        CurrentPassengerStacks.Clear();
+        transform.DOScale(Vector3.zero, duration);
+    }
     public void GetReleased()
     {
         isPicked = false;
         transform.DOMoveY(transform.position.y - 1, 0.25f);
     }
-
     public void GoOtherLot(LotController targetLot)
     {
         if (CurrentLot)
         {
             CurrentLot.SetOccupied(false);
             CurrentLot.SetVehicle(null);
-            //  Debug.LogWarning("CHANGE THE LOGIC, SHOULD NOT MODIFY DIRECTLY ANOTHER CLASSES' ATTRIBUTES");
         }
 
 
@@ -68,17 +125,134 @@ public class VehicleController : MonoBehaviour
         {
             transform.SetParent(CurrentLot.transform);
             GetReleased();
-            StartCoroutine(ControlTransfer(.1f));
+            CurrentLot.OnVehicleArrived();
         });
     }
+    public bool IsVehicleSortedFully()
+    {
+        int sameColoredStackCount = 0;
+        if (CurrentPassengerStacks.Count == 4)
+        {
+            ColorEnum firstColor = CurrentPassengerStacks[0].stackColor;
+            for (int i = 0; i < CurrentPassengerStacks.Count; i++)
+            {
+                if (firstColor == CurrentPassengerStacks[i].stackColor)
+                {
+                    sameColoredStackCount++;
+                }
+            }
+
+        }
+        return sameColoredStackCount == 4;
+    }
+    public bool HasMajorityOfOneColor(out ColorEnum colorEnum, out int countOfTheStack)
+    {
+        Dictionary<ColorEnum, int> colorCounts = new Dictionary<ColorEnum, int>();
+
+        if (CurrentPassengerStacks.Count == 1)
+        {
+            colorEnum = CurrentPassengerStacks[0].stackColor;
+            countOfTheStack = 1;
+            return true;
+        }
+        else
+        {
+            // Count occurrences of each color
+            foreach (PassengerStack stack in CurrentPassengerStacks)
+            {
+                ColorEnum color = stack.stackColor;
+                if (colorCounts.ContainsKey(color))
+                {
+                    colorCounts[color]++;
+                }
+                else
+                {
+                    colorCounts[color] = 1;
+                }
+            }
+
+            // Find the color with the highest count
+            int maxCount = 0;
+            colorEnum = ColorEnum.NONE;
+
+            foreach (KeyValuePair<ColorEnum, int> pair in colorCounts)
+            {
+                if (pair.Value > maxCount)
+                {
+                    maxCount = pair.Value;
+                    colorEnum = pair.Key;
+                }
+            }
+
+            // Check if the majority is at least countOfTheStack
+            if (maxCount >= 2)
+            {
+                countOfTheStack = maxCount;
+                return true;
+            }
+            else
+            {
+                colorEnum = ColorEnum.NONE;
+                countOfTheStack = 0;
+                return false;
+            }
+        }
+    }
+    public void AddStack(PassengerStack stack)
+    {
+        if (CurrentPassengerStacks.Contains(stack)) return;
+
+        CurrentPassengerStacks.Add(stack);
+
+        if (IsVehicleSortedFully())
+        {
+            Disappearing = true;
+            float tweenDuration = .5f;
+
+            //Debug.LogWarning("This vehicle fully sorted: " + gameObject.name);
+            CurrentLot.SetOccupied(false);
+            transform.DOScale(Vector3.zero, tweenDuration);
+            CurrentPassengerStacks.Clear(); // bir daha routine başlamaması için 
+
+            //Wait Tween Completetion
+
+            CurrentLot.SetOccupied(false);
+            CurrentLot.SetVehicle(null);
+
+            Debug.LogWarning("Vehicle is sorted fully and disappearing, BUT this is not the best practise this function should not be called here.");
+        }
+    }
+    public void RemoveStack(PassengerStack stack)
+    {
+        if (!CurrentPassengerStacks.Contains(stack)) { return; }
+
+        CurrentPassengerStacks.Remove(stack);
+    }
+    public void AddExistingStackColors(ColorEnum _color)
+    {
+        if (!existingColorList.Contains(_color))
+            existingColorList.Add(_color);
+    }
+    public void RefreshExistingColorList()
+    {
+        existingColorList.Clear();
+        for (int i = 0; i < CurrentPassengerStacks.Count; i++)
+        {
+            ColorEnum stackColor = CurrentPassengerStacks[i].stackColor;
+
+            if (!existingColorList.Contains(stackColor))
+                existingColorList.Add(stackColor);
+        }
+    }
+}
 
     #region Passenger Transfer Region
-
+/*
     IEnumerator ControlTransfer(float startControlDelay)
     {
         // Debug.LogWarning("CONTROL ROUTINE INVOKED");
 
-        if (disappearing) yield break;
+        if (Disappearing) yield break;
 
 
         if (CurrentPassengerStacks.Count > 0)
@@ -87,7 +261,7 @@ public class VehicleController : MonoBehaviour
 
             if (IsVehicleSortedFully())
             {
-                disappearing = true;
+                Disappearing = true;
                 float tweenDuration = .5f;
                 yield return new WaitForSeconds(startControlDelay);
 
@@ -409,7 +583,7 @@ public class VehicleController : MonoBehaviour
 
                         if (IsVehicleSortedFully())
                         {
-                            disappearing = true;
+                            Disappearing = true;
                             float tweenDuration = .25f;
                             yield return new WaitForSeconds(startControlDelay);
 
@@ -448,188 +622,5 @@ public class VehicleController : MonoBehaviour
         }
 
         TargetVehiclesToMove.Clear();
-    }
-
-    public bool IsVehicleSortedFully()
-    {
-        int sameColoredStackCount = 0;
-        if (CurrentPassengerStacks.Count == 4)
-        {
-            ColorEnum firstColor = CurrentPassengerStacks[0].stackColor;
-            for (int i = 0; i < CurrentPassengerStacks.Count; i++)
-            {
-                if (firstColor == CurrentPassengerStacks[i].stackColor)
-                {
-                    sameColoredStackCount++;
-                }
-            }
-
-        }
-        return sameColoredStackCount == 4;
-    }
-
-    public bool HasMajorityOfOneColor(out ColorEnum colorEnum, out int countOfTheStack)
-    {
-        Dictionary<ColorEnum, int> colorCounts = new Dictionary<ColorEnum, int>();
-
-        if (CurrentPassengerStacks.Count == 1)
-        {
-            colorEnum = CurrentPassengerStacks[0].stackColor;
-            countOfTheStack = 1;
-            return true;
-        }
-        else
-        {
-            // Count occurrences of each color
-            foreach (PassengerStack stack in CurrentPassengerStacks)
-            {
-                ColorEnum color = stack.stackColor;
-                if (colorCounts.ContainsKey(color))
-                {
-                    colorCounts[color]++;
-                }
-                else
-                {
-                    colorCounts[color] = 1;
-                }
-            }
-
-            // Find the color with the highest count
-            int maxCount = 0;
-            colorEnum = ColorEnum.NONE;
-
-            foreach (KeyValuePair<ColorEnum, int> pair in colorCounts)
-            {
-                if (pair.Value > maxCount)
-                {
-                    maxCount = pair.Value;
-                    colorEnum = pair.Key;
-                }
-            }
-
-            // Check if the majority is at least countOfTheStack
-            if (maxCount >= 2)
-            {
-                countOfTheStack = maxCount;
-                return true;
-            }
-            else
-            {
-                colorEnum = ColorEnum.NONE;
-                countOfTheStack = 0;
-                return false;
-            }
-        }
-    }
-    public List<PassengerStack> GetPassengerStacksBySpecificColor(ColorEnum _color)
-    {
-        List<PassengerStack> stacks = new List<PassengerStack>();
-
-
-        for (int i = 0; i < CurrentPassengerStacks.Count; i++)
-        {
-            if (CurrentPassengerStacks[i].stackColor == _color && !stacks.Contains(CurrentPassengerStacks[i]))
-                stacks.Add(CurrentPassengerStacks[i]);
-        }
-
-        return stacks;
-    }
+    }*/
     #endregion
-    public void AddStack(PassengerStack stack)
-    {
-        if (CurrentPassengerStacks.Contains(stack)) return;
-
-        CurrentPassengerStacks.Add(stack);
-
-        if (IsVehicleSortedFully())
-        {
-            disappearing = true;
-            float tweenDuration = .5f;
-          
-            //Debug.LogWarning("This vehicle fully sorted: " + gameObject.name);
-            CurrentLot.SetOccupied(false);
-            transform.DOScale(Vector3.zero, tweenDuration);
-            CurrentPassengerStacks.Clear(); // bir daha routine başlamaması için 
-
-            //Wait Tween Completetion
-
-            CurrentLot.SetOccupied(false);
-            CurrentLot.SetVehicle(null);
-
-            Debug.LogWarning("Vehicle is sorted fully and disappearing, BUT this is not the best practise this function should not be called here.");
-        }
-    }
-    public void RemoveStack(PassengerStack stack)
-    {
-        if (!CurrentPassengerStacks.Contains(stack)) { return; }
-
-        CurrentPassengerStacks.Remove(stack);
-    }
-    public int GetAvailablePointCount()
-    {
-        int num = 0;
-        for (int i = 0; i < placementPoints.Count; i++)
-        {
-            if (!placementPoints[i].IsOccupied)
-                num++;
-        }
-
-        return num;
-    }
-    List<PlacementPoint> GetAllAvailablePoints()
-    {
-        List<PlacementPoint> points = new List<PlacementPoint>();
-
-        for (int i = 0; i < placementPoints.Count; i++)
-        {
-            if (!placementPoints[i].IsOccupied)
-                points.Add(placementPoints[i]);
-        }
-
-        return points;
-    }
-    PlacementPoint GetFirstAvailablePoint()
-    {
-        for (int i = 0; i < placementPoints.Count; i++)
-        {
-            PlacementPoint point = placementPoints[i];
-
-            if (!point.IsOccupied)
-                return point;
-            else
-            {
-                if (i == placementPoints.Count - 1)
-                    break;
-            }
-        }
-
-        return null;
-    }
-    public List<ColorEnum> GetExistingColors()
-    {
-
-        return existingColorList;
-
-    }
-    public List<PassengerStack> GetPassengerStacks()
-    {
-        return CurrentPassengerStacks;
-    }
-    public void AddExistingStackColors(ColorEnum _color)
-    {
-        if (!existingColorList.Contains(_color))
-            existingColorList.Add(_color);
-    }
-  
-    public void RefreshExistingColorList()
-    {
-        existingColorList.Clear();
-        for (int i = 0; i < CurrentPassengerStacks.Count; i++)
-        {
-            ColorEnum stackColor = CurrentPassengerStacks[i].stackColor;
-
-            if (!existingColorList.Contains(stackColor))
-                existingColorList.Add(stackColor);
-        }
-    }
-}

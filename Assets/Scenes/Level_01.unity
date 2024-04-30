@@ -137,6 +137,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2769950307539027348, guid: 15f3d92b58fac14458c601f6efea47d2,
         type: 3}
+      propertyPath: placementOffset
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2769950307539027348, guid: 15f3d92b58fac14458c601f6efea47d2,
+        type: 3}
       propertyPath: desiredLotAmount
       value: 1
       objectReference: {fileID: 0}
@@ -144,6 +149,21 @@ PrefabInstance:
         type: 3}
       propertyPath: lotStats.Array.size
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2769950307539027348, guid: 15f3d92b58fac14458c601f6efea47d2,
+        type: 3}
+      propertyPath: emptyLotsIndexes.Array.size
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 2769950307539027348, guid: 15f3d92b58fac14458c601f6efea47d2,
+        type: 3}
+      propertyPath: emptyLotsIndexes.Array.data[0]
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2769950307539027348, guid: 15f3d92b58fac14458c601f6efea47d2,
+        type: 3}
+      propertyPath: emptyLotsIndexes.Array.data[1]
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 2769950307539027348, guid: 15f3d92b58fac14458c601f6efea47d2,
         type: 3}
@@ -214,7 +234,7 @@ PrefabInstance:
         type: 3}
       propertyPath: neighborParkingLots.Array.data[0]
       value: 
-      objectReference: {fileID: 1876634900}
+      objectReference: {fileID: 0}
     - target: {fileID: 2769950307539027348, guid: 15f3d92b58fac14458c601f6efea47d2,
         type: 3}
       propertyPath: neighborParkingLots.Array.data[1]
@@ -1637,6 +1657,46 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 5049745740805046149, guid: 42a38a0fd29132249b4de7782580a1b5,
+        type: 3}
+      propertyPath: occupancyRateOfVehicles
+      value: 7
+      objectReference: {fileID: 0}
+    - target: {fileID: 5049745740805046149, guid: 42a38a0fd29132249b4de7782580a1b5,
+        type: 3}
+      propertyPath: desiredColorsForLevel.Array.size
+      value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 5049745740805046149, guid: 42a38a0fd29132249b4de7782580a1b5,
+        type: 3}
+      propertyPath: desiredColorsForLevel.Array.data[0]
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5049745740805046149, guid: 42a38a0fd29132249b4de7782580a1b5,
+        type: 3}
+      propertyPath: desiredColorsForLevel.Array.data[1]
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 5049745740805046149, guid: 42a38a0fd29132249b4de7782580a1b5,
+        type: 3}
+      propertyPath: desiredColorsForLevel.Array.data[2]
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 5049745740805046149, guid: 42a38a0fd29132249b4de7782580a1b5,
+        type: 3}
+      propertyPath: desiredColorsForLevel.Array.data[3]
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 5049745740805046149, guid: 42a38a0fd29132249b4de7782580a1b5,
+        type: 3}
+      propertyPath: desiredColorsForLevel.Array.data[4]
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 5049745740805046149, guid: 42a38a0fd29132249b4de7782580a1b5,
+        type: 3}
+      propertyPath: desiredColorsForLevel.Array.data[5]
+      value: 5
+      objectReference: {fileID: 0}
     - target: {fileID: 5823024360243036200, guid: 42a38a0fd29132249b4de7782580a1b5,
         type: 3}
       propertyPath: m_Name
@@ -1697,50 +1757,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 9186055064451690987, guid: 42a38a0fd29132249b4de7782580a1b5,
-        type: 3}
-      propertyPath: emptyLotCount
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 9186055064451690987, guid: 42a38a0fd29132249b4de7782580a1b5,
+    - target: {fileID: 8319609327625125698, guid: 42a38a0fd29132249b4de7782580a1b5,
         type: 3}
       propertyPath: occupancyRateOfVehicles
       value: 7
-      objectReference: {fileID: 0}
-    - target: {fileID: 9186055064451690987, guid: 42a38a0fd29132249b4de7782580a1b5,
-        type: 3}
-      propertyPath: activatedPassengerStackCount
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 9186055064451690987, guid: 42a38a0fd29132249b4de7782580a1b5,
-        type: 3}
-      propertyPath: desiredColorsForLevel.Array.size
-      value: 5
-      objectReference: {fileID: 0}
-    - target: {fileID: 9186055064451690987, guid: 42a38a0fd29132249b4de7782580a1b5,
-        type: 3}
-      propertyPath: desiredColorsForLevel.Array.data[0]
-      value: 5
-      objectReference: {fileID: 0}
-    - target: {fileID: 9186055064451690987, guid: 42a38a0fd29132249b4de7782580a1b5,
-        type: 3}
-      propertyPath: desiredColorsForLevel.Array.data[1]
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 9186055064451690987, guid: 42a38a0fd29132249b4de7782580a1b5,
-        type: 3}
-      propertyPath: desiredColorsForLevel.Array.data[2]
-      value: 7
-      objectReference: {fileID: 0}
-    - target: {fileID: 9186055064451690987, guid: 42a38a0fd29132249b4de7782580a1b5,
-        type: 3}
-      propertyPath: desiredColorsForLevel.Array.data[3]
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 9186055064451690987, guid: 42a38a0fd29132249b4de7782580a1b5,
-        type: 3}
-      propertyPath: desiredColorsForLevel.Array.data[4]
-      value: 3
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 42a38a0fd29132249b4de7782580a1b5, type: 3}

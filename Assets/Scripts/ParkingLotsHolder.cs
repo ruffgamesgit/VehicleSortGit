@@ -25,8 +25,9 @@ public class ParkingLotsHolder : MonoBehaviour
     {
         SetLotsHorizontalNeighbors();
         SetLotsVerticalNeighbors();
-        RandomStatsAssigner.instance.ModifyTotalLotCount(desiredLotCount);
-        RandomStatsAssigner.instance.AddParkingLotsHolder(this);
+        LevelGenerator.instance.ModifyTotalLotCount(desiredLotCount);
+        LevelGenerator.instance.AddParkingLotsHolder(this);
+        InputManager.instance.AddParkingLotHolder(this);
     }
     private void SpawnLots()
     {
@@ -45,7 +46,7 @@ public class ParkingLotsHolder : MonoBehaviour
             if (emptyLotsIndexes.Contains(i))
             {
                 cloneLot.SetIsEmpty(true);
-                RandomStatsAssigner.instance.AddEmptyLot(cloneLot);
+                LevelGenerator.instance.AddEmptyLot(cloneLot);
             }
             cloneLot.gameObject.name = "Lot (" + i + ")";
 
@@ -55,7 +56,6 @@ public class ParkingLotsHolder : MonoBehaviour
 
         transform.position = new Vector3(transform.position.x + initXPos, transform.position.y, transform.position.z);
     }
-
 
     void SetLotsVerticalNeighbors()
     {
@@ -117,5 +117,81 @@ public class ParkingLotsHolder : MonoBehaviour
         }
     }
 
+
+    public bool CheckCanMove(int targetHolderIndex)
+    {
+        bool canVehicleMove = false;
+        List<ParkingLotsHolder> allHolders = InputManager.instance.ParkingLotsHolders;
+        List<ParkingLotsHolder> holdersInMiddle = new List<ParkingLotsHolder>();
+        int myIndex = allHolders.IndexOf(this);
+
+        ParkingLotsHolder targetHolder = allHolders[targetHolderIndex];
+        int diff = Mathf.Abs(targetHolderIndex - myIndex);
+        if (diff <= 1)
+            canVehicleMove = true;
+        else
+        {
+            if (myIndex < targetHolderIndex)
+            {
+
+                for (int i = 1; i <= diff; i++)
+                {
+                    if (targetHolder != allHolders[myIndex + i])
+                        holdersInMiddle.Add(allHolders[myIndex + i]);
+                }
+            }
+            else
+            {
+                for (int i = 1; i <= diff; i++)
+                {
+                    if (targetHolder != allHolders[myIndex - i])
+                        holdersInMiddle.Add(allHolders[myIndex - i]);
+                }
+            }
+        }
+
+        if (holdersInMiddle.Count > 0)
+        {
+            int totalSpawnedLots = 0;
+            int occupiedSpawnedLots = 0;
+            for (int i = 0; i < holdersInMiddle.Count; i++)
+            {
+                ParkingLotsHolder holder = holdersInMiddle[i];
+                totalSpawnedLots += holder.SpawnedLots.Count;
+                for (int k = 0; k < holder.SpawnedLots.Count; k++)
+                {
+                    if (holder.SpawnedLots[k].GetVehicle() != null)
+                        occupiedSpawnedLots++;
+                }
+            }
+
+            if (totalSpawnedLots == occupiedSpawnedLots)
+                canVehicleMove = false;
+            else
+                canVehicleMove = true;
+        }
+
+        return canVehicleMove;
+    }
+
+    public bool AreAllLotsOccupied()
+    {
+        bool fullyOccupied = true;
+
+
+        for (int i = 0; i < SpawnedLots.Count; i++)
+        {
+            LotController lot = SpawnedLots[i];
+
+            if (lot.GetVehicle() == null)
+            {
+                fullyOccupied = false;
+                break;
+            }
+        }
+
+        return fullyOccupied;
+
+    }
 }
 
