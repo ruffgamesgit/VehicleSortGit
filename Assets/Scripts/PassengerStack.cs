@@ -57,7 +57,7 @@ public class PassengerStack : MonoBehaviour
         // color unu çıkartman gerekli
         currentVehicle.RemoveStack(this);
         placementPoint.SetOccupied(false);
-        currentVehicle.UpdateExistingColorList();
+        currentVehicle.RefreshExistingColorList();
 
         //////////////////////////////////////////////////////////
         

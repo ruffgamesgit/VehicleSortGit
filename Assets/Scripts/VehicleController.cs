@@ -19,7 +19,6 @@ public class VehicleController : MonoBehaviour
     [SerializeField] List<ColorEnum> existingColorList = new();
     bool disappearing = false;
 
-
     public void Initiliaze(int passengerStackCount)
     {
         CurrentLot = transform.parent.GetComponent<LotController>();
@@ -59,7 +58,7 @@ public class VehicleController : MonoBehaviour
         {
             CurrentLot.SetOccupied(false);
             CurrentLot.SetVehicle(null);
-            Debug.LogWarning("CHANGE THE LOGIC, SHOULD NOT MODIFY DIRECTLY ANOTHER CLASSES' ATTRIBUTES");
+            //  Debug.LogWarning("CHANGE THE LOGIC, SHOULD NOT MODIFY DIRECTLY ANOTHER CLASSES' ATTRIBUTES");
         }
 
 
@@ -67,6 +66,7 @@ public class VehicleController : MonoBehaviour
         CurrentLot.SetVehicle(this);
         transform.DOMove(targetLot.GetCenter(), .5f).OnComplete(() =>
         {
+            transform.SetParent(CurrentLot.transform);
             GetReleased();
             StartCoroutine(ControlTransfer(.1f));
         });
@@ -76,8 +76,7 @@ public class VehicleController : MonoBehaviour
 
     IEnumerator ControlTransfer(float startControlDelay)
     {
-        Debug.LogWarning("CONTROL ROUTINE INVOKED");
-
+        // Debug.LogWarning("CONTROL ROUTINE INVOKED");
 
         if (disappearing) yield break;
 
@@ -92,7 +91,7 @@ public class VehicleController : MonoBehaviour
                 float tweenDuration = .5f;
                 yield return new WaitForSeconds(startControlDelay);
 
-                Debug.LogWarning("This vehicle fully sorted: " + gameObject.name);
+                //Debug.LogWarning("This vehicle fully sorted: " + gameObject.name);
                 CurrentLot.SetOccupied(false);
                 transform.DOScale(Vector3.zero, tweenDuration);
                 CurrentPassengerStacks.Clear(); // bir daha routine başlamaması için 
@@ -105,8 +104,10 @@ public class VehicleController : MonoBehaviour
             }
             else
             {
+
                 List<LotController> neighborLots = CurrentLot.GetLotNeighbors();
-                List<VehicleController> targetVehiclesToMove = new List<VehicleController>();
+                //  List<VehicleController> targetVehiclesToMove = new List<VehicleController>();
+
 
                 for (int i = 0; i < neighborLots.Count; i++)
                 {
@@ -130,288 +131,323 @@ public class VehicleController : MonoBehaviour
 
                     }
                     //     TargetVehiclesToMove.Shuffle();
+                }
+                //for (int i = 0; i < TargetVehiclesToMove.Count; i++)
+                //{
+                //    Debug.LogError("N count: " + TargetVehiclesToMove[i]);
+                //}
 
-                    // EĞER KOMŞU VEHICLE LARDA UYUŞAN RENK VAR İSE
-                    if (TargetVehiclesToMove.Count > 0)
+                // EĞER KOMŞU VEHICLE LARDA UYUŞAN RENK VAR İSE 
+                // HAREKET EDEBİLECEĞİM HEDEF ARAÇLAR VAR İSE
+                if (TargetVehiclesToMove.Count > 0)
+                {
+                    #region Perform Transfer
+                    for (int n = 0; n < TargetVehiclesToMove.Count; n++)
                     {
-                        #region Perform Transfer
-                        for (int n = 0; n < TargetVehiclesToMove.Count; n++)
+                        //TargetVehiclesToMove.AddRange(targetVehiclesToMove);
+                        VehicleController targetVehicleToTranfer = TargetVehiclesToMove[n];
+                        List<PassengerStack> stacksToTakeList = new List<PassengerStack>();
+                        List<PassengerStack> stacksToSendList = new List<PassengerStack>();
+                        List<PlacementPoint> availablePlacementPoints = new List<PlacementPoint>();
+
+                        // Eğer passenger stacklerimin içerisinde renk olarak çoğunlukla bir renk var ise
+                        // ilk önce komşularımdan o rengi talep etmeliyim
+                        ColorEnum myColorToControl;
+                        int majorityStackNumber; // Bu değer çoğunluğa sahip bir renk varsa o renge sahip stack sayısını temsil ediyor
+                        int demandingStackCountFromNeighbor; // Bu değer ise vehicle in tamamen sort olması için komşudan istenecek stack sayısı
+                                                             // tabi ki majority renge göre stack sayısı 
+
+                        if (HasMajorityOfOneColor(out myColorToControl, out majorityStackNumber))
                         {
-                            //TargetVehiclesToMove.AddRange(targetVehiclesToMove);
-                            VehicleController targetVehicleToTranfer = TargetVehiclesToMove[n];
-                            List<PassengerStack> stacksToTakeList = new List<PassengerStack>();
-                            List<PassengerStack> stacksToSendList = new List<PassengerStack>();
-                            List<PlacementPoint> availablePlacementPoints = new List<PlacementPoint>();
-                            bool hasMajority = false;
-
-                            // Eğer passenger stacklerimin içerisinde renk olarak çoğunlukla bir renk var ise
-                            // ilk önce komşularımdan o rengi talep etmeliyim
-                            ColorEnum myColorToControl;
-                            int majorityStackNumber; // Bu değer çoğunluğa sahip bir renk varsa o renge sahip stack sayısını temsil ediyor
-                            int demandingStackCountFromNeighbor; // Bu değer ise vehicle in tamamen sort olması için komşudan istenecek stack sayısı
-                                                                 // tabi ki majority renge göre stack sayısı 
-
-                            if (HasMajorityOfOneColor(out myColorToControl, out majorityStackNumber))
+                            // Bir rengim çoğunluğa sahip ve komşumda bu renkten var mı diye kontrol ediyorum
+                            if (targetVehicleToTranfer.GetExistingColors().Contains(myColorToControl))
                             {
-                                // Bir rengim çoğunluğa sahip ve komşumda bu renkten var mı diye kontrol ediyorum
-                                if (targetVehicleToTranfer.GetExistingColors().Contains(myColorToControl))
+                                demandingStackCountFromNeighbor = 4 - majorityStackNumber;
+                                Debug.LogWarning("Has majority of one color: " + myColorToControl + ("\n") +
+                                    ", and the stacks of that color: " + majorityStackNumber + ("\n") +
+                                     ", demanding stack count of that color from neighbor:  " + demandingStackCountFromNeighbor);
+
+                                // Komşu vehicle içerisinde verdiğim color ile uyuşan passenger stacklerin listesini alıyorum
+                                List<PassengerStack> stacksWithMatchedColors = targetVehicleToTranfer.GetPassengerStacksBySpecificColor(myColorToControl);
+
+
+
+                                // Tamamen sorted olmam için gereken sayıda passenger stack eğer komşumda var ise direkt alıyorum
+                                for (int s = 0; s < stacksWithMatchedColors.Count; s++)
                                 {
-                                    demandingStackCountFromNeighbor = 4 - majorityStackNumber;
-                                    Debug.LogWarning("Has majority of one color: " + myColorToControl + ("\n") +
-                                        ", and the stacks of that color: " + majorityStackNumber + ("\n") +
-                                         ", demanding stack count of that color from neighbor:  " + demandingStackCountFromNeighbor);
-
-                                    // Komşu vehicle içerisinde verdiğim color ile uyuşan passenger stacklerin listesini alıyorum
-                                    List<PassengerStack> stacksWithMatchedColors = targetVehicleToTranfer.GetPassengerStacksBySpecificColor(myColorToControl);
-
-                                    // Tamamen sorted olmam için gereken sayıda passenger stack eğer komşumda var ise direkt alıyorum
-                                    for (int s = 0; s < stacksWithMatchedColors.Count; s++)
+                                    if (demandingStackCountFromNeighbor == 0) break; // Yeteri kadar stack aldıktan sonra loop kırılmalı
+                                    if (!stacksToTakeList.Contains(stacksWithMatchedColors[s]))
                                     {
-                                        if (demandingStackCountFromNeighbor == 0) break; // Yeteri kadar stack aldıktan sonra loop kırılmalı
-                                        if (!stacksToTakeList.Contains(stacksWithMatchedColors[s]))
-                                        {
-                                            stacksToTakeList.Add(stacksWithMatchedColors[s]);
-                                            demandingStackCountFromNeighbor--;
-                                        }
-
-                                    }
-
-                                    // Transfer işlemi sonucunda aldığım ve verdiğim stack sayısı eşit olmalı 
-                                    int stackToSendCount = stacksToTakeList.Count;
-
-                                    // Burada gönderilecek stackleri belirlemeden önce koyabileceğim boş placement point var mı diye kontrol etmeliyim
-                                    // Çünkü göndermeme gerek kalmayabilir öncelikle boş pointler doldurulmalı
-                                    if (GetAllAvailablePoints().Count != 0)
-                                    {
-                                        // Ne kadar available point var ise listeye ekliyorum ilk önce boş pointleri doldurmalıyım
-
-                                        availablePlacementPoints.AddRange(GetAllAvailablePoints());
-                                    }
-
-                                    if (stackToSendCount > availablePlacementPoints.Count)
-                                    {
-                                        // Yeteri kadar boş point yok, aldığım stack sayısı kadarını göndermem lazım
-                                        // ve göndereceklerimin placement pointlerini listeye eklemeliyim  
-
-                                        stackToSendCount -= availablePlacementPoints.Count; // istenilen kadar olmasa da boş point olabilir o sayıya
-                                                                                            // göre göndereceklerimin sayısını bilmem gerekli
-
-
-                                        // Göndereceğim passenger stacklerin sayısını ve hangi color dan olmaması gerektiğini biliyorum
-                                        //  onları bir listeye alıyorum
-                                        for (int k = 0; k < CurrentPassengerStacks.Count; k++)
-                                        {
-                                            if (stackToSendCount == 0) break;
-                                            if (CurrentPassengerStacks[k].stackColor != myColorToControl && !stacksToSendList.Contains(CurrentPassengerStacks[k]))
-                                            {
-                                                stacksToSendList.Add(CurrentPassengerStacks[k]);
-                                                availablePlacementPoints.Add(stacksToSendList[k].GetCurrentPoint());
-                                                stackToSendCount--;
-                                            }
-
-                                        }
+                                        stacksToTakeList.Add(stacksWithMatchedColors[s]);
+                                        demandingStackCountFromNeighbor--;
                                     }
 
                                 }
-                                else
+
+                                // Transfer işlemi sonucunda aldığım ve verdiğim stack sayısı eşit olmalı 
+                                int stackToSendCount = stacksToTakeList.Count;
+
+                                // Burada gönderilecek stackleri belirlemeden önce koyabileceğim boş placement point var mı diye kontrol etmeliyim
+                                // Çünkü göndermeme gerek kalmayabilir öncelikle boş pointler doldurulmalı
+                                if (GetAllAvailablePoints().Count != 0)
                                 {
-                                    // Bendeki çoğunluğa sahip rengim komşumda yok, diğer azınlık renkleri kontrol ediyorum
-                                    //
+                                    // Ne kadar available point var ise listeye ekliyorum ilk önce boş pointleri doldurmalıyım
+
+                                    availablePlacementPoints.AddRange(GetAllAvailablePoints());
+                                }
+
+                                if (stackToSendCount > availablePlacementPoints.Count)
+                                {
+                                    // Yeteri kadar boş point yok, aldığım stack sayısı kadarını göndermem lazım
+                                    // ve göndereceklerimin placement pointlerini listeye eklemeliyim  
+
+                                    stackToSendCount -= availablePlacementPoints.Count; // istenilen kadar olmasa da boş point olabilir o sayıya
+                                                                                        // göre göndereceklerimin sayısını bilmem gerekli
 
 
+                                }
+                                // Göndereceğim passenger stacklerin sayısını ve hangi color dan olmaması gerektiğini biliyorum
+                                //  onları bir listeye alıyorum
+                                for (int k = 0; k < CurrentPassengerStacks.Count; k++)
+                                {
+                                    if (stackToSendCount == 0) break;
+                                    if (CurrentPassengerStacks[k].stackColor != myColorToControl && !stacksToSendList.Contains(CurrentPassengerStacks[k]))
+                                    {
+                                        stacksToSendList.Add(CurrentPassengerStacks[k]);
+                                        stackToSendCount--;
+                                    }
+
+                                }
+
+                                // Göndereceklerimin placement pointleri bana lazım listeye alıyorum
+                                for (int gg = 0; gg < stacksToSendList.Count; gg++)
+                                {
+                                    availablePlacementPoints.Add(stacksToSendList[gg].GetCurrentPoint());
                                 }
 
                             }
                             else
                             {
-                                List<ColorEnum> matchedColorList = new List<ColorEnum>();
-                                for (int c = 0; c < GetExistingColors().Count; c++)
-                                {
-                                    ColorEnum myColor = GetExistingColors()[c];
-                                    // Herhangi bir renk çoğunluğa sahip değil renk listemden komşularımın rengiyle uyuşanları kontrol ediyorum 
-                                    if (targetVehicleToTranfer.GetExistingColors().Contains(myColor))
-                                    {
-                                        matchedColorList.Add(myColor);
-                                    }
+                                // Bendeki çoğunluğa sahip rengim komşumda yok, diğer azınlık renkleri kontrol ediyorum
+                                // Buradakiler stackToSend listesine eklenecek büyük ihitmalle
 
+                                List<ColorEnum> minorityColorStacks = new List<ColorEnum>();
+
+                                // Bende azınlık olan ve aynı zamanda komşumda da bulunan renkleri listeye ekliyorum göndermek için
+                                for (int m = 0; m < GetPassengerStacks().Count; m++)
+                                {
+                                    PassengerStack passengerStack = GetPassengerStacks()[m];
+                                    if (myColorToControl != passengerStack.stackColor && !targetVehicleToTranfer.GetExistingColors().Contains(myColorToControl))
+                                        minorityColorStacks.Add(passengerStack.stackColor);
+                                }
+                                if (minorityColorStacks.Count == 0)
+                                {
+                                    Debug.LogWarning("Neighbour list is set incorrectly.");
+                                    break;
                                 }
 
-                                // Komşumda uyuşan rengim var
-                                if (matchedColorList.Count > 0)
+                                myColorToControl = minorityColorStacks[0];
+
+                                for (int t = 0; t < GetPassengerStacks().Count; t++)
                                 {
-                                    matchedColorList.Shuffle();
-                                    myColorToControl = matchedColorList[0];
-                                    // Komşu vehicle içerisinde verdiğim color ile uyuşan passenger stacklerin listesini alıyorum
-                                    List<PassengerStack> stacksWithMatchedColors = targetVehicleToTranfer.GetPassengerStacksBySpecificColor(myColorToControl);
-
-                                    int neighborStackCountWithSpecificColor = targetVehicleToTranfer.GetPassengerStacksBySpecificColor(myColorToControl).Count;
-                                    int myStackCountWithSpecificColor = GetPassengerStacksBySpecificColor(myColorToControl).Count;
-
-
-                                    // Seçilen renk komşumda daha fazla var ise gönderilecekler listeme ekliyorum
-                                    if (neighborStackCountWithSpecificColor > myStackCountWithSpecificColor)
-                                    {
-                                        stacksToSendList.AddRange(GetPassengerStacksBySpecificColor(myColorToControl));
-                                    }
-                                    else
-                                    {
-                                        // Eğer bende istenilen renk sayısı komşumdakiyle eşit veya fazlaysa alınacaklar listeme ekliyorum 
-                                        stacksToTakeList.AddRange(targetVehicleToTranfer.GetPassengerStacksBySpecificColor(myColorToControl));
-                                    }
-
-                                    ///////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-                                    // Transfer işlemi sonucunda aldığım ve verdiğim stack sayısı eşit olmalı 
-                                    int stackToSendCount = stacksToTakeList.Count;
-                                    int takeableStackCount = stacksToTakeList.Count;
-
-
-                                    // Burada gönderilecek stackleri belirlemeden önce koyabileceğim boş placement point var mı diye kontrol etmeliyim
-                                    // Çünkü göndermeme gerek kalmayabilir öncelikle boş pointler doldurulmalı
-                                    if (GetAllAvailablePoints().Count != 0)
-                                    {
-                                        for (int p = 0; p < GetAllAvailablePoints().Count; p++)
-                                        {
-                                            // Ne kadar available point var ise listeye ekliyorum ilk önce bkoş pointleri doldurmalıyım
-                                            availablePlacementPoints.Add(GetAllAvailablePoints()[p]);
-
-                                        }
-
-                                    }
-
-
-                                    // Boş point im var gönderme işlemi yapılmadan öncelikle boşları dolduruyorum
-                                    if (availablePlacementPoints.Count > 0)
-                                    {
-                                        // Boş point sayım ile alabileceğim stack sayısını eşitliyorum
-                                        if (availablePlacementPoints.Count < stacksToTakeList.Count)
-                                        {
-                                            int stackToRemoveCount = stacksToTakeList.Count - availablePlacementPoints.Count;
-
-                                            for (int z = 0; z < stackToRemoveCount; z++)
-                                            {
-                                                stacksToTakeList.RemoveAt(stacksToTakeList.Count - 1);
-                                            }
-                                        }
-
-                                        Debug.Log("Have empty placement point, no need to send stack in first hand");
-                                    }
-                                    else
-                                    {
-                                        // Boş point yok göndermeden stack alamam
-
-                                        //if (stackToSendCount > availablePlacementPoints.Count)
-                                        //{
-                                        //    // Yeteri kadar boş point yok, aldığım stack sayısı kadarını göndermem lazım
-                                        //    // ve göndereceklerimin placement pointlerini listeye eklemeliyim  
-
-                                        //    stackToSendCount -= availablePlacementPoints.Count; // istenilen kadar olmasa da boş point olabilir o sayıya
-                                        //                                                        // göre göndereceklerimin sayısını bilmem gerekli
-
-
-                                        //    // Göndereceğim passenger stacklerin sayısını ve hangi color dan olmaması gerektiğini biliyorum
-                                        //    //  onları bir listeye alıyorum
-                                        //    for (int k = 0; k < CurrentPassengerStacks.Count; k++)
-                                        //    {
-                                        //        if (stackToSendCount == 0) break;
-                                        //        if (CurrentPassengerStacks[k].stackColor != myColorToControl &&
-                                        //            !stacksToSendList.Contains(CurrentPassengerStacks[k]))
-                                        //        {
-                                        //            stacksToSendList.Add(CurrentPassengerStacks[k]);
-                                        //            availablePlacementPoints.Add(stacksToSendList[k].GetCurrentPoint());
-                                        //            stackToSendCount--;
-                                        //        }
-
-                                        //    }
-                                        //}
-                                    }
-
-
+                                    PassengerStack passengerStack = GetPassengerStacks()[t];
+                                    if (passengerStack.stackColor == myColorToControl && !stacksToSendList.Contains(CurrentPassengerStacks[t]))
+                                        stacksToSendList.Add(passengerStack);
                                 }
-                                else
-                                {
 
-                                    Debug.LogWarning("Has NO matched colors");
-
-                                }
-                            }
-
-                            //  PERFORM TRANSFERRING BY THE DATA COLLECTED 
-                            if (stacksToTakeList.Count == 0)
-                            {
-                                Debug.LogWarning("No stack to TAKE is found");
-                            }
-                            if (stacksToSendList.Count == 0)
-                            {
-                                Debug.LogWarning("No stack to SEND is found");
-                            }
-                            //
-
-                            // İlk önce alma işlemini gerçekleştiriyorum
-                            for (int t = 0; t < stacksToTakeList.Count; t++)
-                            {
-                                PassengerStack stack = stacksToTakeList[t];
-                                // Kendi üzerimden göndereceğim stacklerin placement pointlerini alacaklarıma atıyorum
-                                PlacementPoint placementPoint = availablePlacementPoints[t];
-
-                                availablePlacementPoints.Add(stack.GetCurrentPoint());
-                                availablePlacementPoints[t].SetOccupied(true);
-                                stack.GoOtherVehicle(this, placementPoint);
-                            }
-
-                            for (int ss = 0; ss < stacksToSendList.Count; ss++)
-                            {
-                                PassengerStack stackToSend = stacksToSendList[ss];
-                                PlacementPoint placementPoint = targetVehicleToTranfer.GetAllAvailablePoints()[ss];
-
-                                stackToSend.GoOtherVehicle(targetVehicleToTranfer, placementPoint);
-
-                            }
-
-
-
-                            if (IsVehicleSortedFully())
-                            {
-                                disappearing = true;
-                                float tweenDuration = .25f;
-                                yield return new WaitForSeconds(startControlDelay);
-
-                                Debug.LogWarning("This vehicle fully sorted: " + gameObject.name);
-                                CurrentLot.SetOccupied(false);
-                                transform.DOScale(Vector3.zero, tweenDuration);
-                                CurrentPassengerStacks.Clear(); // bir daha routine başlamaması için 
-
-                                //Wait Tween Completetion
-                                yield return new WaitForSeconds(tweenDuration);
-
-                                CurrentLot.SetOccupied(false);
-                                CurrentLot.SetVehicle(null);
                             }
 
                         }
+                        else
+                        {
+                            List<ColorEnum> matchedColorList = new List<ColorEnum>();
+                            for (int c = 0; c < GetExistingColors().Count; c++)
+                            {
+                                ColorEnum myColor = GetExistingColors()[c];
+                                // Herhangi bir renk çoğunluğa sahip değil renk listemden komşularımın rengiyle uyuşanları kontrol ediyorum 
+                                if (targetVehicleToTranfer.GetExistingColors().Contains(myColor))
+                                {
+                                    matchedColorList.Add(myColor);
+                                }
 
-                        #endregion
+                            }
 
-                        //TRANSFER OLAYI GERÇEKLEŞTİ TEKRARDAN KONTROL BAŞLATILMALI
-                        //StartCoroutine(ControlTransfer(0.1f));
-                        //for (int nn = 0; nn < TargetVehiclesToMove.Count; nn++)
-                        //{
-                        //    VehicleController controller = TargetVehiclesToMove[nn];
-                        //    if (!controller.IsPerformingTransfer)
-                        //        TargetVehiclesToMove[nn].StartCoroutine(ControlTransfer(.1f));
-                        //}
+                            // Komşumda uyuşan rengim var
+                            if (matchedColorList.Count > 0)
+                            {
+                                matchedColorList.Shuffle();
+                                myColorToControl = matchedColorList[0];
+                                // Komşu vehicle içerisinde verdiğim color ile uyuşan passenger stacklerin listesini alıyorum
+                                List<PassengerStack> stacksWithMatchedColors = targetVehicleToTranfer.GetPassengerStacksBySpecificColor(myColorToControl);
+
+                                int neighborStackCountWithSpecificColor = targetVehicleToTranfer.GetPassengerStacksBySpecificColor(myColorToControl).Count;
+                                int myStackCountWithSpecificColor = GetPassengerStacksBySpecificColor(myColorToControl).Count;
+
+
+                                // Seçilen renk komşumda daha fazla var ise gönderilecekler listeme ekliyorum
+                                if (neighborStackCountWithSpecificColor > myStackCountWithSpecificColor)
+                                {
+                                    stacksToSendList.AddRange(GetPassengerStacksBySpecificColor(myColorToControl));
+                                }
+                                else
+                                {
+                                    // Eğer bende istenilen renk sayısı komşumdakiyle eşit veya fazlaysa alınacaklar listeme ekliyorum 
+                                    stacksToTakeList.AddRange(targetVehicleToTranfer.GetPassengerStacksBySpecificColor(myColorToControl));
+                                }
+
+                                ///////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+                                // Transfer işlemi sonucunda aldığım ve verdiğim stack sayısı eşit olmalı 
+                                int stackToSendCount = stacksToTakeList.Count;
+                                int takeableStackCount = stacksToTakeList.Count;
+
+
+                                // Burada gönderilecek stackleri belirlemeden önce koyabileceğim boş placement point var mı diye kontrol etmeliyim
+                                // Çünkü göndermeme gerek kalmayabilir öncelikle boş pointler doldurulmalı
+                                if (GetAllAvailablePoints().Count != 0)
+                                {
+                                    for (int p = 0; p < GetAllAvailablePoints().Count; p++)
+                                    {
+                                        // Ne kadar available point var ise listeye ekliyorum ilk önce bkoş pointleri doldurmalıyım
+                                        availablePlacementPoints.Add(GetAllAvailablePoints()[p]);
+
+                                    }
+
+                                }
+
+
+                                // Boş point im var gönderme işlemi yapılmadan öncelikle boşları dolduruyorum
+                                if (availablePlacementPoints.Count > 0)
+                                {
+                                    // Boş point sayım ile alabileceğim stack sayısını eşitliyorum
+                                    if (availablePlacementPoints.Count < stacksToTakeList.Count)
+                                    {
+                                        int stackToRemoveCount = stacksToTakeList.Count - availablePlacementPoints.Count;
+
+                                        for (int z = 0; z < stackToRemoveCount; z++)
+                                        {
+                                            stacksToTakeList.RemoveAt(stacksToTakeList.Count - 1);
+                                        }
+                                    }
+
+                                    Debug.Log("Have empty placement point, no need to send stack in first hand");
+                                }
+                                else
+                                {
+                                    // Boş point yok göndermeden stack alamam
+
+                                    //if (stackToSendCount > availablePlacementPoints.Count)
+                                    //{
+                                    //    // Yeteri kadar boş point yok, aldığım stack sayısı kadarını göndermem lazım
+                                    //    // ve göndereceklerimin placement pointlerini listeye eklemeliyim  
+
+                                    //    stackToSendCount -= availablePlacementPoints.Count; // istenilen kadar olmasa da boş point olabilir o sayıya
+                                    //                                                        // göre göndereceklerimin sayısını bilmem gerekli
+
+
+                                    //    // Göndereceğim passenger stacklerin sayısını ve hangi color dan olmaması gerektiğini biliyorum
+                                    //    //  onları bir listeye alıyorum
+                                    //    for (int k = 0; k < CurrentPassengerStacks.Count; k++)
+                                    //    {
+                                    //        if (stackToSendCount == 0) break;
+                                    //        if (CurrentPassengerStacks[k].stackColor != myColorToControl &&
+                                    //            !stacksToSendList.Contains(CurrentPassengerStacks[k]))
+                                    //        {
+                                    //            stacksToSendList.Add(CurrentPassengerStacks[k]);
+                                    //            availablePlacementPoints.Add(stacksToSendList[k].GetCurrentPoint());
+                                    //            stackToSendCount--;
+                                    //        }
+
+                                    //    }
+                                    //}
+                                }
+
+
+                            }
+                            else
+                            {
+
+                                Debug.LogWarning("Has NO matched colors");
+
+                            }
+                        }
+
+                        //  PERFORM TRANSFERRING BY THE DATA COLLECTED 
+                        if (stacksToTakeList.Count == 0)
+                        {
+                            //  Debug.LogWarning("No stack to TAKE is found");
+                        }
+                        if (stacksToSendList.Count == 0)
+                        {
+                            Debug.LogWarning("No stack to SEND is found");
+                        }
+                        //
+
+                        // İlk önce alma işlemini gerçekleştiriyorum
+                        for (int t = 0; t < stacksToTakeList.Count; t++)
+                        {
+                            PassengerStack stack = stacksToTakeList[t];
+                            // Kendi üzerimden göndereceğim stacklerin placement pointlerini alacaklarıma atıyorum
+                            PlacementPoint placementPoint = availablePlacementPoints[t];
+
+                            availablePlacementPoints.Add(stack.GetCurrentPoint());
+                            availablePlacementPoints[t].SetOccupied(true);
+                            stack.GoOtherVehicle(this, placementPoint);
+                        }
+
+                        List<PlacementPoint> neighbourPoints = new List<PlacementPoint>(targetVehicleToTranfer.GetAllAvailablePoints());
+                        int iterateCount = Mathf.Min(stacksToSendList.Count, neighbourPoints.Count);
+
+                        for (int ss = 0; ss < iterateCount; ss++)
+                        {
+                            PassengerStack stackToSend = stacksToSendList[ss];
+                            PlacementPoint placementPoint = neighbourPoints[ss];
+
+                            stackToSend.GoOtherVehicle(targetVehicleToTranfer, placementPoint);
+
+                        }
+
+                        if (IsVehicleSortedFully())
+                        {
+                            disappearing = true;
+                            float tweenDuration = .25f;
+                            yield return new WaitForSeconds(startControlDelay);
+
+                            Debug.LogWarning("This vehicle fully sorted: " + gameObject.name);
+                            CurrentLot.SetOccupied(false);
+                            transform.DOScale(Vector3.zero, tweenDuration);
+                            CurrentPassengerStacks.Clear(); // bir daha routine başlamaması için 
+
+                            //Wait Tween Completetion
+                            yield return new WaitForSeconds(tweenDuration);
+
+                            CurrentLot.SetOccupied(false);
+                            CurrentLot.SetVehicle(null);
+                        }
+
+
+                        // Perform transfer süreci son komşuyla da etkileşime geçtikten sonra tekrar kontrol edilmeli
                     }
+                    #endregion
 
-                    else
-                        IsPerformingTransfer = false;
+
+                    // TRANSFER OLAYI GERÇEKLEŞTİ TEKRARDAN KONTROL BAŞLATILMALI
+                    StartCoroutine(ControlTransfer(0.1f));
+                    for (int nn = 0; nn < TargetVehiclesToMove.Count; nn++)
+                    {
+                        VehicleController vehicle = TargetVehiclesToMove[nn];
+                        if (!vehicle.IsPerformingTransfer)
+                            vehicle.StartCoroutine(ControlTransfer(.1f));
+
+                    }
                 }
+                else
+                    IsPerformingTransfer = false;
             }
 
         }
 
         TargetVehiclesToMove.Clear();
-        yield return null;
-
     }
 
     public bool IsVehicleSortedFully()
@@ -485,7 +521,6 @@ public class VehicleController : MonoBehaviour
             }
         }
     }
-
     public List<PassengerStack> GetPassengerStacksBySpecificColor(ColorEnum _color)
     {
         List<PassengerStack> stacks = new List<PassengerStack>();
@@ -500,21 +535,36 @@ public class VehicleController : MonoBehaviour
         return stacks;
     }
     #endregion
-
     public void AddStack(PassengerStack stack)
     {
         if (CurrentPassengerStacks.Contains(stack)) return;
 
         CurrentPassengerStacks.Add(stack);
-    }
 
+        if (IsVehicleSortedFully())
+        {
+            disappearing = true;
+            float tweenDuration = .5f;
+          
+            //Debug.LogWarning("This vehicle fully sorted: " + gameObject.name);
+            CurrentLot.SetOccupied(false);
+            transform.DOScale(Vector3.zero, tweenDuration);
+            CurrentPassengerStacks.Clear(); // bir daha routine başlamaması için 
+
+            //Wait Tween Completetion
+
+            CurrentLot.SetOccupied(false);
+            CurrentLot.SetVehicle(null);
+
+            Debug.LogWarning("Vehicle is sorted fully and disappearing, BUT this is not the best practise this function should not be called here.");
+        }
+    }
     public void RemoveStack(PassengerStack stack)
     {
         if (!CurrentPassengerStacks.Contains(stack)) { return; }
 
         CurrentPassengerStacks.Remove(stack);
     }
-
     public int GetAvailablePointCount()
     {
         int num = 0;
@@ -526,7 +576,6 @@ public class VehicleController : MonoBehaviour
 
         return num;
     }
-
     List<PlacementPoint> GetAllAvailablePoints()
     {
         List<PlacementPoint> points = new List<PlacementPoint>();
@@ -571,8 +620,7 @@ public class VehicleController : MonoBehaviour
         if (!existingColorList.Contains(_color))
             existingColorList.Add(_color);
     }
-
-    public void UpdateExistingColorList()
+    public void RefreshExistingColorList()
     {
         existingColorList.Clear();
         for (int i = 0; i < CurrentPassengerStacks.Count; i++)

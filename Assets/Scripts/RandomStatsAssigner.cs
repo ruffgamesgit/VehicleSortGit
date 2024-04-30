@@ -30,6 +30,9 @@ public class RandomStatsAssigner : MonoSingleton<RandomStatsAssigner>
     private System.Random _rng = new System.Random();
     IEnumerator Start()
     {
+
+
+
         yield return null;
 
         SetEmptyLots();
@@ -86,6 +89,12 @@ public class RandomStatsAssigner : MonoSingleton<RandomStatsAssigner>
         totalVehiclesCount = (spawnedLots.Count - emptyLots.Count);
         totalPassengerStackCount = totalVehiclesCount * 4;
         desiredPassengerStackCount = (totalPassengerStackCount * occupancyRateOfVehicles) / 10;
+
+        if (desiredPassengerStackCount % 4 != 0)
+        {
+            desiredPassengerStackCount += 4 - (desiredPassengerStackCount % 4);
+            Debug.LogWarning(desiredPassengerStackCount);
+        }
     }
     void SetLotsWithVehicleList()
     {
