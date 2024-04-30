@@ -11,7 +11,7 @@ using UnityEngine.SceneManagement;
 public class RandomStatsAssigner : MonoSingleton<RandomStatsAssigner>
 {
     [Header("Config")]
-    public int emptyLotCount;
+    [SerializeField] int emptyLotCount;
     [Range(1, 10)]
     [SerializeField] int occupancyRateOfVehicles;
     [SerializeField] List<ColorEnum> desiredColorsForLevel = new List<ColorEnum>();
@@ -30,14 +30,10 @@ public class RandomStatsAssigner : MonoSingleton<RandomStatsAssigner>
     private System.Random _rng = new System.Random();
     IEnumerator Start()
     {
-
-
-
         yield return null;
 
-        SetEmptyLots();
+        SetInitialParameters();
         SetLotsWithVehicleList();
-
         GenerateLevelRandomly();
     }
     #region List Modify Region 
@@ -64,27 +60,27 @@ public class RandomStatsAssigner : MonoSingleton<RandomStatsAssigner>
             }
         }
     }
-    void SetEmptyLots()
+    void SetInitialParameters()
     {
-        for (int i = 0; i < spawnedLots.Count; i++)
-        {
-            if (emptyLotCount == 0) break;
+        //for (int i = 0; i < spawnedLots.Count; i++)
+        //{
+        //    if (emptyLotCount <= 0) break;
 
-            int randomIndex = _rng.Next(0, spawnedLots.Count - 1);
-            LotController lot = spawnedLots[randomIndex];
+        //    int randomIndex = _rng.Next(0, spawnedLots.Count - 1);
+        //    LotController lot = spawnedLots[randomIndex];
 
-            if (lot != null && !lot.IsInitializedEmpty)
-            {
-                lot.SetIsEmpty(true);
-                emptyLots.Add(lot);
-                emptyLotCount--;
-            }
-            else
-            {
-                continue;
-            }
+        //    if (lot != null && !lot.IsInitializedEmpty)
+        //    {
+        //        lot.SetIsEmpty(true);
+        //        emptyLots.Add(lot);
+        //        emptyLotCount--;
+        //    }
+        //    else
+        //    {
+        //        continue;
+        //    }
 
-        }
+        //}
 
         totalVehiclesCount = (spawnedLots.Count - emptyLots.Count);
         totalPassengerStackCount = totalVehiclesCount * 4;
@@ -180,7 +176,7 @@ public class RandomStatsAssigner : MonoSingleton<RandomStatsAssigner>
             var neighbors = lot.GetLotNeighbors();
             var uniqueNeighborColors = GetUniqueColorListFromNeighbors(neighbors);
             List<ColorEnum> colorsAvailable = new List<ColorEnum>(baseColorPool.Keys);
-            foreach (var color in uniqueNeighborColors)
+            foreach (ColorEnum color in uniqueNeighborColors)
             {
                 colorsAvailable.Remove(color);
             }
@@ -233,6 +229,7 @@ public class RandomStatsAssigner : MonoSingleton<RandomStatsAssigner>
         if (baseColorPool.Count > 0)
         {
             // Reload Scene
+            Debug.Log("Scene reloaded");
             SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
         }
     }
@@ -251,6 +248,16 @@ public class RandomStatsAssigner : MonoSingleton<RandomStatsAssigner>
             }
         }
         return colorEnums.ToList();
+    }
+
+    public void SetEmptyLotCount(int value)
+    {
+        emptyLotCount += value;
+    }
+
+    public void AddEmptyLot(LotController lot)
+    {
+        emptyLots.Add(lot);
     }
 }
 

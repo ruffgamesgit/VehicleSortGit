@@ -620,6 +620,7 @@ public class VehicleController : MonoBehaviour
         if (!existingColorList.Contains(_color))
             existingColorList.Add(_color);
     }
+  
     public void RefreshExistingColorList()
     {
         existingColorList.Clear();

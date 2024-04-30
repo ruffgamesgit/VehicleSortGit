@@ -12,6 +12,7 @@ public class ParkingLotsHolder : MonoBehaviour
     [SerializeField] int desiredLotCount;
     public int placementOffset;
     [SerializeField] List<ParkingLotsHolder> neighborParkingLots = new();
+    [SerializeField] List<int> emptyLotsIndexes = new();
 
     [Header("Debug")]
     [HideInInspector] public List<LotController> SpawnedLots = new List<LotController>();
@@ -41,6 +42,11 @@ public class ParkingLotsHolder : MonoBehaviour
             float xPos = i * horizontalGap;
             Vector3 spawnPos = new Vector3(xPos, 1, transform.position.z);
             LotController cloneLot = Instantiate(lotPrefab, spawnPos, Quaternion.identity, transform);
+            if (emptyLotsIndexes.Contains(i))
+            {
+                cloneLot.SetIsEmpty(true);
+                RandomStatsAssigner.instance.AddEmptyLot(cloneLot);
+            }
             cloneLot.gameObject.name = "Lot (" + i + ")";
 
             SpawnedLots.Add(cloneLot);
