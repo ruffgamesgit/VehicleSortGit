@@ -41,7 +41,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3327124795914785505}
-  m_Mesh: {fileID: 10208, guid: 0000000000000000e000000000000000, type: 0}
+  m_Mesh: {fileID: 3338390170865266959, guid: 66a0233274d33bd4d96006ee57e96ba1, type: 3}
 --- !u!23 &5363298228465218165
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -99,11 +99,11 @@ MonoBehaviour:
   passengerColor: 0
   materials:
   - {fileID: 2100000, guid: 63a28ea884dd64b4a87f2903325b49de, type: 2}
-  - {fileID: 2100000, guid: 2086864fe70384741ad5ea5e296a7c88, type: 2}
-  - {fileID: 2100000, guid: 7656d920720e13f4bb1593c1021c2c18, type: 2}
-  - {fileID: 2100000, guid: 019932c4a028c9b469de9f8ca6324f35, type: 2}
-  - {fileID: 2100000, guid: 32308855b4727ea46b3d65bed205a474, type: 2}
-  - {fileID: 2100000, guid: 79398a552e6960a4f8f0bdd8b41a79f1, type: 2}
+  - {fileID: 2100000, guid: c93ebb683e313784aaf9148cefe9222a, type: 2}
+  - {fileID: 2100000, guid: cb4319e817f37664cb46cd125ba75946, type: 2}
+  - {fileID: 2100000, guid: ef510bf6545407c43894b509ba260e5c, type: 2}
+  - {fileID: 2100000, guid: 68e14f20a3528794898c518840414a3f, type: 2}
+  - {fileID: 2100000, guid: 3cc9ccc3a1667c441b76a61deb9ae731, type: 2}
   - {fileID: 2100000, guid: eae96d594677e9c48912ddc3220d3078, type: 2}
   - {fileID: 2100000, guid: 0dfda25669337b448a3aac28c2111d18, type: 2}
   - {fileID: 2100000, guid: ded90ff0eb9b8c947ad29df18a2ee821, type: 2}
