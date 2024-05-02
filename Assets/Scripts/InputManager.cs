@@ -41,11 +41,8 @@ public class InputManager : MonoSingleton<InputManager>
                     }
                     ResetParams();
 
-                    if (vehicle.isPicked)
-                    {
-                        return;
-                    }
-
+                    if (vehicle.isPicked) return; 
+                    if (vehicle.CurrentLot == null) return;
 
                     selectedVehicle = vehicle;
                     startHolder = selectedVehicle.CurrentLot.GetComponentInParent<ParkingLotsHolder>();
