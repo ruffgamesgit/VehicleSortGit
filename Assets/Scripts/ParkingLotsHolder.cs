@@ -5,9 +5,10 @@ using UnityEngine;
 public class ParkingLotsHolder : MonoBehaviour
 {
     [Header("Config")]
+    [SerializeField] int desiredLotCount;
+    [Header("Config")]
     [SerializeField] LotController lotPrefab;
     [SerializeField] float horizontalGap;
-    [SerializeField] int desiredLotCount;
     public int placementOffset;
     [SerializeField] List<ParkingLotsHolder> neighborParkingLots = new();
     [SerializeField] List<int> emptyLotsIndexes = new();
@@ -143,15 +144,6 @@ public class ParkingLotsHolder : MonoBehaviour
                     else
                         canVehicleMove = true;
                 }
-
-
-
-
-                //for (int i = 1; i <= diff; i++)
-                //{
-                //    if (targetHolderToMove != allHolders[myIndex + i])
-                //        holdersInMiddle.Add(allHolders[myIndex + i]);
-                //}
             }
             else
             {
@@ -167,14 +159,6 @@ public class ParkingLotsHolder : MonoBehaviour
                     else
                         canVehicleMove = true;
                 }
-
-
-
-                //for (int i = 1; i <= diff; i++)
-                //{
-                //    if (targetHolderToMove != allHolders[myIndex - i])
-                //        holdersInMiddle.Add(allHolders[myIndex - i]);
-                //}
             }
         }
 

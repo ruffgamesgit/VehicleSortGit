@@ -1650,6 +1650,100 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c4ccc005b57682b4d84f311e73a5e400, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!1001 &1505448829769697646
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 1505448830303965026, guid: 2b42e5a0d0afbda47be59c45d3761bf7,
+        type: 3}
+      propertyPath: m_RootOrder
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 1505448830303965026, guid: 2b42e5a0d0afbda47be59c45d3761bf7,
+        type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 15.58
+      objectReference: {fileID: 0}
+    - target: {fileID: 1505448830303965026, guid: 2b42e5a0d0afbda47be59c45d3761bf7,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 4.03
+      objectReference: {fileID: 0}
+    - target: {fileID: 1505448830303965026, guid: 2b42e5a0d0afbda47be59c45d3761bf7,
+        type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 27.55
+      objectReference: {fileID: 0}
+    - target: {fileID: 1505448830303965026, guid: 2b42e5a0d0afbda47be59c45d3761bf7,
+        type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1505448830303965026, guid: 2b42e5a0d0afbda47be59c45d3761bf7,
+        type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1505448830303965026, guid: 2b42e5a0d0afbda47be59c45d3761bf7,
+        type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1505448830303965026, guid: 2b42e5a0d0afbda47be59c45d3761bf7,
+        type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1505448830303965026, guid: 2b42e5a0d0afbda47be59c45d3761bf7,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1505448830303965026, guid: 2b42e5a0d0afbda47be59c45d3761bf7,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1505448830303965026, guid: 2b42e5a0d0afbda47be59c45d3761bf7,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1505448830303965029, guid: 2b42e5a0d0afbda47be59c45d3761bf7,
+        type: 3}
+      propertyPath: m_Name
+      value: AdditionalVehicleLot
+      objectReference: {fileID: 0}
+    - target: {fileID: 1505448830303965029, guid: 2b42e5a0d0afbda47be59c45d3761bf7,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2991820553264237528, guid: 2b42e5a0d0afbda47be59c45d3761bf7,
+        type: 3}
+      propertyPath: targetParkingHolder
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 2991820553264237528, guid: 2b42e5a0d0afbda47be59c45d3761bf7,
+        type: 3}
+      propertyPath: additionalVehicleCount
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 2991820553264237528, guid: 2b42e5a0d0afbda47be59c45d3761bf7,
+        type: 3}
+      propertyPath: targetLotInfo.TargetLotIndex
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 2991820553264237528, guid: 2b42e5a0d0afbda47be59c45d3761bf7,
+        type: 3}
+      propertyPath: targetLotInfo.ParkingLotsHolder
+      value: 
+      objectReference: {fileID: 1544315461}
+    m_RemovedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 2b42e5a0d0afbda47be59c45d3761bf7, type: 3}
 --- !u!1001 &5823024358962656491
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1661,6 +1755,11 @@ PrefabInstance:
         type: 3}
       propertyPath: occupancyRateOfVehicles
       value: 7
+      objectReference: {fileID: 0}
+    - target: {fileID: 5049745740805046149, guid: 42a38a0fd29132249b4de7782580a1b5,
+        type: 3}
+      propertyPath: desiredPassengerStackCount
+      value: 44
       objectReference: {fileID: 0}
     - target: {fileID: 5049745740805046149, guid: 42a38a0fd29132249b4de7782580a1b5,
         type: 3}

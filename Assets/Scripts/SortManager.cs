@@ -376,6 +376,56 @@ public class SortManager : MonoSingleton<SortManager>
                 }
 
             }
+
+            //if (currentVehicle.GetPassengerStacks().Count == 0)
+            //{
+            //    yield return new WaitForSeconds(startControlDelay);
+
+            //    List<LotController> neighborLots = lot.GetLotNeighbors();
+            //    List<VehicleController> targetVehiclesToMove = new List<VehicleController>();
+            //    List<ColorEnum> colorList = new List<ColorEnum>();
+
+            //    for (int i = 0; i < neighborLots.Count; i++)
+            //    {
+            //        LotController neighborLot = neighborLots[i];
+
+
+            //        if (neighborLot.GetVehicle() != null && neighborLot.GetVehicle().GetPassengerStacks().Count > 0)
+            //        {
+            //            VehicleController targetVehicle = neighborLots[i].GetVehicle();
+
+            //            if (targetVehicle.CurrentPassengerStacks.Count == 1) continue;
+
+            //            colorList.AddRange(targetVehicle.GetExistingColors());
+
+            //        }
+            //    }
+
+            //    Dictionary<ColorEnum, int> colorDict = new Dictionary<ColorEnum, int>();
+
+            //    // Renkleri say
+            //    foreach (ColorEnum renk in colorList)
+            //    {
+            //        if (!colorDict.ContainsKey(renk))
+            //        {
+            //            colorDict.Add(renk, 1);
+            //        }
+            //        else
+            //        {
+            //            colorDict[renk]++;
+            //        }
+            //    }
+
+            //    // Renkleri en çok olan sıraya göre sırala
+            //    colorList.Sort((renk1, renk2) => colorDict[renk2].CompareTo(colorDict[renk1]));
+
+            //    // Sıralanmış listeyi göster
+            //    foreach (ColorEnum renk in colorList)
+            //    {
+            //        Debug.LogWarning(renk);
+            //    }
+
+            //}
         }
     }
 

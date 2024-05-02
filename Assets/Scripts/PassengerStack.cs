@@ -42,6 +42,13 @@ public class PassengerStack : MonoBehaviour
         placementPoint = _placementPoint;
     }
 
+    public void SetPlacementPoint(PlacementPoint placementPoint)
+    {
+        this.placementPoint = placementPoint;
+        transform.SetParent(placementPoint.transform);
+        transform.DOMove(placementPoint.transform.position, .2f);
+    }
+
     public LotController GetCurrentLot()
     {
         return currentVehicle.CurrentLot;

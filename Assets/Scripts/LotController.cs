@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class LotController : BaseCellBehavior
 {
+    public event System.Action OnVehicleLeaveEvent;
+
     [Header("Customized References")]
     [SerializeField] VehicleController vehiclePrefab;
 
@@ -24,6 +26,7 @@ public class LotController : BaseCellBehavior
 
     public void OnVehicleArrived()
     {
+        Debug.Log("Vehicle arrived");
         SortManager.instance.Sort(this, .1f);
     }
     public void AddPassengerStack(int stackCount)
@@ -60,6 +63,8 @@ public class LotController : BaseCellBehavior
 
     public void SetVehicle(VehicleController vehicle)
     {
+        if (vehicle == null) OnVehicleLeaveEvent?.Invoke();
+
         CurrentVehicle = vehicle;
     }
 

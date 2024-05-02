@@ -7,18 +7,20 @@ using UnityEngine.SceneManagement;
 
 public class LevelGenerator : MonoSingleton<LevelGenerator>
 {
-    [Header("Config")]   
-    [Range(1, 10)]
-    [SerializeField] int occupancyRateOfVehicles;
+    [Header("Config")]
+    [SerializeField] int desiredPassengerStackCount;
+    //[Range(1, 10)]
+    //[SerializeField] int occupancyRateOfVehicles;
     [SerializeField] List<ColorEnum> desiredColorsForLevel = new List<ColorEnum>();
     [SerializeField] List<int> multipliers = new List<int>();
     [SerializeField] Dictionary<ColorEnum, int> baseColorPool = new Dictionary<ColorEnum, int>();
 
     [Header("Debug")]
     [SerializeField] int totalPassengerStackCount;
-    [SerializeField] int desiredPassengerStackCount;
+    int additionalVehicleCount;
     int totalLotCount;
     int totalVehiclesCount;
+    [SerializeField] List<AdditionalVehicleLot> additionalVehicleLots = new List<AdditionalVehicleLot>();
     List<LotController> spawnedLots = new();
     List<LotController> lotsWithVehicle = new List<LotController>();
     List<LotController> emptyLots = new();
@@ -58,9 +60,11 @@ public class LevelGenerator : MonoSingleton<LevelGenerator>
     }
     void SetInitialParameters()
     {
-        totalVehiclesCount = (spawnedLots.Count - emptyLots.Count);
+        totalVehiclesCount = (spawnedLots.Count - emptyLots.Count) + additionalVehicleCount;
+
+        Debug.Log("Add: " + additionalVehicleCount + ", total: " + totalVehiclesCount);
+
         totalPassengerStackCount = totalVehiclesCount * 4;
-        desiredPassengerStackCount = (totalPassengerStackCount * occupancyRateOfVehicles) / 10;
 
         if (desiredPassengerStackCount % 4 != 0)
         {
@@ -111,6 +115,34 @@ public class LevelGenerator : MonoSingleton<LevelGenerator>
 
             }
         }
+
+        for (int i = 0; i < additionalVehicleLots.Count; i++)
+        {
+            AdditionalVehicleLot additionalLot = additionalVehicleLots[i];
+            int randomValue = _rng.Next(1, 4);
+            for (int aa = 0; aa < additionalLot.additionalVehicleCount; aa++)
+            {
+                additionalLot.SpawnVehicle(randomValue);
+                VehicleController vehicle = additionalLot.GetVehicle();
+
+                List<ColorEnum> colorsAvailable = new List<ColorEnum>(baseColorPool.Keys);
+                colorsAvailable.Shuffle();
+                for (int c = 0; c < randomValue; c++)
+                {
+                    var colorToUse = colorsAvailable[c];
+                    vehicle.CurrentPassengerStacks[c].Initialize(colorToUse);
+                    baseColorPool[colorToUse] -= 1;
+
+                    if (baseColorPool[colorToUse] <= 0)
+                    {
+                        baseColorPool.Remove(colorToUse);
+                    }
+                }
+            }
+        }
+
+
+
 
         List<LotController> lotsWithVehicleShuffled = new List<LotController>(lotsWithVehicle);
         lotsWithVehicleShuffled.Shuffle();
@@ -230,6 +262,17 @@ public class LevelGenerator : MonoSingleton<LevelGenerator>
     public void AddEmptyLot(LotController lot)
     {
         emptyLots.Add(lot);
+    }
+
+    public void IncrementAdditionalVehicleCount(int count)
+    {
+        additionalVehicleCount += count;
+    }
+    public void AddAdditionalVehicleLotList(AdditionalVehicleLot additionalVehicleLot)
+    {
+        if (additionalVehicleLots.Contains(additionalVehicleLot)) return;
+
+        additionalVehicleLots.Add(additionalVehicleLot);
     }
 }
 
