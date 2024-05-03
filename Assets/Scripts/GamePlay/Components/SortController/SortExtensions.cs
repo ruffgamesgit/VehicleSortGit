@@ -23,7 +23,7 @@ namespace GamePlay.Components.SortController
             }
               
             else
-                seat.Occupy(tempObject2,true, taskCompletionSource1);
+                seat.Occupy(tempObject2,false, taskCompletionSource1);
 
             if (tempObject1 == null)
             {
@@ -31,7 +31,7 @@ namespace GamePlay.Components.SortController
                 taskCompletionSource2.TrySetResult();
             }
             else
-                otherSeat.Occupy(tempObject1, true, taskCompletionSource2);
+                otherSeat.Occupy(tempObject1, false, taskCompletionSource2);
 
 
             UniTask.WhenAll(taskCompletionSource1.Task,taskCompletionSource2.Task).ContinueWith(() =>
@@ -89,7 +89,7 @@ namespace GamePlay.Components.SortController
                 }
             }
             
-            //neighbors = neighbors.ExtractEmptyParkingLots();
+            neighbors = neighbors.ExtractEmptyParkingLots();
             return neighbors.Shuffle();
         }
         
@@ -98,7 +98,7 @@ namespace GamePlay.Components.SortController
             var parkingLotsExtracted = new List<ParkingLot>();
             for (int i = 0; i < parkingLots.Count; i++)
             {
-                if (!parkingLots[i].IsInvisible() && !parkingLots[i].IsEmpty())
+                if (!parkingLots[i].IsInvisible())
                 {
                     parkingLotsExtracted.Add(parkingLots[i]);
                 }

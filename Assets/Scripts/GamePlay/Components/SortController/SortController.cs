@@ -5,6 +5,7 @@ using System.Threading;
 using Cysharp.Threading.Tasks;
 using GamePlay.Data;
 using GamePlay.Data.Grid;
+using GamePlay.Extension;
 using Unity.VisualScripting;
 using UnityEngine;
 
@@ -14,16 +15,16 @@ namespace GamePlay.Components.SortController
     {
         [SerializeField] private GridData gridData;
         private FillController _fillController;
-        [SerializeField] private LevelData _levelData; 
+        [SerializeField] private LevelData _levelData;
         private readonly SemaphoreSlim _semaphore = new(1, 1);
         private readonly ConcurrentQueue<(ParkingLot, Seat)> _affectedSortQueue = new();
-
+        private ParkingLot _lastClickedParkingLot;
 
         private void Awake()
         {
             _fillController = GetComponent<FillController>();
             InitializeParkingLots();
-            _fillController.FillVehicles(gridData.gridGroups, 20,5 , 16); // Variety , MatchingPassangerCount
+            _fillController.FillVehicles(gridData.gridGroups, 17, 13, 13); // Variety , MatchingPassangerCount
         }
 
         private void InitializeParkingLots()
@@ -40,9 +41,9 @@ namespace GamePlay.Components.SortController
                         var isParkingLotInvisible = _levelData.levelDataGridGroups[gridGroupIndex].lines[gridLineIndex]
                             .parkingLotStatus[parkingLotIndex];
                         var parkingLotPosition = new ParkingLotPosition(gridGroupIndex, gridLineIndex, parkingLotIndex);
-                        parkingLot.Initialize(isParkingLotInvisible,parkingLotPosition);
-                        parkingLot.OnVehiclePlaced += SortParkingLot;
-                        
+                        parkingLot.Initialize(isParkingLotInvisible, parkingLotPosition);
+                        parkingLot.OnParkingLotClicked += OnParkingLotClicked;
+
                         parkingLotIndex++;
                     }
 
@@ -50,6 +51,42 @@ namespace GamePlay.Components.SortController
                 }
 
                 gridGroupIndex++;
+            }
+        }
+
+        private void OnParkingLotClicked(object sender, Vehicle arg)
+        {
+            var parkingLot = (ParkingLot)sender;
+            if (_lastClickedParkingLot != null)
+            {
+                if (parkingLot.GetCurrentVehicle() == null)
+                {
+                    var path = gridData.FindPath(_lastClickedParkingLot, parkingLot);
+
+                    if (path is { Count: > 0 })
+                    {
+                        if (path[^1] == parkingLot)
+                        {
+                            var vehicle = _lastClickedParkingLot.GetCurrentVehicle();
+                            _lastClickedParkingLot.SetEmpty();
+                            parkingLot.Occupy(vehicle, true, null);
+                            SortParkingLot(parkingLot, vehicle);
+                            _lastClickedParkingLot = null;
+                            return;
+                        }
+                    }
+                }
+
+                // REMOVE HIGHLIGHT 
+                _lastClickedParkingLot = null;
+            }
+            else
+            {
+                if (!parkingLot.IsEmpty())
+                {
+                    _lastClickedParkingLot = parkingLot;
+                    // HİGHLIGHT 
+                }
             }
         }
 
@@ -62,14 +99,15 @@ namespace GamePlay.Components.SortController
             {
                 foreach (var seat in arg.GetSeats())
                 {
-                    if(!seat.IsEmpty())
-                        InsertItemToQueue(parkingLot,seat);
+                    if (!seat.IsEmpty())
+                        InsertItemToQueue(parkingLot, seat);
                 }
+
                 SortAffectedParkingLots();
             });
         }
-        
-        
+
+
         private async void SortParkingLotAlgorithm(object sender, Seat arg)
         {
             try
@@ -82,7 +120,8 @@ namespace GamePlay.Components.SortController
                 }
 
                 var parkingLotPosition = parkingLot.GetParkingLotPosition();
-                var neighborParkingLots = parkingLot.FindNeighbors(gridData.gridGroups[parkingLotPosition.GetGridGroupIndex()].lines);
+                var neighborParkingLots =
+                    parkingLot.FindNeighbors(gridData.gridGroups[parkingLotPosition.GetGridGroupIndex()].lines);
                 if (neighborParkingLots.Count == 0)
                 {
                     return;
@@ -118,7 +157,8 @@ namespace GamePlay.Components.SortController
                 {
                     bool IsMatchedBySecondNeighbor()
                     {
-                        var secondNeighbors = swappingNeighbors[0].FindNeighbors(gridData.gridGroups[parkingLotPosition.GetGridGroupIndex()].lines);
+                        var secondNeighbors = swappingNeighbors[0]
+                            .FindNeighbors(gridData.gridGroups[parkingLotPosition.GetGridGroupIndex()].lines);
                         secondNeighbors.Remove(parkingLot);
                         if (secondNeighbors.Count != 0)
                         {
@@ -127,7 +167,7 @@ namespace GamePlay.Components.SortController
                                 var matchingSlots = LookForMatchingTypes(secondNeighborParkingLot,
                                     arg.GetPassenger().GetColor());
                                 if (matchingSlots.Count == 0) continue;
-                                
+
                                 EnqueueItem(secondNeighborParkingLot, matchingSlots[0]);
                                 return true;
                             }
@@ -162,7 +202,7 @@ namespace GamePlay.Components.SortController
                     {
                         break;
                     }
-                    
+
                     await swappingSlot.Swap(match);
 
                     if (swappingNeighbors[i].CheckIfCompleted()) // LATER AWAIT ANIMATION
@@ -174,7 +214,7 @@ namespace GamePlay.Components.SortController
                         EnqueueItem(swappingNeighbors[i], swappingSeats[i]);
                     }
                 }
-                
+
                 if (parkingLot.CheckIfCompleted()) // LATER AWAIT ANIMATION
                 {
                     EnqueueItem(parkingLot);
@@ -191,7 +231,7 @@ namespace GamePlay.Components.SortController
                 _semaphore.Release();
             }
         }
-        
+
         private async void SortAffectedParkingLots()
         {
             while (_affectedSortQueue.Count > 0)
@@ -208,18 +248,24 @@ namespace GamePlay.Components.SortController
                 }
             }
         }
-        
+
         private List<Seat> LookForMatchingTypes(ParkingLot neighbor, ColorEnum color)
         {
             var seats = new List<Seat>();
-            foreach (var seat in neighbor.GetCurrentVehicle().GetSeats())
+            var vehicle = neighbor.GetCurrentVehicle();
+            if (vehicle != null)
             {
-                if (!seat.IsEmpty() &&  seat.GetPassenger().GetColor() == color)
-                    seats.Add(seat);
+                foreach (var seat in vehicle.GetSeats())
+                {
+                    if (!seat.IsEmpty() && seat.GetPassenger().GetColor() == color)
+                        seats.Add(seat);
+                }
             }
+           
+
             return seats;
         }
-        
+
         private bool DoesParkingLotHasMatchingItem(ParkingLot parkingLot, ColorEnum color)
         {
             var matchingItems = parkingLot.GetCurrentVehicle().GetSeats()
@@ -243,20 +289,20 @@ namespace GamePlay.Components.SortController
             return false;
         }
 
-        
+
         private void EnqueueItem(ParkingLot parkingLot)
         {
             foreach (var seat in parkingLot.GetCurrentVehicle().GetSeats())
             {
-                _affectedSortQueue.Enqueue((parkingLot, seat)); 
+                _affectedSortQueue.Enqueue((parkingLot, seat));
             }
         }
-        
+
         private void EnqueueItem(ParkingLot parkingLot, Seat seat)
         {
             _affectedSortQueue.Enqueue((parkingLot, seat));
         }
-        
+
         private void InsertItemToQueue(ParkingLot parkingLot, Seat seat)
         {
             var items = _affectedSortQueue.ToArray();

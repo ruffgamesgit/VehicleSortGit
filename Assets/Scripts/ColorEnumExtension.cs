@@ -63,6 +63,20 @@ public static class ColorEnumExtension
                 return Color.white;
             case ColorEnum.BLACK:
                 return Color.black;
+            case ColorEnum.MAGENTA:
+                return Color.magenta;
+            case ColorEnum.CYAN:
+                return Color.cyan;
+            case ColorEnum.GREY:
+                return Color.grey;
+            case ColorEnum.TURQUOISE:
+                return new Color(0, 0.9f, 1f);
+            case ColorEnum.LIME:
+                return new Color(1, 0.95f, 0.5f);
+            case ColorEnum.MAROON:
+                return new Color(0, 1f, 0.7f);
+            case ColorEnum.OLIVE:
+                return new Color(0.3f, 0.7f, 0);
             default:
                 throw new ArgumentOutOfRangeException(nameof(colorEnum), colorEnum, null);
         }

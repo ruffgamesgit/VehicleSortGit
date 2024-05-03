@@ -1,13 +1,37 @@
 using System;
 using System.Collections.Generic;
 using GamePlay.Components;
+using GamePlay.Components.SortController;
+using GamePlay.Data;
 using GamePlay.Data.Grid;
 
 namespace GamePlay.Extension
 {
     public static class PathFinder
     {
-        public  static List<ParkingLot> FindPath(this List<GridLine> gridLines, int startX, int startY, int targetX, int targetY)
+        
+        public static List<ParkingLot> FindPath(this GridData gridData,ParkingLot from, ParkingLot to)
+        {
+            int GetGridLineOffset(ParkingLotPosition position)
+            {
+                int offset = 0;
+                for (int i = 0; i < position.GetGridGroupIndex(); i++)
+                {
+                    offset += gridData.gridGroups[i].lines.Count + 1;
+                }
+
+                offset += 1;
+                return offset;
+            }
+            List<GridLine> virtualizedLines = gridData.gridGroups.GenerateVirtualGrid();
+            var fromPosition = from.GetParkingLotPosition();
+            var toPosition = to.GetParkingLotPosition();
+            var startGridLineIndex = fromPosition.GetGridLineIndex() + GetGridLineOffset(fromPosition);
+            var targetGridLineIndex = toPosition.GetGridLineIndex() + GetGridLineOffset(toPosition);
+            return virtualizedLines.CalculatePath(startGridLineIndex, fromPosition.GetParkingLotIndex(), 
+                targetGridLineIndex, toPosition.GetParkingLotIndex());
+        }
+        private static List<ParkingLot> CalculatePath(this List<GridLine> gridLines, int startX, int startY, int targetX, int targetY)
         {
             var grid = GenerateArray(gridLines);
             var nodes = ConvertGridToNode(grid);

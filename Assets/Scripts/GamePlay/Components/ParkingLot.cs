@@ -7,7 +7,7 @@ namespace GamePlay.Components
 {
     public class ParkingLot : MonoBehaviour
     {
-        public EventHandler<Vehicle> OnVehiclePlaced;
+        public EventHandler<Vehicle> OnParkingLotClicked;
         private ParkingLotPosition _parkingLotPosition;
         private bool _isInvisible = false;
         private Vehicle _currentVehicle;
@@ -16,6 +16,10 @@ namespace GamePlay.Components
         public void Initialize(bool isInvisible, ParkingLotPosition parkingLotPosition)
         {
             _isInvisible = isInvisible;
+            if (_isInvisible)
+            {
+                gameObject.SetActive(false);
+            }
             _parkingLotPosition = parkingLotPosition;
         }
         
@@ -37,6 +41,12 @@ namespace GamePlay.Components
            
         }
 
+        private void OnMouseDown()
+        {
+            if (_isInvisible) return;
+            OnParkingLotClicked?.Invoke(this, _currentVehicle);
+        }
+
         public void SetEmpty()
         {
             _currentVehicle = null;
@@ -44,7 +54,7 @@ namespace GamePlay.Components
 
         public bool IsEmpty()
         {
-            return _currentVehicle != null;
+            return _currentVehicle == null;
         }
         
         public Vehicle GetCurrentVehicle()
@@ -59,7 +69,7 @@ namespace GamePlay.Components
         
         public bool IsWalkable()
         {
-            return _isInvisible || !IsEmpty();
+            return _isInvisible || IsEmpty();
         }
         
         public bool IsInvisible()
