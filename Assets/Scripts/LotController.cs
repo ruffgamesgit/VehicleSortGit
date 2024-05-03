@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using GamePlay.Data;
 using UnityEngine;
 
 public class LotController : BaseCellBehavior

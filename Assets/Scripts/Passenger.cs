@@ -1,5 +1,6 @@
 using DG.Tweening;
 using System.Collections.Generic;
+using GamePlay.Data;
 using UnityEngine;
 
 public class Passenger : MonoBehaviour

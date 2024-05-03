@@ -1,11 +1,8 @@
 ﻿using DG.Tweening;
 using System.Collections.Generic;
+using GamePlay.Data;
 using UnityEngine;
 
-public enum ColorEnum
-{
-    NONE, RED, BLUE, GREEN, YELLOW, PURPLE, ORANGE, PINK, WHITE, BLACK,
-}
 
 public class PassengerStack : MonoBehaviour
 {

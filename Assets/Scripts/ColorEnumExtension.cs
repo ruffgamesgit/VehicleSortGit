@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using GamePlay.Data;
 using UnityEngine;
 
 public static class ColorEnumExtension 
@@ -10,7 +11,9 @@ public static class ColorEnumExtension
 
     public static ColorEnum GetRandomObjectType()
     {
-        ColorEnum[] values = GetAsList().ToArray();
+        var valueList = GetAsList();
+        valueList.Remove(0);
+        ColorEnum[] values = valueList.ToArray();
         var randomValue = Rng.Next(values.Length - 1);
         var randomObjectType = values[randomValue];
         return randomObjectType;
@@ -32,6 +35,36 @@ public static class ColorEnumExtension
     {
         List<ColorEnum> objectTypesList =
             Enum.GetValues(typeof(ColorEnum)).Cast<ColorEnum>().ToList();
+        objectTypesList.Remove(0);
         return objectTypesList;
+    }
+
+    public static Color GetColorCode(this ColorEnum colorEnum)
+    {
+        switch (colorEnum)
+        {
+            case ColorEnum.NONE:
+                return Color.clear;
+            case ColorEnum.RED:
+                return Color.red;
+            case ColorEnum.BLUE:
+                return Color.blue;
+            case ColorEnum.GREEN:
+                return Color.green;
+            case ColorEnum.YELLOW:
+                return Color.yellow;
+            case ColorEnum.PURPLE:
+                return new Color(0.5f, 0, 0.5f);
+            case ColorEnum.ORANGE:
+                return new Color(1, 0.5f, 0);
+            case ColorEnum.PINK:
+                return new Color(1, 0.5f, 0.5f);
+            case ColorEnum.WHITE:
+                return Color.white;
+            case ColorEnum.BLACK:
+                return Color.black;
+            default:
+                throw new ArgumentOutOfRangeException(nameof(colorEnum), colorEnum, null);
+        }
     }
 }
