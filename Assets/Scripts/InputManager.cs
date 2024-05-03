@@ -41,7 +41,7 @@ public class InputManager : MonoSingleton<InputManager>
                     }
                     ResetParams();
 
-                    if (vehicle.isPicked) return; 
+                    if (vehicle.isPicked) return;
                     if (vehicle.CurrentLot == null) return;
 
                     selectedVehicle = vehicle;
@@ -55,7 +55,7 @@ public class InputManager : MonoSingleton<InputManager>
                 if (hit.collider.TryGetComponent(out LotController lot))
                 {
                     int targetHolderIndex = ParkingLotsHolders.IndexOf(lot.GetComponentInParent<ParkingLotsHolder>());
-                    if (startHolder.CheckCanMove(targetHolderIndex) && !lot.IsOccupied)
+                    if (startHolder is not null && startHolder.CheckCanMove(targetHolderIndex) && !lot.IsOccupied)
                     {
                         if (selectedVehicle == null) return;
 

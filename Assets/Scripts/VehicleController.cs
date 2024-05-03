@@ -5,6 +5,7 @@ using UnityEngine;
 
 public class VehicleController : MonoBehaviour
 {
+    public event System.Action  VehicleArrivedAtNewLotEvent;
 
     [Header("Debug")]
     public bool isPicked;
@@ -20,13 +21,13 @@ public class VehicleController : MonoBehaviour
     [SerializeField] List<ColorEnum> existingColorList = new();
 
 
-    IEnumerator Start()
+    void Start()
     {
-        yield return new WaitForSeconds(.25f);
-
-        SortInnerPlacement();
-
+        StartCoroutine(SortInnerPlacementRoutine(.3f));
     }
+
+
+
     public void Initiliaze(int passengerStackCount)
     {
         CurrentLot = transform.parent.GetComponent<LotController>();
@@ -121,6 +122,7 @@ public class VehicleController : MonoBehaviour
     }
     public void GoOtherLot(LotController targetLot, float tweenDuration = .5f)
     {
+        float initYRot = transform.position.y;
         if (CurrentLot)
         {
             CurrentLot.SetOccupied(false);
@@ -134,8 +136,10 @@ public class VehicleController : MonoBehaviour
             transform.SetParent(CurrentLot.transform);
             GetReleased();
             CurrentLot.OnVehicleArrived();
+            VehicleArrivedAtNewLotEvent?.Invoke();
         });
     }
+
     public bool IsVehicleSortedFully()
     {
         int sameColoredStackCount = 0;
@@ -223,42 +227,27 @@ public class VehicleController : MonoBehaviour
 
             CurrentLot.SetOccupied(false);
             CurrentLot.SetVehicle(null);
-
-            // Debug.LogWarning("Vehicle is sorted fully and disappearing, BUT this is not the best practise this function should not be called here.");
         }
         else
         {
 
-            IEnumerator Routine()
-            {
-                yield return new WaitForSeconds(0.05f);
-                SortInnerPlacement();
-
-            }
-            StartCoroutine(Routine());
+            StartCoroutine(SortInnerPlacementRoutine());
         }
     }
-
     public void RemoveStack(PassengerStack stack)
     {
         if (!CurrentPassengerStacks.Contains(stack)) { return; }
 
         CurrentPassengerStacks.Remove(stack);
 
-        IEnumerator Routine()
-        {
-            yield return new WaitForSeconds(0.05f);
-            SortInnerPlacement();
 
-        }
-
-        StartCoroutine(Routine());
+        StartCoroutine(SortInnerPlacementRoutine());
     }
-    public void SortInnerPlacement()
+    IEnumerator SortInnerPlacementRoutine(float duration = 0.05f)
     {
-        Debug.Log("Sort inner placement");
+        yield return new WaitForSeconds(duration);
 
-        if(CurrentPassengerStacks.Count == 0) return;
+        if (CurrentPassengerStacks.Count == 0) yield break;
 
         Dictionary<ColorEnum, List<PassengerStack>> colorGroupsDict = new Dictionary<ColorEnum, List<PassengerStack>>();
 
@@ -271,7 +260,13 @@ public class VehicleController : MonoBehaviour
             colorGroupsDict[targetStack.stackColor].Add(targetStack);
         }
 
+        bool incrementIndex = true;
         int usedPointCount = 0;
+        if (transform.eulerAngles.y == 180f)
+        {
+            usedPointCount = 3;
+            incrementIndex = false;
+        }
 
         for (int i = 0; i < GetExistingColors().Count; i++)
         {
@@ -281,9 +276,14 @@ public class VehicleController : MonoBehaviour
             {
                 PlacementPoint newPoint = placementPoints[usedPointCount];
                 colorGroupsDict[selectedColor][cc].SetPlacementPoint(newPoint);
-                usedPointCount++;
+
+                if (incrementIndex)
+                    usedPointCount++;
+                else
+                    usedPointCount--;
             }
         }
+
     }
     public void AddExistingStackColors(ColorEnum _color)
     {
@@ -299,6 +299,35 @@ public class VehicleController : MonoBehaviour
 
             if (!existingColorList.Contains(stackColor))
                 existingColorList.Add(stackColor);
+        }
+    }
+
+    private void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            UpdatePointPosAfterRotate();
+        }
+    }
+
+    private void UpdatePointPosAfterRotate()
+    {
+        for (int i = 0; i < CurrentPassengerStacks.Count; i++)
+        {
+            PassengerStack passengerStack = CurrentPassengerStacks[i];
+
+            int formerPointIndex = placementPoints.IndexOf(passengerStack.GetCurrentPoint());
+            int nextPointIndex = 3 - formerPointIndex;
+
+
+            PlacementPoint formerPoint = placementPoints[formerPointIndex];
+            PlacementPoint newPoint = placementPoints[nextPointIndex];
+
+            formerPoint.SetOccupied(false);
+
+            passengerStack.SetPlacementPoint(newPoint);
+            newPoint.SetOccupied(true);
+
         }
     }
 }

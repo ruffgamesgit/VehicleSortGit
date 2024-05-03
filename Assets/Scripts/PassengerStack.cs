@@ -9,6 +9,9 @@ public enum ColorEnum
 
 public class PassengerStack : MonoBehaviour
 {
+    public event System.Action<VehicleController> UpdateCurrentVehicleEvent;
+    public event System.Action StackMovedNewVehicleEvent;
+
     [Header("Debug")]
     public ColorEnum stackColor;
     [SerializeField] VehicleController currentVehicle;
@@ -31,14 +34,14 @@ public class PassengerStack : MonoBehaviour
                 pass.SetColorEnumAndMat(stackColor);
             }
         }
-
-
     }
 
 
     public void SetCurrentVehicleAndPlacementPoint(VehicleController vehicle, PlacementPoint _placementPoint)
     {
         currentVehicle = vehicle;
+        UpdateCurrentVehicleEvent?.Invoke(vehicle);
+
         placementPoint = _placementPoint;
     }
 
@@ -57,6 +60,10 @@ public class PassengerStack : MonoBehaviour
     {
         return placementPoint;
     }
+    public VehicleController GetCurrentVehicle()
+    {
+        return currentVehicle;
+    }
 
     public void GoOtherVehicle(VehicleController vehicle, PlacementPoint targetPoint)
     {
@@ -67,9 +74,14 @@ public class PassengerStack : MonoBehaviour
         currentVehicle.RefreshExistingColorList();
 
         //////////////////////////////////////////////////////////
-        
+
         transform.SetParent(targetPoint.transform);
-        transform.DOMove(targetPoint.transform.position, .2f); 
+        transform.DOMove(targetPoint.transform.position, .2f).OnComplete(() =>
+        {
+            StackMovedNewVehicleEvent?.Invoke();
+        });
+
+
         placementPoint = targetPoint;
         placementPoint.SetOccupied(true);
 
