@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class VehicleController : MonoBehaviour
 {
-    public event System.Action  VehicleArrivedAtNewLotEvent;
+    public event System.Action VehicleArrivedAtNewLotEvent;
 
     [Header("Debug")]
     public bool isPicked;
@@ -111,6 +111,7 @@ public class VehicleController : MonoBehaviour
 
     public void Disappear(float duration = .5f)
     {
+        GameManager.instance.OnVehicleDisappears();
         Disappearing = true;
         CurrentPassengerStacks.Clear();
         transform.DOScale(Vector3.zero, duration);
@@ -222,7 +223,7 @@ public class VehicleController : MonoBehaviour
             float tweenDuration = .5f;
 
             CurrentLot.SetOccupied(false);
-            transform.DOScale(Vector3.zero, tweenDuration);
+            Disappear(tweenDuration);
             CurrentPassengerStacks.Clear();
 
             CurrentLot.SetOccupied(false);

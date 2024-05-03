@@ -8,7 +8,7 @@ using UnityEngine.SceneManagement;
 public class LevelGenerator : MonoSingleton<LevelGenerator>
 {
     [Header("Config")]
-    [SerializeField] int desiredPassengerStackCount;
+    public int DesiredPassengerStackCount;
     //[Range(1, 10)]
     //[SerializeField] int occupancyRateOfVehicles;
     [SerializeField] List<ColorEnum> desiredColorsForLevel = new List<ColorEnum>();
@@ -66,10 +66,10 @@ public class LevelGenerator : MonoSingleton<LevelGenerator>
 
         totalPassengerStackCount = totalVehiclesCount * 4;
 
-        if (desiredPassengerStackCount % 4 != 0)
+        if (DesiredPassengerStackCount % 4 != 0)
         {
-            desiredPassengerStackCount += 4 - (desiredPassengerStackCount % 4);
-            Debug.LogWarning(desiredPassengerStackCount);
+            DesiredPassengerStackCount += 4 - (DesiredPassengerStackCount % 4);
+            Debug.LogWarning(DesiredPassengerStackCount);
         }
     }
     void SetLotsWithVehicleList()
@@ -97,7 +97,7 @@ public class LevelGenerator : MonoSingleton<LevelGenerator>
             }
         }
 
-        int totalMultiplier = (desiredPassengerStackCount / 4) - desiredColorsForLevel.Count;
+        int totalMultiplier = (DesiredPassengerStackCount / 4) - desiredColorsForLevel.Count;
         while (totalMultiplier > 0)
         {
             if (totalMultiplier <= 0) break;

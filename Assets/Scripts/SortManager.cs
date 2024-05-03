@@ -345,7 +345,7 @@ public class SortManager : MonoSingleton<SortManager>
 
                                 Debug.LogWarning("This vehicle fully sorted: " + gameObject.name);
                                 lot.SetOccupied(false);
-                                currentVehicle.transform.DOScale(Vector3.zero, tweenDuration);
+                                currentVehicle.Disappear();
                                 currentVehicle.GetPassengerStacks().Clear(); // bir daha routine başlamaması için 
 
                                 //Wait Tween Completetion
