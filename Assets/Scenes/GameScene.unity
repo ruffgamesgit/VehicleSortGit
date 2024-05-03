@@ -1280,17 +1280,17 @@ PrefabInstance:
     - target: {fileID: 1505448830303965026, guid: 2b42e5a0d0afbda47be59c45d3761bf7,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: 10.5
+      value: 15.35
       objectReference: {fileID: 0}
     - target: {fileID: 1505448830303965026, guid: 2b42e5a0d0afbda47be59c45d3761bf7,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0
+      value: 1.5
       objectReference: {fileID: 0}
     - target: {fileID: 1505448830303965026, guid: 2b42e5a0d0afbda47be59c45d3761bf7,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: 9.1
+      value: 25.36
       objectReference: {fileID: 0}
     - target: {fileID: 1505448830303965026, guid: 2b42e5a0d0afbda47be59c45d3761bf7,
         type: 3}
@@ -1335,8 +1335,23 @@ PrefabInstance:
     - target: {fileID: 1505448830303965029, guid: 2b42e5a0d0afbda47be59c45d3761bf7,
         type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 2991820553264237528, guid: 2b42e5a0d0afbda47be59c45d3761bf7,
+        type: 3}
+      propertyPath: additionalVehicleCount
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 2991820553264237528, guid: 2b42e5a0d0afbda47be59c45d3761bf7,
+        type: 3}
+      propertyPath: targetLotInfo.TargetLotIndex
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 2991820553264237528, guid: 2b42e5a0d0afbda47be59c45d3761bf7,
+        type: 3}
+      propertyPath: targetLotInfo.ParkingLotsHolder
+      value: 
+      objectReference: {fileID: 1544315461}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 2b42e5a0d0afbda47be59c45d3761bf7, type: 3}
 --- !u!1 &1186374445

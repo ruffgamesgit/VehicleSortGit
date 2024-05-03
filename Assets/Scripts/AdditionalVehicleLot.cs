@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 
 public class AdditionalVehicleLot : MonoBehaviour
@@ -7,11 +8,12 @@ public class AdditionalVehicleLot : MonoBehaviour
 
     [Header("References")]
     [SerializeField] VehicleController vehiclePrefab;
+    [SerializeField] TextMeshProUGUI leftVehicleText;
 
     [Header("Config")]
     public int additionalVehicleCount;
     [SerializeField] TargetLotInfo targetLotInfo;
-
+    int leftVehicleCount;
 
     [Header("Debug")]
     [SerializeField] LotController targetLotToPlace;
@@ -26,6 +28,9 @@ public class AdditionalVehicleLot : MonoBehaviour
 
         targetLotToPlace = targetLotInfo.ParkingLotsHolder.SpawnedLots[targetLotInfo.TargetLotIndex];
         targetLotToPlace.OnVehicleLeaveEvent += OnTargetLotIsEmpty;
+        leftVehicleCount =additionalVehicleCount;
+        SetText();
+
     }
 
     private void OnTargetLotIsEmpty()
@@ -48,11 +53,19 @@ public class AdditionalVehicleLot : MonoBehaviour
         }
 
         StartCoroutine(Routine());
+        leftVehicleCount--;
+
+        SetText();
+    }
+
+    void SetText()
+    {
+        leftVehicleText.text = leftVehicleCount.ToString();
     }
 
     public void SpawnVehicle(int activePassengerStackCount)
     {
-        VehicleController cloneVehicle = Instantiate(vehiclePrefab, transform.position + Vector3.down, Quaternion.identity, transform);
+        VehicleController cloneVehicle = Instantiate(vehiclePrefab, transform.position + Vector3.up, Quaternion.identity, transform);
         cloneVehicle.Initiliaze(activePassengerStackCount);
         CurrentVehicle = cloneVehicle;
         spawnedVehicles.Add(cloneVehicle);

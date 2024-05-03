@@ -60,7 +60,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8896ed8b4048dcd41a0e92048078a02f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  verticalCenterOffset: 2
+  verticalCenterOffset: 0.5
   IsOccupied: 0
   vehiclePrefab: {fileID: 8854592403249635882, guid: 8b08a52e63792ac4e87bb7950048fb69,
     type: 3}
