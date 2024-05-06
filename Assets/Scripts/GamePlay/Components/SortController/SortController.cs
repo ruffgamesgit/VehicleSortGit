@@ -1,14 +1,21 @@
+using Cysharp.Threading.Tasks;
+using GamePlay.Data;
+using GamePlay.Data.Grid;
+using GamePlay.Extension;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
+<<<<<<< Updated upstream
 using Cysharp.Threading.Tasks;
 using DG.Tweening;
 using GamePlay.Data;
 using GamePlay.Data.Grid;
 using GamePlay.Extension;
 using Unity.VisualScripting;
+=======
+>>>>>>> Stashed changes
 using UnityEngine;
 using Sequence = DG.Tweening.Sequence;
 
@@ -22,12 +29,29 @@ namespace GamePlay.Components.SortController
         private readonly SemaphoreSlim _semaphore = new(1, 1);
         private readonly ConcurrentQueue<(ParkingLot, Seat)> _affectedSortQueue = new();
         private ParkingLot _lastClickedParkingLot;
-
+        [SerializeField] int _colorVariety;
         private void Awake()
         {
             _fillController = GetComponent<FillController>();
             InitializeParkingLots();
+<<<<<<< Updated upstream
             _fillController.FillVehicles(gridData.gridGroups, 14, 12, 12); // Variety , MatchingPassangerCount
+=======
+
+            if (_colorVariety == 0)
+            {
+                _colorVariety = 15;
+                Debug.LogError("Color variety count is assigned manually, this should be pre-assigned from the hierarchy");
+            }
+
+            _fillController.FillVehicles(gridData.gridGroups, 23, _colorVariety, 12); // Variety , MatchingPassangerCount
+
+        }
+
+        private void Start()
+        {
+            GameManager.instance.SetColorVarietyCount(_colorVariety);
+>>>>>>> Stashed changes
         }
 
         private void InitializeParkingLots()
@@ -318,7 +342,7 @@ namespace GamePlay.Components.SortController
                 }
             }
 
-            Iterate:
+        Iterate:
             ColorEnum selectedColor = ColorEnum.NONE;
             int selectedColorCount = 0;
             foreach (var color in colorCount)
@@ -329,7 +353,10 @@ namespace GamePlay.Components.SortController
                     selectedColorCount = color.Value;
                     continue;
                 }
+<<<<<<< Updated upstream
 
+=======
+>>>>>>> Stashed changes
                 if (selectedColorCount < color.Value)
                 {
                     selectedColor = color.Key;

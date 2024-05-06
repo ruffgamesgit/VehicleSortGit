@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -26,17 +24,16 @@ public class GameManager : MonoSingleton<GameManager>
 
     private void Start()
     {
-        SetSortableVehicleCount(LevelGenerator.instance.DesiredPassengerStackCount);
+        SetColorVarietyCount(15);
     }
 
-    void SetSortableVehicleCount(int count)
+    public void SetColorVarietyCount(int count)
     {
-        sortableVehicleCount = count / 4;
+        sortableVehicleCount = count;
     }
 
     public void OnVehicleDisappears()
     {
-
         sortableVehicleCount--;
 
         if (sortableVehicleCount == 0)
@@ -44,9 +41,9 @@ public class GameManager : MonoSingleton<GameManager>
     }
     private void Update()
     {
-        if(Input.GetKeyDown(KeyCode.A))
+        if (Input.GetKeyDown(KeyCode.A))
         {
-            EndGame(true);
+            EndGame(false);
         }
     }
     #region Level Management Related

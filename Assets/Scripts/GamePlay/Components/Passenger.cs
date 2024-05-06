@@ -35,8 +35,6 @@ namespace GamePlay.Components
             {
                 Transform child = meshTransforms[i];
                 offsetDictionary[i] = child.localPosition;
-
-                Debug.Log(offsetDictionary[i]);
             }
         }
 

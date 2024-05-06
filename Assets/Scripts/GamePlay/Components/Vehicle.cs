@@ -41,6 +41,7 @@ namespace GamePlay.Components
 
         public void Destroy()
         {
+            GameManager.instance.OnVehicleDisappears();
             Destroy(this.gameObject);
         }
     }
