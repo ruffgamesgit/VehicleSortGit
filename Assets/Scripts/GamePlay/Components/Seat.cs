@@ -1,6 +1,7 @@
 using Cysharp.Threading.Tasks;
 using DG.Tweening;
 using GamePlay.Data;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace GamePlay.Components
@@ -13,9 +14,9 @@ namespace GamePlay.Components
         {
             _passenger = passenger;
             _passenger.transform.parent = transform;
-             // LATER : Add delay
+            // LATER : Add delay
         }
-        
+
         public void SetEmpty()
         {
             _passenger = null;
@@ -25,22 +26,22 @@ namespace GamePlay.Components
         {
             return _passenger == null;
         }
-        
+
         public Passenger GetPassenger()
         {
             return _passenger;
         }
-        
+
         public ColorEnum GetPreColor()
         {
             return _preColor;
         }
-        
+
         public void SetPreColor(ColorEnum color)
         {
             _preColor = color;
         }
-        
+
         public void ResetPreColor()
         {
             _preColor = ColorEnum.NONE;
@@ -48,9 +49,9 @@ namespace GamePlay.Components
 
         public void InstantiatePreColor(Passenger passengerPrefab)
         {
-            if(_preColor == ColorEnum.NONE) return;
+            if (_preColor == ColorEnum.NONE) return;
             var passenger = Instantiate(passengerPrefab, this.transform.position, Quaternion.identity);
-            passenger.SetColor(_preColor); 
+            passenger.SetColor(_preColor);
             Occupy(passenger);
         }
 
@@ -61,12 +62,29 @@ namespace GamePlay.Components
                 ucs.TrySetResult();
                 return;
             }
-            _passenger.transform.DOMove(transform.position, 0.75f).OnComplete(() =>
+
+            List<Transform> passengerMeshes = _passenger.GetMeshTransforms();
+            
+            for (int i = 0; i < passengerMeshes.Count; i++)
             {
-                ucs.TrySetResult();
-            }).SetEase(Ease.OutQuad);
+                Transform meshTr = passengerMeshes[i];
+
+                meshTr.SetParent(transform);
+                Vector3 targetPos = _passenger.GetOffsetByIndex(i);
+              
+                int index = i;
+
+                meshTr.transform.DOLocalJump(targetPos, 1, 1, .5f).OnComplete(() =>
+                {
+                    if (index == passengerMeshes.Count - 1)
+                    {
+                        _passenger.transform.position = transform.position;
+                        _passenger.SetMeshesParent();
+                        ucs.TrySetResult();
+                    }
+
+                }).SetEase(Ease.OutQuad).SetDelay(i * .1f);
+            }
         }
-        
-        
     }
 }
