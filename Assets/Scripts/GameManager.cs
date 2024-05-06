@@ -7,6 +7,7 @@ public class GameManager : MonoSingleton<GameManager>
 {
     public event System.Action LevelEndedEvent;
     public event System.Action LevelFailedEvent;
+    public event System.Action LevelSuccessEvent;
 
     [Header("Debug")]
     public bool isLevelActive;
@@ -35,13 +36,19 @@ public class GameManager : MonoSingleton<GameManager>
 
     public void OnVehicleDisappears()
     {
-         
+
         sortableVehicleCount--;
 
         if (sortableVehicleCount == 0)
             EndGame(success: true, .75f);
     }
-
+    private void Update()
+    {
+        if(Input.GetKeyDown(KeyCode.A))
+        {
+            EndGame(true);
+        }
+    }
     #region Level Management Related
 
     public void EndGame(bool success, float delayAsSeconds = 0)
@@ -49,17 +56,10 @@ public class GameManager : MonoSingleton<GameManager>
         if (!isLevelActive) return;
 
         isLevelActive = false;
-        IEnumerator EndingRoutine()
-        {
-            if (!success) LevelFailedEvent?.Invoke();
-            yield return new WaitForSeconds(delayAsSeconds);
 
-            if (success)
-                OnTapNext();
-            else
-                OnTapRestart();
-        }
-        StartCoroutine(EndingRoutine());
+        if (!success) LevelFailedEvent?.Invoke();
+        else LevelSuccessEvent?.Invoke();
+
     }
     public void OnTapRestart()
     {
@@ -83,8 +83,6 @@ public class GameManager : MonoSingleton<GameManager>
         SceneManager.LoadScene(nextSceneIndex);
 
         #endregion
-
-
     }
 
     #endregion
