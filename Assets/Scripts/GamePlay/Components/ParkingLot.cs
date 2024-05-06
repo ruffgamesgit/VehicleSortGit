@@ -1,5 +1,6 @@
 using System;
 using Cysharp.Threading.Tasks;
+using DG.Tweening;
 using GamePlay.Data;
 using UnityEngine;
 
@@ -11,7 +12,7 @@ namespace GamePlay.Components
         private ParkingLotPosition _parkingLotPosition;
         private bool _isInvisible = false;
         private Vehicle _currentVehicle;
-
+        private Sequence _sequence;
 
         public void Initialize(bool isInvisible, ParkingLotPosition parkingLotPosition)
         {
@@ -23,7 +24,7 @@ namespace GamePlay.Components
             _parkingLotPosition = parkingLotPosition;
         }
         
-        public void Occupy(Vehicle vehicle, bool withAnimation, UniTaskCompletionSource ucs)
+        public void Occupy(Vehicle vehicle, ParkingLot from, bool withAnimation, UniTaskCompletionSource ucs)
         {
             _currentVehicle = vehicle;
             _currentVehicle.transform.parent = this.transform;
@@ -34,11 +35,70 @@ namespace GamePlay.Components
             }
             else
             {
-                _currentVehicle.transform.position = this.transform.position;
-                ucs?.TrySetResult();
-                //ANIMATION
+                OccupyAnimation(ucs, from);
             }
-           
+        }
+
+
+        private void OccupyAnimation(UniTaskCompletionSource ucs, ParkingLot from)
+        {
+            _sequence?.Kill(true);
+            _sequence = DOTween.Sequence();
+            var fromPosition = from.GetParkingLotPosition();
+            var targetGridGroupIndex = _parkingLotPosition.GetGridGroupIndex();
+            var fromGridGroupIndex = fromPosition.GetGridGroupIndex();
+            var targetGridLineIndex = _parkingLotPosition.GetGridLineIndex();
+            var fromGridLineIndex = fromPosition.GetGridLineIndex();
+            var targetParkingLotIndex = _parkingLotPosition.GetParkingLotIndex();
+            var fromParkingLotIndex = fromPosition.GetParkingLotIndex();
+
+            if (targetGridGroupIndex == fromGridGroupIndex)
+            {
+                if (targetGridLineIndex == fromGridLineIndex)
+                {
+                    bool isNext = Mathf.Abs(targetParkingLotIndex - fromParkingLotIndex) == 1;
+                    if(isNext)
+                    {
+                        _sequence.Append(_currentVehicle.transform.DOMove(transform.position, 0.25f).SetEase(Ease.Linear));
+                    }
+                    else
+                    {
+                        var targetVector3 = transform.position;
+                        _sequence.Append(_currentVehicle.transform
+                            .DOMoveZ(targetVector3.z + (targetGridLineIndex == 0 ? -2 : 2), 0.25f)
+                            .SetEase(Ease.Linear));
+                     
+                        _sequence.Append(_currentVehicle.transform.DOMoveX(targetVector3.x, 0.25f).SetEase(Ease.Linear));
+                        _sequence.Append(_currentVehicle.transform.DOMoveZ(targetVector3.z, 0.25f)
+                            .SetEase(Ease.Linear));
+                    }
+                }
+                else
+                {
+                    _sequence.Append(_currentVehicle.transform.DOMove(transform.position, 0.25f).SetEase(Ease.Linear));
+                }
+            }
+            else
+            {
+                var targetVector3 = transform.position;
+                var midPointVector3 = (from.transform.position + targetVector3) / 2;
+                
+                _sequence.Append(_currentVehicle.transform
+                    .DOMoveZ(midPointVector3.z, 0.25f)
+                    .SetEase(Ease.Linear));
+                if (Math.Abs(targetVector3.x - from.transform.position.x) > 0.01f)
+                {
+                    _sequence.Append(_currentVehicle.transform.DOMoveX(targetVector3.x, 0.25f).SetEase(Ease.Linear));
+                }
+                
+                _sequence.Append(_currentVehicle.transform.DOMoveZ(targetVector3.z, 0.25f)
+                    .SetEase(Ease.Linear));
+            }
+
+            _sequence.OnComplete(() =>
+            {
+                ucs.TrySetResult();
+            });
         }
 
         private void OnMouseDown()

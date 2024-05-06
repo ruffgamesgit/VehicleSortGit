@@ -4,11 +4,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using Cysharp.Threading.Tasks;
+using DG.Tweening;
 using GamePlay.Data;
 using GamePlay.Data.Grid;
 using GamePlay.Extension;
 using Unity.VisualScripting;
 using UnityEngine;
+using Sequence = DG.Tweening.Sequence;
 
 namespace GamePlay.Components.SortController
 {
@@ -25,7 +27,7 @@ namespace GamePlay.Components.SortController
         {
             _fillController = GetComponent<FillController>();
             InitializeParkingLots();
-            _fillController.FillVehicles(gridData.gridGroups, 23, 15, 12); // Variety , MatchingPassangerCount
+            _fillController.FillVehicles(gridData.gridGroups, 14, 12, 12); // Variety , MatchingPassangerCount
         }
 
         private void InitializeParkingLots()
@@ -55,7 +57,7 @@ namespace GamePlay.Components.SortController
             }
         }
 
-        private void OnParkingLotClicked(object sender, Vehicle arg)
+        private async void OnParkingLotClicked(object sender, Vehicle arg)
         {
             var parkingLot = (ParkingLot)sender;
             if (_lastClickedParkingLot != null)
@@ -69,8 +71,26 @@ namespace GamePlay.Components.SortController
                         if (path[^1] == parkingLot)
                         {
                             var vehicle = _lastClickedParkingLot.GetCurrentVehicle();
-                            _lastClickedParkingLot.SetEmpty();
-                            parkingLot.Occupy(vehicle, true, null);
+                            ParkingLot from = null;
+                            foreach (var pLot in path)
+                            {
+                                if (pLot != null)
+                                {
+                                    if (from == null)
+                                    {
+                                        from = pLot;
+                                    }
+                                    else
+                                    {
+                                        UniTaskCompletionSource ucs = new UniTaskCompletionSource();
+                                        from.SetEmpty();
+                                        pLot.Occupy(vehicle, from, true, ucs);
+                                        from = pLot;
+                                        await ucs.Task;
+                                    }
+                                }
+                            }
+
                             SortParkingLot(parkingLot, vehicle);
                             _lastClickedParkingLot = null;
                             return;
@@ -94,21 +114,15 @@ namespace GamePlay.Components.SortController
         private void SortParkingLot(object sender, Vehicle arg)
         {
             var parkingLot = (ParkingLot)sender;
-            UniTaskCompletionSource uc = new UniTaskCompletionSource();
-            parkingLot.Occupy(arg, true, uc);
-            uc.Task.ContinueWith(() =>
+            var seatsToSort = SortSeatsByColorCount(arg.GetSeats());
+            if (seatsToSort.Count == 0) return;
+            foreach (var seat in seatsToSort)
             {
-                var seatsToSort = SortSeatsByColorCount(arg.GetSeats());
-                if (seatsToSort.Count == 0) return;
-                foreach (var seat in seatsToSort)
-                {
-                    InsertItemToQueue(parkingLot, seat);
-                }
+                InsertItemToQueue(parkingLot, seat);
+            }
 
-                SortAffectedParkingLots();
-            });
+            SortAffectedParkingLots();
         }
-
 
         private async void SortParkingLotAlgorithm(object sender, Seat arg)
         {
@@ -313,9 +327,10 @@ namespace GamePlay.Components.SortController
                 {
                     selectedColor = color.Key;
                     selectedColorCount = color.Value;
-                    continue;   
+                    continue;
                 }
-                if(selectedColorCount < color.Value)
+
+                if (selectedColorCount < color.Value)
                 {
                     selectedColor = color.Key;
                     selectedColorCount = color.Value;
@@ -331,7 +346,7 @@ namespace GamePlay.Components.SortController
                     goto Iterate;
                 }
             }
-               
+
 
             return sortedSeats;
         }
