@@ -6,40 +6,44 @@ namespace GamePlay.Components.SortController
 {
     public static class SortExtensions
     {
-        
-        public static UniTask Swap(this Seat seat, Seat otherSeat)
+
+        public static UniTask AnimateSeatChanges(this List<Seat> seats) 
         {
-            var tempObject1 = seat.GetPassenger();
-            var tempObject2 = otherSeat.GetPassenger();
-            
             UniTaskCompletionSource mainTaskCompletionSource = new UniTaskCompletionSource();
-            UniTaskCompletionSource taskCompletionSource1 = new UniTaskCompletionSource();
-            UniTaskCompletionSource taskCompletionSource2 = new UniTaskCompletionSource();
-
-            if (tempObject2 == null)
+            List<UniTask> ucsList = new List<UniTask>();
+            for (int i = 0; i < seats.Count; i++)
             {
-                seat.SetEmpty();
-                taskCompletionSource1.TrySetResult();
+                var ucs = new UniTaskCompletionSource();
+                ucsList.Add(ucs.Task);
+                seats[i].TakePassengerWithAnimation(ucs);
             }
-              
-            else
-                seat.Occupy(tempObject2,false, taskCompletionSource1);
 
-            if (tempObject1 == null)
-            {
-                otherSeat.SetEmpty();
-                taskCompletionSource2.TrySetResult();
-            }
-            else
-                otherSeat.Occupy(tempObject1, false, taskCompletionSource2);
-
-
-            UniTask.WhenAll(taskCompletionSource1.Task,taskCompletionSource2.Task).ContinueWith(() =>
+            UniTask.WhenAll(ucsList.ToArray()).ContinueWith(() =>
             {
                 mainTaskCompletionSource.TrySetResult();
             });
 
             return mainTaskCompletionSource.Task;
+        }
+        
+        public static void Swap(this Seat seat, Seat otherSeat)
+        {
+            var tempObject1 = seat.GetPassenger();
+            var tempObject2 = otherSeat.GetPassenger();
+            
+            if (tempObject2 == null)
+            {
+                seat.SetEmpty();
+            }
+            else
+                seat.Occupy(tempObject2);
+
+            if (tempObject1 == null)
+            {
+                otherSeat.SetEmpty();
+            }
+            else
+                otherSeat.Occupy(tempObject1);
         }
         
         public static List<ParkingLot> FindNeighbors(this ParkingLot parkingLot, List<GridLine> gridLines)

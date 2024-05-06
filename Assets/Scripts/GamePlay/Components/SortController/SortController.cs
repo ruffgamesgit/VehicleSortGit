@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using Cysharp.Threading.Tasks;
 using GamePlay.Data;
@@ -24,7 +25,7 @@ namespace GamePlay.Components.SortController
         {
             _fillController = GetComponent<FillController>();
             InitializeParkingLots();
-            _fillController.FillVehicles(gridData.gridGroups, 17, 13, 13); // Variety , MatchingPassangerCount
+            _fillController.FillVehicles(gridData.gridGroups, 23, 15, 12); // Variety , MatchingPassangerCount
         }
 
         private void InitializeParkingLots()
@@ -97,10 +98,11 @@ namespace GamePlay.Components.SortController
             parkingLot.Occupy(arg, true, uc);
             uc.Task.ContinueWith(() =>
             {
-                foreach (var seat in arg.GetSeats())
+                var seatsToSort = SortSeatsByColorCount(arg.GetSeats());
+                if (seatsToSort.Count == 0) return;
+                foreach (var seat in seatsToSort)
                 {
-                    if (!seat.IsEmpty())
-                        InsertItemToQueue(parkingLot, seat);
+                    InsertItemToQueue(parkingLot, seat);
                 }
 
                 SortAffectedParkingLots();
@@ -176,8 +178,9 @@ namespace GamePlay.Components.SortController
                         return false;
                     }
 
-                    if (DoesParkingLotHasMatchingItem(parkingLot, arg.GetPassenger().GetColor()) &&
-                        DoesParkingLotHasMatchingItem(swappingNeighbors[0], swappingSeats[0].GetPassenger().GetColor()))
+                    if (DoesParkingLotHasAnotherMatchingItem(parkingLot, arg.GetPassenger().GetColor()) &&
+                        DoesParkingLotHasAnotherMatchingItem(swappingNeighbors[0],
+                            swappingSeats[0].GetPassenger().GetColor()))
                     {
                         IsMatchedBySecondNeighbor();
                         return;
@@ -187,33 +190,28 @@ namespace GamePlay.Components.SortController
                         return;
                 }
 
+                List<Seat> animateSwappingSeats = new List<Seat>();
                 for (var i = 0; i < swappingSeats.Count; i++)
                 {
                     var match = swappingSeats[i];
-                    var swappingSlot = parkingLot.GetCurrentVehicle().GetSeats().Find(seat =>
-                        seat.IsEmpty());
-                    if (swappingSlot == null)
-                    {
-                        swappingSlot = parkingLot.GetCurrentVehicle().GetSeats().Find(seat =>
-                            seat.GetPassenger().GetColor() != arg.GetPassenger().GetColor());
-                    }
+                    var swappingSlot = CheckForSeatToSwap(parkingLot, arg.GetPassenger().GetColor());
 
                     if (swappingSlot == null)
                     {
                         break;
                     }
 
-                    await swappingSlot.Swap(match);
+                    animateSwappingSeats.Add(swappingSlot);
+                    animateSwappingSeats.Add(match);
+                    swappingSlot.Swap(match);
 
-                    if (swappingNeighbors[i].CheckIfCompleted()) // LATER AWAIT ANIMATION
-                    {
-                        EnqueueItem(swappingNeighbors[i]);
-                    }
-                    else
+                    if (!swappingNeighbors[i].CheckIfCompleted()) // LATER AWAIT ANIMATION
                     {
                         EnqueueItem(swappingNeighbors[i], swappingSeats[i]);
                     }
                 }
+
+                await animateSwappingSeats.AnimateSeatChanges();
 
                 if (parkingLot.CheckIfCompleted()) // LATER AWAIT ANIMATION
                 {
@@ -261,32 +259,116 @@ namespace GamePlay.Components.SortController
                         seats.Add(seat);
                 }
             }
-           
+
 
             return seats;
         }
 
-        private bool DoesParkingLotHasMatchingItem(ParkingLot parkingLot, ColorEnum color)
+        private bool DoesParkingLotHasAnotherMatchingItem(ParkingLot parkingLot, ColorEnum color)
         {
-            var matchingItems = parkingLot.GetCurrentVehicle().GetSeats()
+            var otherItems = parkingLot.GetCurrentVehicle().GetSeats()
                 .FindAll(seat => !seat.IsEmpty() && seat.GetPassenger().GetColor() != color);
 
-            if (matchingItems.Count >= 2)
+            if (otherItems.Count >= 3)
             {
-                var firstMatchingItemColor = matchingItems[0].GetPassenger().GetColor();
-
-                foreach (var item in matchingItems)
+                foreach (var item in otherItems)
                 {
-                    if (item.GetPassenger().GetColor() != firstMatchingItemColor)
+                    var matchingItems = parkingLot.GetCurrentVehicle().GetSeats()
+                        .FindAll(seat => !seat.IsEmpty() && seat.GetPassenger().GetColor()
+                            == item.GetPassenger().GetColor());
+                    if (matchingItems.Count >= 3)
                     {
-                        return false;
+                        return true;
                     }
                 }
 
-                return true;
+                return false;
             }
 
             return false;
+        }
+
+        private List<Seat> SortSeatsByColorCount(List<Seat> seats)
+        {
+            List<Seat> sortedSeats = new List<Seat>();
+            if (seats.FindAll(s => s.IsEmpty()).Count == 4) return sortedSeats;
+
+            var colorCount = new Dictionary<ColorEnum, int>();
+            foreach (var seat in seats)
+            {
+                if (seat.IsEmpty()) continue;
+                var color = seat.GetPassenger().GetColor();
+                if (!colorCount.TryAdd(color, 1))
+                {
+                    colorCount[color]++;
+                }
+            }
+
+            Iterate:
+            ColorEnum selectedColor = ColorEnum.NONE;
+            int selectedColorCount = 0;
+            foreach (var color in colorCount)
+            {
+                if (selectedColor == ColorEnum.NONE)
+                {
+                    selectedColor = color.Key;
+                    selectedColorCount = color.Value;
+                    continue;   
+                }
+                if(selectedColorCount < color.Value)
+                {
+                    selectedColor = color.Key;
+                    selectedColorCount = color.Value;
+                }
+            }
+
+            if (selectedColor != ColorEnum.NONE)
+            {
+                colorCount.Remove(selectedColor);
+                sortedSeats.Add(seats.First(s => !s.IsEmpty() && s.GetPassenger().GetColor() == selectedColor));
+                if (colorCount.Count > 0)
+                {
+                    goto Iterate;
+                }
+            }
+               
+
+            return sortedSeats;
+        }
+
+        private Seat CheckForSeatToSwap(ParkingLot parkingLot, ColorEnum color)
+        {
+            var emptySeats = parkingLot.GetCurrentVehicle().GetSeats()
+                .FindAll(seat => seat.IsEmpty());
+
+            if (emptySeats.Count > 0)
+            {
+                return emptySeats[0];
+            }
+
+            var otherItems = parkingLot.GetCurrentVehicle().GetSeats()
+                .FindAll(seat => !seat.IsEmpty() && seat.GetPassenger().GetColor() != color);
+
+            if (otherItems.Count == 1)
+            {
+                return otherItems[0];
+            }
+
+            if (otherItems.Count >= 2)
+            {
+                foreach (var item in otherItems)
+                {
+                    var matchingItems = parkingLot.GetCurrentVehicle().GetSeats()
+                        .FindAll(seat =>
+                            !seat.IsEmpty() && seat.GetPassenger().GetColor() == item.GetPassenger().GetColor());
+                    if (matchingItems.Count == 1)
+                    {
+                        return item;
+                    }
+                }
+            }
+
+            return otherItems[0];
         }
 
 

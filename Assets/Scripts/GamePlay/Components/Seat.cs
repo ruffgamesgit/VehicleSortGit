@@ -1,4 +1,5 @@
 using Cysharp.Threading.Tasks;
+using DG.Tweening;
 using GamePlay.Data;
 using UnityEngine;
 
@@ -8,15 +9,10 @@ namespace GamePlay.Components
     {
         private Passenger _passenger;
         private ColorEnum _preColor;
-        public void Occupy(Passenger passenger, bool withAnimation ,UniTaskCompletionSource ucs)
+        public void Occupy(Passenger passenger)
         {
             _passenger = passenger;
-            _passenger.transform.parent = this.transform;
-            if (!withAnimation)
-            {
-                passenger.transform.position = this.transform.position;
-                ucs?.TrySetResult();
-            }
+            _passenger.transform.parent = transform;
              // LATER : Add delay
         }
         
@@ -55,7 +51,20 @@ namespace GamePlay.Components
             if(_preColor == ColorEnum.NONE) return;
             var passenger = Instantiate(passengerPrefab, this.transform.position, Quaternion.identity);
             passenger.SetColor(_preColor); 
-            Occupy(passenger,false,null);
+            Occupy(passenger);
+        }
+
+        public void TakePassengerWithAnimation(UniTaskCompletionSource ucs)
+        {
+            if (_passenger == null)
+            {
+                ucs.TrySetResult();
+                return;
+            }
+            _passenger.transform.DOMove(transform.position, 0.75f).OnComplete(() =>
+            {
+                ucs.TrySetResult();
+            }).SetEase(Ease.OutQuad);
         }
         
         

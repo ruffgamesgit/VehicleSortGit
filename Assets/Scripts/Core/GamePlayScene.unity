@@ -1572,12 +1572,12 @@ MonoBehaviour:
   _levelData:
     levelDataGridGroups:
     - lines:
-      - parkingLotStatus: 000001010000
-      - parkingLotStatus: 000001010000
+      - parkingLotStatus: 000000000000
+      - parkingLotStatus: 000000000000
     - lines:
       - parkingLotStatus: 000000000000
     - lines:
-      - parkingLotStatus: 000001010000
+      - parkingLotStatus: 000000000000
 --- !u!1 &814432780
 GameObject:
   m_ObjectHideFlags: 0
