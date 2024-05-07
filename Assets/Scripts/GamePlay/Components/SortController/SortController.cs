@@ -16,13 +16,13 @@ namespace GamePlay.Components.SortController
         [SerializeField] private GridData gridData;
         [SerializeField] private LevelData _levelData; // Removed Later
         [SerializeField] private int _colorVariety; // Removed Later
-        
+
         private FillController _fillController;
         private ParkingLot _lastClickedParkingLot;
-        
+
         private readonly SemaphoreSlim _semaphore = new(1, 1);
         private readonly ConcurrentQueue<(ParkingLot, Seat)> _affectedSortQueue = new();
-       
+
         private void Awake()
         {
             _fillController = GetComponent<FillController>();
@@ -35,11 +35,12 @@ namespace GamePlay.Components.SortController
             if (_colorVariety == 0)
             {
                 _colorVariety = 15;
-                Debug.LogError("Color variety count is assigned manually, this should be pre-assigned from the hierarchy");
+                Debug.LogError(
+                    "Color variety count is assigned manually, this should be pre-assigned from the hierarchy");
             }
 
-            _fillController.FillVehicles(gridData.gridGroups, 23, _colorVariety, 12); // Variety , MatchingPassangerCount
-
+            _fillController.FillVehicles(gridData.gridGroups, 23, _colorVariety,
+                12); // Variety , MatchingPassangerCount
         }
 
         private void Start()
@@ -78,15 +79,17 @@ namespace GamePlay.Components.SortController
         private async void OnParkingLotClicked(object sender, Vehicle arg)
         {
             var parkingLot = (ParkingLot)sender;
-            if(parkingLot == null)
+            if (parkingLot == null)
             {
                 if (_lastClickedParkingLot != null)
                 {
                     _lastClickedParkingLot.GetCurrentVehicle()?.SetHighlight(false);
                     _lastClickedParkingLot = null;
                 }
+
                 return;
             }
+
             if (_lastClickedParkingLot != null)
             {
                 if (parkingLot.GetCurrentVehicle() == null)
@@ -104,7 +107,7 @@ namespace GamePlay.Components.SortController
                             _lastClickedParkingLot = null;
                             ParkingLot from = null;
 
-                
+
                             foreach (var pLot in path)
                             {
                                 if (pLot != null)
@@ -116,14 +119,14 @@ namespace GamePlay.Components.SortController
                                     else
                                     {
                                         UniTaskCompletionSource ucs = new UniTaskCompletionSource();
-                                        pLot.MoveAnimation(vehicle,ucs, from);
+                                        pLot.MoveAnimation(vehicle, ucs, from);
                                         from = pLot;
                                         await ucs.Task;
                                     }
                                 }
                             }
-                            
-                            parkingLot.Occupy(vehicle,false);
+
+                            parkingLot.Occupy(vehicle, false);
                             SortParkingLot(parkingLot, vehicle);
                             return;
                         }
@@ -162,7 +165,7 @@ namespace GamePlay.Components.SortController
             {
                 ParkingLot parkingLot = (ParkingLot)sender;
 
-                
+
                 if (parkingLot == null || arg.IsEmpty())
                 {
                     return;
@@ -172,7 +175,7 @@ namespace GamePlay.Components.SortController
                 var neighborParkingLots =
                     parkingLot.FindNeighbors(gridData.gridGroups[parkingLotPosition.GetGridGroupIndex()].lines);
                 neighborParkingLots = neighborParkingLots.ExtractUnSortableParkingLots();
-       
+
                 if (neighborParkingLots.Count == 0)
                 {
                     return;
@@ -344,7 +347,7 @@ namespace GamePlay.Components.SortController
 
             var colorCount = vehicle.GetExistingColors();
 
-        Iterate:
+            Iterate:
             ColorEnum selectedColor = ColorEnum.NONE;
             int selectedColorCount = 0;
             foreach (var color in colorCount)
@@ -355,10 +358,7 @@ namespace GamePlay.Components.SortController
                     selectedColorCount = color.Value;
                     continue;
                 }
-                //<<<<<<< Updated upstream
 
-                //=======
-                //>>>>>>> Stashed changes
                 if (selectedColorCount < color.Value)
                 {
                     selectedColor = color.Key;
