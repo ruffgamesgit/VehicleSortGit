@@ -12,7 +12,7 @@ namespace GamePlay.Components
         private ParkingLotPosition _parkingLotPosition;
         private bool _isInvisible = false;
         private Vehicle _currentVehicle;
-        private Sequence _sequence;
+        private bool _willOccupied = false;
 
         public void Initialize(bool isInvisible, ParkingLotPosition parkingLotPosition)
         {
@@ -24,26 +24,22 @@ namespace GamePlay.Components
             _parkingLotPosition = parkingLotPosition;
         }
         
-        public void Occupy(Vehicle vehicle, ParkingLot from, bool withAnimation, UniTaskCompletionSource ucs)
+        public void Occupy(Vehicle vehicle, bool moveTransform)
         {
+            _willOccupied = false;
             _currentVehicle = vehicle;
             _currentVehicle.transform.parent = this.transform;
-            if (!withAnimation)
+            if (!moveTransform)
             {
                 _currentVehicle.transform.position = this.transform.position;
-                ucs?.TrySetResult();
-            }
-            else
-            {
-                OccupyAnimation(ucs, from);
             }
         }
 
 
-        private void OccupyAnimation(UniTaskCompletionSource ucs, ParkingLot from)
+        public void MoveAnimation(Vehicle vehicle,UniTaskCompletionSource ucs, ParkingLot from)
         {
-            _sequence?.Kill(true);
-            _sequence = DOTween.Sequence();
+
+            var sequence = DOTween.Sequence();
             var fromPosition = from.GetParkingLotPosition();
             var targetGridGroupIndex = _parkingLotPosition.GetGridGroupIndex();
             var fromGridGroupIndex = fromPosition.GetGridGroupIndex();
@@ -59,23 +55,23 @@ namespace GamePlay.Components
                     bool isNext = Mathf.Abs(targetParkingLotIndex - fromParkingLotIndex) == 1;
                     if(isNext)
                     {
-                        _sequence.Append(_currentVehicle.transform.DOMove(transform.position, 0.25f).SetEase(Ease.Linear));
+                        sequence.Append(vehicle.transform.DOMove(transform.position, 0.25f).SetEase(Ease.Linear));
                     }
                     else
                     {
                         var targetVector3 = transform.position;
-                        _sequence.Append(_currentVehicle.transform
+                        sequence.Append(vehicle.transform
                             .DOMoveZ(targetVector3.z + (targetGridLineIndex == 0 ? -2 : 2), 0.25f)
                             .SetEase(Ease.Linear));
                      
-                        _sequence.Append(_currentVehicle.transform.DOMoveX(targetVector3.x, 0.25f).SetEase(Ease.Linear));
-                        _sequence.Append(_currentVehicle.transform.DOMoveZ(targetVector3.z, 0.25f)
+                        sequence.Append(vehicle.transform.DOMoveX(targetVector3.x, 0.25f).SetEase(Ease.Linear));
+                        sequence.Append(vehicle.transform.DOMoveZ(targetVector3.z, 0.25f)
                             .SetEase(Ease.Linear));
                     }
                 }
                 else
                 {
-                    _sequence.Append(_currentVehicle.transform.DOMove(transform.position, 0.25f).SetEase(Ease.Linear));
+                    sequence.Append(vehicle.transform.DOMove(transform.position, 0.25f).SetEase(Ease.Linear));
                 }
             }
             else
@@ -83,19 +79,19 @@ namespace GamePlay.Components
                 var targetVector3 = transform.position;
                 var midPointVector3 = (from.transform.position + targetVector3) / 2;
                 
-                _sequence.Append(_currentVehicle.transform
+                sequence.Append(vehicle.transform
                     .DOMoveZ(midPointVector3.z, 0.25f)
                     .SetEase(Ease.Linear));
                 if (Math.Abs(targetVector3.x - from.transform.position.x) > 0.01f)
                 {
-                    _sequence.Append(_currentVehicle.transform.DOMoveX(targetVector3.x, 0.25f).SetEase(Ease.Linear));
+                    sequence.Append(vehicle.transform.DOMoveX(targetVector3.x, 0.25f).SetEase(Ease.Linear));
                 }
                 
-                _sequence.Append(_currentVehicle.transform.DOMoveZ(targetVector3.z, 0.25f)
+                sequence.Append(vehicle.transform.DOMoveZ(targetVector3.z, 0.25f)
                     .SetEase(Ease.Linear));
             }
 
-            _sequence.OnComplete(() =>
+            sequence.OnComplete(() =>
             {
                 ucs.TrySetResult();
             });
@@ -104,17 +100,18 @@ namespace GamePlay.Components
         private void OnMouseDown()
         {
             if (_isInvisible) return;
+            if (IsAnimationOn() || _willOccupied)
+            {
+                OnParkingLotClicked?.Invoke(null, null);
+                return;
+            }
             OnParkingLotClicked?.Invoke(this, _currentVehicle);
         }
-
-        public void SetEmpty()
+        
+        private bool IsAnimationOn()
         {
-            _currentVehicle = null;
-        }
-
-        public bool IsEmpty()
-        {
-            return _currentVehicle == null;
+            if (_currentVehicle == null) return false;
+            return _currentVehicle.IsAnimationOn();
         }
         
         public Vehicle GetCurrentVehicle()
@@ -127,11 +124,26 @@ namespace GamePlay.Components
             return _parkingLotPosition;
         }
         
-        public bool IsWalkable()
+        public void SetWillOccupied()
         {
-            return _isInvisible || IsEmpty();
+            _willOccupied = true;
         }
         
+        public void SetEmpty()
+        {
+            _currentVehicle = null;
+        }
+
+        public bool IsEmpty()
+        {
+            return _currentVehicle == null;
+        }
+
+        public bool IsWalkable()
+        {
+            return  _isInvisible || IsEmpty();
+        }
+
         public bool IsInvisible()
         {
             return _isInvisible;

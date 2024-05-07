@@ -24,7 +24,7 @@ namespace GamePlay.Components.SortController
             {
                 var parkingLot = parkingLotQueue.Dequeue();
                 var vehicle = Instantiate(vehiclePrefab, parkingLot.transform.position, Quaternion.identity);
-                parkingLot.Occupy(vehicle,null,false,null);
+                parkingLot.Occupy(vehicle,true);
                 vehicle.transform.position = parkingLot.transform.position;
                 vehicleCounter++;
             }

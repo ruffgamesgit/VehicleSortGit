@@ -7,21 +7,46 @@ namespace GamePlay.Components
     public class Vehicle : MonoBehaviour
     {
         [SerializeField] private List<Seat> seats = new List<Seat>(4);
-
-        public List<ColorEnum> GetExistingColors()
+        [SerializeField] private GameObject highLight;
+        private bool _isMoving = false;
+        public Dictionary<ColorEnum,int> GetExistingColors()
         {
-            List<ColorEnum> colors = new List<ColorEnum>();
+            var colorCount = new Dictionary<ColorEnum, int>();
             foreach (var seat in seats)
             {
-                if (!seat.IsEmpty())
-                    colors.Add(seat.GetPassenger().GetColor());
+                if (seat.IsEmpty()) continue;
+                var color = seat.GetPassenger().GetColor();
+                if (!colorCount.TryAdd(color, 1))
+                {
+                    colorCount[color]++;
+                }
             }
-            return colors;
+
+            return colorCount;
         }
 
+        public void SetMoving(bool moving)
+        {
+            _isMoving = moving;
+        }
+
+        public bool GetMoving()
+        {
+            return _isMoving;
+        }
+        public void SetHighlight(bool active)
+        {
+            highLight.SetActive(active);
+        }
+        
         public List<Seat> GetSeats()
         {
             return seats;
+        }
+
+        public bool IsAllEmpty()
+        {
+            return seats.FindAll(s => s.IsEmpty()).Count == 4;
         }
         
         public bool HasEmptySeat()
@@ -33,7 +58,17 @@ namespace GamePlay.Components
             }
             return false;
         }
-
+        
+        public bool IsAnimationOn()
+        {
+            foreach (var seat in seats)
+            {
+                if (seat.IsAnimating())
+                    return true;
+            }
+            return false;
+        }
+        
         public void SortByType()
         {
             

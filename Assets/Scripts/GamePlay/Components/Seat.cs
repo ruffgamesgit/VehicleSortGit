@@ -10,6 +10,7 @@ namespace GamePlay.Components
     {
         private Passenger _passenger;
         private ColorEnum _preColor;
+        private bool _isAnimationOn = false;
         public void Occupy(Passenger passenger)
         {
             _passenger = passenger;
@@ -55,6 +56,11 @@ namespace GamePlay.Components
             Occupy(passenger);
         }
 
+        public bool IsAnimating()
+        {
+            return _isAnimationOn;
+        }
+        
         public void TakePassengerWithAnimation(UniTaskCompletionSource ucs)
         {
             if (_passenger == null)
@@ -62,7 +68,7 @@ namespace GamePlay.Components
                 ucs.TrySetResult();
                 return;
             }
-
+            _isAnimationOn = true;
             List<Transform> passengerMeshes = _passenger.GetMeshTransforms();
             
             for (int i = 0; i < passengerMeshes.Count; i++)
@@ -80,6 +86,7 @@ namespace GamePlay.Components
                     {
                         _passenger.transform.position = transform.position;
                         _passenger.SetMeshesParent();
+                        _isAnimationOn = false;
                         ucs.TrySetResult();
                     }
 

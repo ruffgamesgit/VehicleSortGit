@@ -28,8 +28,39 @@ namespace GamePlay.Extension
             var toPosition = to.GetParkingLotPosition();
             var startGridLineIndex = fromPosition.GetGridLineIndex() + GetGridLineOffset(fromPosition);
             var targetGridLineIndex = toPosition.GetGridLineIndex() + GetGridLineOffset(toPosition);
-            return virtualizedLines.CalculatePath(startGridLineIndex, fromPosition.GetParkingLotIndex(), 
+            var path =  virtualizedLines.CalculatePath(startGridLineIndex, fromPosition.GetParkingLotIndex(), 
                 targetGridLineIndex, toPosition.GetParkingLotIndex());
+
+            if (path.Count >= 3)
+            {
+                var indexOfLastNullElement = path.FindLastIndex(x => x == null);
+
+                if (indexOfLastNullElement != -1)
+                {
+                    var lastElementLine = path[^1].GetParkingLotPosition().GetGridLineIndex();
+                    var elementsAfterNull = path.GetRange(indexOfLastNullElement + 1, path.Count - 1 - indexOfLastNullElement);
+
+                    foreach (var element in elementsAfterNull)
+                    {
+                        if (element.GetParkingLotPosition().GetGridLineIndex() != lastElementLine)
+                        {
+                            return path;
+                        }
+                    }
+                    
+                    for(int i = path.Count -2 ; i > indexOfLastNullElement; i--)
+                    {
+                        if (path[i].GetParkingLotPosition().GetGridLineIndex() == lastElementLine)
+                        {
+                            path[i] = null;
+                        }
+                    }
+
+                }
+                   
+            }
+
+            return path;
         }
         private static List<ParkingLot> CalculatePath(this List<GridLine> gridLines, int startX, int startY, int targetX, int targetY)
         {

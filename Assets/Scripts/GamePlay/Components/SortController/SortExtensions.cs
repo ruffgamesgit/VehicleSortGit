@@ -93,23 +93,15 @@ namespace GamePlay.Components.SortController
                 }
             }
             
-            neighbors = neighbors.ExtractEmptyParkingLots();
             return neighbors.Shuffle();
         }
         
-        private static List<ParkingLot> ExtractEmptyParkingLots(this List<ParkingLot> parkingLots)
+        public static List<ParkingLot> ExtractUnSortableParkingLots(this List<ParkingLot> parkingLots)
         {
-            var parkingLotsExtracted = new List<ParkingLot>();
-            for (int i = 0; i < parkingLots.Count; i++)
-            {
-                if (!parkingLots[i].IsInvisible())
-                {
-                    parkingLotsExtracted.Add(parkingLots[i]);
-                }
-            }
-
-            return parkingLotsExtracted;
+            parkingLots.RemoveAll(lot => lot.IsInvisible() || lot.IsEmpty() || lot.GetCurrentVehicle().GetMoving());
+            return parkingLots;
         }
+        
         
         public static List<GridLine> GenerateVirtualGrid(this List<GridGroup> gridGroups)
         {
