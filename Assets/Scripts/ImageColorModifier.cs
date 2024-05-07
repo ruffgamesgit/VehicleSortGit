@@ -5,8 +5,7 @@ using UnityEngine.UI;
 public class ImageColorModifier : MonoBehaviour
 {
     public Image image;
-    public float alphaDuration = .5f;
-    public float loopInterval = .5f;
+    public float tweenDuration = .5f;
     public bool stopLoop = false;
     private Tween alphaTween;
 
@@ -20,22 +19,29 @@ public class ImageColorModifier : MonoBehaviour
     {
         if (stopLoop)
         {
+            alphaTween.Kill();
             alphaTween = null;
+            image.DOFade(0, 0.25f);
             return;
         }
 
-        alphaTween = image.DOFade(0, alphaDuration)
+        alphaTween = image.DOFade(0, tweenDuration)
             .SetEase(Ease.Linear)
             .OnComplete(() =>
             {
-                if (!stopLoop)
-                {
-                    image.DOFade(.45f, alphaDuration)
-                        .SetEase(Ease.Linear)
-                        .OnComplete(() => ModifyAlphaLoop());
-                }
-                else
-                    alphaTween = null;
+                image.DOFade(.45f, tweenDuration)
+                    .SetEase(Ease.Linear)
+                    .OnComplete(() => ModifyAlphaLoop());
             });
+    }
+
+    bool flag = false;
+    private void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            flag = !flag;
+            SetHighlight(flag);
+        }
     }
 }

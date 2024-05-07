@@ -9,7 +9,7 @@ namespace GamePlay.Components
     public class ParkingLot : MonoBehaviour
     {
         public EventHandler<Vehicle> OnParkingLotClicked;
-        
+
         private ParkingLotPosition _parkingLotPosition;
         private Vehicle _currentVehicle;
         private Sequence _sequence;
@@ -26,7 +26,7 @@ namespace GamePlay.Components
             }
             _parkingLotPosition = parkingLotPosition;
         }
-        
+
         public void Occupy(Vehicle vehicle, bool moveTransform)
         {
             _willOccupied = false;
@@ -38,8 +38,12 @@ namespace GamePlay.Components
             }
         }
 
+        public void SetHighlight(bool activate)
+        {
+            _imageColorModifier.SetHighlight(activate);
+        }
 
-        public void MoveAnimation(Vehicle vehicle,UniTaskCompletionSource ucs, ParkingLot from)
+        public void MoveAnimation(Vehicle vehicle, UniTaskCompletionSource ucs, ParkingLot from)
         {
 
             var sequence = DOTween.Sequence();
@@ -56,7 +60,7 @@ namespace GamePlay.Components
                 if (targetGridLineIndex == fromGridLineIndex)
                 {
                     bool isNext = Mathf.Abs(targetParkingLotIndex - fromParkingLotIndex) == 1;
-                    if(isNext)
+                    if (isNext)
                     {
                         sequence.Append(vehicle.transform.DOMove(transform.position, 0.25f).SetEase(Ease.Linear));
                     }
@@ -66,7 +70,7 @@ namespace GamePlay.Components
                         sequence.Append(vehicle.transform
                             .DOMoveZ(targetVector3.z + (targetGridLineIndex == 0 ? -2 : 2), 0.25f)
                             .SetEase(Ease.Linear));
-                     
+
                         sequence.Append(vehicle.transform.DOMoveX(targetVector3.x, 0.25f).SetEase(Ease.Linear));
                         sequence.Append(vehicle.transform.DOMoveZ(targetVector3.z, 0.25f)
                             .SetEase(Ease.Linear));
@@ -81,7 +85,7 @@ namespace GamePlay.Components
             {
                 var targetVector3 = transform.position;
                 var midPointVector3 = (from.transform.position + targetVector3) / 2;
-                
+
                 sequence.Append(vehicle.transform
                     .DOMoveZ(midPointVector3.z, 0.25f)
                     .SetEase(Ease.Linear));
@@ -89,7 +93,7 @@ namespace GamePlay.Components
                 {
                     sequence.Append(vehicle.transform.DOMoveX(targetVector3.x, 0.25f).SetEase(Ease.Linear));
                 }
-                
+
                 sequence.Append(vehicle.transform.DOMoveZ(targetVector3.z, 0.25f)
                     .SetEase(Ease.Linear));
             }
@@ -110,28 +114,28 @@ namespace GamePlay.Components
             }
             OnParkingLotClicked?.Invoke(this, _currentVehicle);
         }
-        
+
         private bool IsAnimationOn()
         {
             if (_currentVehicle == null) return false;
             return _currentVehicle.IsAnimationOn();
         }
-        
+
         public Vehicle GetCurrentVehicle()
         {
             return _currentVehicle;
         }
-        
+
         public ParkingLotPosition GetParkingLotPosition()
         {
             return _parkingLotPosition;
         }
-        
+
         public void SetWillOccupied()
         {
             _willOccupied = true;
         }
-        
+
         public void SetEmpty()
         {
             _currentVehicle = null;
@@ -144,7 +148,7 @@ namespace GamePlay.Components
 
         public bool IsWalkable()
         {
-            return  _isInvisible || IsEmpty();
+            return _isInvisible || IsEmpty();
         }
 
         public bool IsInvisible()
@@ -155,7 +159,7 @@ namespace GamePlay.Components
         public bool CheckIfCompleted()
         {
             var seats = _currentVehicle.GetSeats();
-            
+
             foreach (var seat in seats)
             {
                 if (seat.IsEmpty())
@@ -169,6 +173,6 @@ namespace GamePlay.Components
             return true;
             // COMPLETE
         }
-     
+
     }
 }
