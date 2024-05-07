@@ -8,8 +8,8 @@ namespace GamePlay.Components
     {
         [SerializeField] private List<Transform> meshTransforms;
         private ColorEnum _color;
-        private readonly Dictionary<int, Vector3> _offsetDictionary = new Dictionary<int, Vector3>();
-
+        private Dictionary<int, Vector3> _offsetDictionary = new Dictionary<int, Vector3>();
+        const float PLACEMENT_OFFSET_MULTIPLIER = 1.6f; // Some magic mysterious golden ratio stuff
 
         private void Start()
         {
@@ -45,9 +45,7 @@ namespace GamePlay.Components
 
         public Vector3 GetOffsetByIndex(int index)
         {
-            int meshCountPerLine = meshTransforms.Count / 2;
-
-            return _offsetDictionary[index] / meshCountPerLine;
+            return _offsetDictionary[index] * PLACEMENT_OFFSET_MULTIPLIER;
         }
 
         public void SetMeshesParent()

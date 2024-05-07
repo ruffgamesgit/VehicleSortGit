@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using GamePlay.Data;
 using UnityEngine;
@@ -8,6 +9,8 @@ namespace GamePlay.Components
     {
         [SerializeField] private List<Seat> seats = new List<Seat>(4);
         [SerializeField] private GameObject highLight;
+        [SerializeField] Outline outlineController => GetComponentInChildren<Outline>();
+        const float targetOutlineWidth = 2.7f;
         public Dictionary<ColorEnum,int> GetExistingColors()
         {
             var colorCount = new Dictionary<ColorEnum, int>();
@@ -23,10 +26,15 @@ namespace GamePlay.Components
 
             return colorCount;
         }
-        
+
+     
         public void SetHighlight(bool active)
         {
-            highLight.SetActive(active);
+            float outlineWidth = 0;
+
+            if (active) outlineWidth = targetOutlineWidth;
+
+            outlineController.HandleOutline(outlineWidth);
         }
         
         public List<Seat> GetSeats()
@@ -61,12 +69,13 @@ namespace GamePlay.Components
         
         public void SortByType()
         {
-            
+
         }
 
         public void Destroy()
         {
             GameManager.instance.OnVehicleDisappears();
+            SetHighlight(false);
             Destroy(this.gameObject);
         }
     }

@@ -12,6 +12,8 @@ namespace GamePlay.Components
         
         private ParkingLotPosition _parkingLotPosition;
         private Vehicle _currentVehicle;
+        private Sequence _sequence;
+        private ImageColorModifier _imageColorModifier => GetComponentInChildren<ImageColorModifier>();
 
         private bool _isInvisible;
         private bool _willOccupied;
