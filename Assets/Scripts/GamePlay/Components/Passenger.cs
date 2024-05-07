@@ -7,8 +7,8 @@ namespace GamePlay.Components
     public class Passenger : MonoBehaviour
     {
         [SerializeField] private List<Transform> meshTransforms;
-        private ColorEnum color;
-        private Dictionary<int, Vector3> offsetDictionary = new Dictionary<int, Vector3>();
+        private ColorEnum _color;
+        private readonly Dictionary<int, Vector3> _offsetDictionary = new Dictionary<int, Vector3>();
 
 
         private void Start()
@@ -17,15 +17,15 @@ namespace GamePlay.Components
         }
         public ColorEnum GetColor()
         {
-            return color;
+            return _color;
         }
 
         public void SetColor(ColorEnum passengerColor)
         {
-            color = passengerColor;
-            for (int i = 0; i < meshTransforms.Count; i++)
+            _color = passengerColor;
+            foreach (var t in meshTransforms)
             {
-                meshTransforms[i].GetComponent<MeshRenderer>().material.color = passengerColor.GetColorCode();
+                t.GetComponent<MeshRenderer>().material.color = passengerColor.GetColorCode();
             }
         }
 
@@ -34,7 +34,7 @@ namespace GamePlay.Components
             for (int i = 0; i < meshTransforms.Count; i++)
             {
                 Transform child = meshTransforms[i];
-                offsetDictionary[i] = child.localPosition;
+                _offsetDictionary[i] = child.localPosition;
             }
         }
 
@@ -47,14 +47,13 @@ namespace GamePlay.Components
         {
             int meshCountPerLine = meshTransforms.Count / 2;
 
-            return offsetDictionary[index] / meshCountPerLine;
+            return _offsetDictionary[index] / meshCountPerLine;
         }
 
         public void SetMeshesParent()
         {
-            for (int i = 0; i < meshTransforms.Count; i++)
+            foreach (var meshTr in meshTransforms)
             {
-                Transform meshTr = meshTransforms[i];
                 meshTr.SetParent(transform);
             }
         }

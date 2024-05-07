@@ -10,12 +10,11 @@ namespace GamePlay.Components
     {
         private Passenger _passenger;
         private ColorEnum _preColor;
-        private bool _isAnimationOn = false;
+        private bool _isAnimationOn;
         public void Occupy(Passenger passenger)
         {
             _passenger = passenger;
             _passenger.transform.parent = transform;
-            // LATER : Add delay
         }
 
         public void SetEmpty()

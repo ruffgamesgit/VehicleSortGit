@@ -9,11 +9,12 @@ namespace GamePlay.Components
     public class ParkingLot : MonoBehaviour
     {
         public EventHandler<Vehicle> OnParkingLotClicked;
+        
         private ParkingLotPosition _parkingLotPosition;
-        private bool _isInvisible = false;
         private Vehicle _currentVehicle;
-        private bool _willOccupied = false;
 
+        private bool _isInvisible;
+        private bool _willOccupied;
         public void Initialize(bool isInvisible, ParkingLotPosition parkingLotPosition)
         {
             _isInvisible = isInvisible;

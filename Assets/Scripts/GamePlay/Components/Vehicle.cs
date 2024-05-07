@@ -8,7 +8,6 @@ namespace GamePlay.Components
     {
         [SerializeField] private List<Seat> seats = new List<Seat>(4);
         [SerializeField] private GameObject highLight;
-        private bool _isMoving = false;
         public Dictionary<ColorEnum,int> GetExistingColors()
         {
             var colorCount = new Dictionary<ColorEnum, int>();
@@ -24,16 +23,7 @@ namespace GamePlay.Components
 
             return colorCount;
         }
-
-        public void SetMoving(bool moving)
-        {
-            _isMoving = moving;
-        }
-
-        public bool GetMoving()
-        {
-            return _isMoving;
-        }
+        
         public void SetHighlight(bool active)
         {
             highLight.SetActive(active);

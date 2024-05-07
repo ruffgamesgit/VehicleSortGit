@@ -7,9 +7,6 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
-//<<<<<<< Updated upstream
-//=======
-//>>>>>>> Stashed changes
 using UnityEngine;
 
 namespace GamePlay.Components.SortController
@@ -17,12 +14,15 @@ namespace GamePlay.Components.SortController
     public class SortController : MonoBehaviour
     {
         [SerializeField] private GridData gridData;
+        [SerializeField] private LevelData _levelData; // Removed Later
+        [SerializeField] private int _colorVariety; // Removed Later
+        
         private FillController _fillController;
-        [SerializeField] private LevelData _levelData;
+        private ParkingLot _lastClickedParkingLot;
+        
         private readonly SemaphoreSlim _semaphore = new(1, 1);
         private readonly ConcurrentQueue<(ParkingLot, Seat)> _affectedSortQueue = new();
-        private ParkingLot _lastClickedParkingLot;
-        [SerializeField] int _colorVariety;
+       
         private void Awake()
         {
             _fillController = GetComponent<FillController>();
