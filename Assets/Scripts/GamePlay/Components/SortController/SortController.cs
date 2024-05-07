@@ -7,17 +7,10 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
-<<<<<<< Updated upstream
-using Cysharp.Threading.Tasks;
-using DG.Tweening;
-using GamePlay.Data;
-using GamePlay.Data.Grid;
-using GamePlay.Extension;
-using Unity.VisualScripting;
-=======
->>>>>>> Stashed changes
+//<<<<<<< Updated upstream
+//=======
+//>>>>>>> Stashed changes
 using UnityEngine;
-using Sequence = DG.Tweening.Sequence;
 
 namespace GamePlay.Components.SortController
 {
@@ -34,9 +27,10 @@ namespace GamePlay.Components.SortController
         {
             _fillController = GetComponent<FillController>();
             InitializeParkingLots();
-<<<<<<< Updated upstream
-            _fillController.FillVehicles(gridData.gridGroups, 14, 12, 12); // Variety , MatchingPassangerCount
-=======
+            //<<<<<<< Updated upstream
+
+            //    _fillController.FillVehicles(gridData.gridGroups, 14, _colorVariety, 12); // Variety , MatchingPassangerCount
+            //=======
 
             if (_colorVariety == 0)
             {
@@ -51,7 +45,7 @@ namespace GamePlay.Components.SortController
         private void Start()
         {
             GameManager.instance.SetColorVarietyCount(_colorVariety);
->>>>>>> Stashed changes
+            //>>>>>>> Stashed changes
         }
 
         private void InitializeParkingLots()
@@ -353,10 +347,10 @@ namespace GamePlay.Components.SortController
                     selectedColorCount = color.Value;
                     continue;
                 }
-<<<<<<< Updated upstream
+                //<<<<<<< Updated upstream
 
-=======
->>>>>>> Stashed changes
+                //=======
+                //>>>>>>> Stashed changes
                 if (selectedColorCount < color.Value)
                 {
                     selectedColor = color.Key;
