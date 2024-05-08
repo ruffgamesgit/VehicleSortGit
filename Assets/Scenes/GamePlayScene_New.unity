@@ -1069,7 +1069,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1dbfdcb014df410c80cc5b092d956ad6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  vehiclePrefab: {fileID: 2258740898772622527, guid: 80eaebd20e30e1548aa6c8a90e4129f6,
+  vehiclePrefab: {fileID: 1195870707157394610, guid: 9109d0f275255ed41bdafc6c4c22b830,
     type: 3}
   passengerPrefab: {fileID: 8784669535949175475, guid: 6668c544ef00de049bfdb2d095d7ce93,
     type: 3}

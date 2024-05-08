@@ -16,6 +16,7 @@ namespace GamePlay.Components
         private bool _isInvisible;
         private bool _willOccupied;
         const float DURATION_FOR_PER_METER = 0.085f;
+        const float TWEEN_DURATION_DIVIDER = 10;
         public void Initialize(bool isInvisible, ParkingLotPosition parkingLotPosition)
         {
             _isInvisible = isInvisible;
@@ -42,7 +43,7 @@ namespace GamePlay.Components
             imageColorModifier.SetHighlight(activate);
         }
 
-        public void MoveAnimation(Vehicle vehicle, UniTaskCompletionSource ucs, ParkingLot from, bool isFirstMove)
+        public void MoveAnimation(Vehicle vehicle, UniTaskCompletionSource ucs, ParkingLot from, bool isFirstMove, bool isLastMove)
         {
 
             var sequence = DOTween.Sequence();
@@ -63,46 +64,58 @@ namespace GamePlay.Components
                     if (isNext)
                     {
                         float duration = GetDurationByDistance(transform.position, vehicle.transform.position);
-                        sequence.Append(vehicle.transform.DOMove(transform.position, duration).SetEase(Ease.Linear));
+                        sequence.Append(vehicle.transform.DOMove(transform.position, duration).SetEase(isLastMove ? Ease.OutBack : Ease.Linear));
                     }
                     else
                     {
                         var targetVector3 = transform.position;
                         Vector3 vehiclePos = vehicle.transform.position;
                         float tweenDuration = .35f;
+                        #region First Movement
 
+                        Vector3 pos1 = new Vector3(vehicle.transform.position.x, vehicle.transform.position.y, targetVector3.z + (targetGridLineIndex == 0 ? -2 : 2));
+                        tweenDuration = GetDurationByDistance(pos1, vehiclePos);
+                        sequence.Append(vehicle.transform.DOMove(pos1, tweenDuration).SetEase(isFirstMove ? Ease.InBack : Ease.Linear)
+                            .OnStart(() => vehicle.transform.forward = -(pos1 - vehiclePos)));
 
-                        Ease ease1 = isFirstMove ? Ease.InBack : Ease.Linear;
-                        Vector3 pos1 = new Vector3(vehiclePos.x, vehiclePos.y, targetVector3.z + (targetGridLineIndex == 0 ? -2 : 2));
+                        #endregion
+
                         goingDown = vehicle.transform.position.z > pos1.z ? false : true;
-                        sequence.Append(vehicle.transform.DOMove(pos1, tweenDuration).SetEase(ease1));
+                        #region Second Movement
 
-                        float additionalRot = goingDown == true ? -15 : 15;
-                        Vector3 pos2 = new Vector3(targetVector3.x, vehiclePos.y, targetVector3.z + (targetGridLineIndex == 0 ? -2 : 2));
+                        //  Debug.Log("Going down: " + goingDown);
+                        Vector3 pos2 = new Vector3(targetVector3.x, vehicle.transform.position.y, targetVector3.z + (targetGridLineIndex == 0 ? -2 : 2));
+                        tweenDuration = GetDurationByDistance(pos1, pos2);
                         sequence.Append(vehicle.transform.DOMoveX(targetVector3.x, tweenDuration).SetEase(Ease.Linear));
-                        DOTween.To((xx) => { }, 0, 1, tweenDuration).OnComplete(() =>
-                         {
-                             vehicle.transform.forward = -(pos2 - pos1);
-                         });
-
-                        Ease ease2 = isFirstMove ? Ease.OutBack : Ease.Linear;
-                        Vector3 pos3 = new Vector3(targetVector3.x, vehiclePos.y, targetVector3.z);
-                        sequence.Append(vehicle.transform.DOMove(pos3, tweenDuration).SetEase(ease2));
-                        DOTween.To((xx) => { }, 0, 1, tweenDuration * 2).OnComplete(() =>
+                        sequence.Join(DOTween.To((xx) => { }, 0, 1, tweenDuration / TWEEN_DURATION_DIVIDER).OnComplete(() =>
                         {
-                            vehicle.transform.forward = -(pos3 - pos2);
-                        });
+                            vehicle.transform.forward = -(pos2 - pos1);
+                        }));
+
+                        #endregion
+
+                        #region Third Movement
+
+                        Vector3 pos3 = new Vector3(targetVector3.x, vehicle.transform.position.y, targetVector3.z);
+                        tweenDuration = GetDurationByDistance(pos3, pos2);
+                        sequence.Append(vehicle.transform.DOMove(pos3, tweenDuration * 2).SetEase(isLastMove ? Ease.OutBack : Ease.Linear));
+                        sequence.Join(DOTween.To((xx) => { }, 0, 1, tweenDuration / TWEEN_DURATION_DIVIDER).OnComplete(() =>
+                        {
+                            vehicle.transform.forward = -(pos3 - (pos2 == Vector3.zero ? pos1 : pos2));
+                        }));
+
+                        #endregion
                     }
                 }
                 else
                 {
                     float duration = GetDurationByDistance(transform.position, vehicle.transform.position);
-                    sequence.Append(vehicle.transform.DOMove(transform.position, duration).SetEase(Ease.Linear));
+                    sequence.Append(vehicle.transform.DOMove(transform.position, duration).SetEase(isFirstMove ? Ease.InBack : Ease.Linear));
                     sequence.Join(DOTween.To((xx) => { }, 0, 1, duration).OnComplete(() =>
                     {
                         vehicle.transform.forward = (transform.position - vehicle.transform.position);
                     }));
-                    
+
                 }
             }
             else
@@ -117,10 +130,9 @@ namespace GamePlay.Components
                 #region First Movement
 
                 Vector3 pos1 = new Vector3(vehiclePos.x, vehiclePos.y, midPointVector3.z);
-                Ease ease1 = isFirstMove ? Ease.InBack : Ease.Linear;
                 tweenDuration = GetDurationByDistance(pos1, vehiclePos);
 
-                sequence.Append(vehicle.transform.DOMove(pos1, tweenDuration).SetEase(ease1))
+                sequence.Append(vehicle.transform.DOMove(pos1, tweenDuration).SetEase(isFirstMove ? Ease.InBack : Ease.Linear))
                     .OnStart(() => vehicle.transform.forward = -(pos1 - vehiclePos));
 
                 #endregion
@@ -133,9 +145,8 @@ namespace GamePlay.Components
                 {
                     pos2 = new Vector3(targetVector3.x, vehiclePos.y, midPointVector3.z);
                     tweenDuration = GetDurationByDistance(pos1, pos2);
-                    //  additional = tweenDuration;
                     sequence.Append(vehicle.transform.DOMoveX(targetVector3.x, tweenDuration).SetEase(Ease.Linear));
-                    sequence.Join(DOTween.To((xx) => { }, 0, 1, tweenDuration / 10).OnComplete(() =>
+                    sequence.Join(DOTween.To((xx) => { }, 0, 1, tweenDuration / TWEEN_DURATION_DIVIDER).OnComplete(() =>
                     {
                         vehicle.transform.forward = -(pos2 - pos1);
                     }));
@@ -143,14 +154,14 @@ namespace GamePlay.Components
                 }
                 #endregion
 
+
                 #region Third Movement
                 Vector3 pos3 = new Vector3(targetVector3.x, vehicle.transform.position.y, targetVector3.z);
-                Ease ease2 = isFirstMove ? Ease.OutBack : Ease.Linear;
 
                 tweenDuration = GetDurationByDistance(pos2 == Vector3.zero ? pos1 : pos2, vehiclePos);
                 //  tweenDuration = Mathf.Approximately(Vector3.Distance(pos2, Vector3.zero), 0) ? tweenDuration : (tweenDuration * 2);
-                sequence.Append(vehicle.transform.DOMove(pos3, tweenDuration).SetEase(ease2));
-                sequence.Join(DOTween.To((xx) => { }, 0, 1, tweenDuration / 10).OnComplete(() =>
+                sequence.Append(vehicle.transform.DOMove(pos3, tweenDuration).SetEase(isLastMove ? Ease.OutBack : Ease.Linear));
+                sequence.Join(DOTween.To((xx) => { }, 0, 1, tweenDuration / TWEEN_DURATION_DIVIDER).OnComplete(() =>
                 {
                     vehicle.transform.forward = -(pos3 - (pos2 == Vector3.zero ? pos1 : pos2));
                 }));
@@ -164,16 +175,13 @@ namespace GamePlay.Components
             });
         }
 
-
         float GetDurationByDistance(Vector3 pos1, Vector3 pos2)
         {
             float distance = Vector3.Distance(pos1, pos2);
-            Debug.Log("Duration: " + distance * DURATION_FOR_PER_METER);
 
             return distance * DURATION_FOR_PER_METER;
-
-
         }
+
         private void OnMouseDown()
         {
             if (_isInvisible) return;

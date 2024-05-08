@@ -115,12 +115,13 @@ namespace GamePlay.Components.SortController
                                     else
                                     {
                                         UniTaskCompletionSource ucs = new UniTaskCompletionSource();
-                                        pLot.MoveAnimation(vehicle, ucs, from, counter == 0);
+                                        pLot.MoveAnimation(vehicle, ucs, from, counter == 0, pLot == parkingLot);
+                                        counter++;
                                         from = pLot;
                                         await ucs.Task;
                                     }
                                 }
-                                counter++;
+                               
                             }
 
                             parkingLot.Occupy(vehicle, false);
