@@ -62,7 +62,7 @@ namespace GamePlay.Components
             return false;
         }
         
-        public async UniTask SortByType()
+        public async UniTask SortByType(bool instant)
         {
             if (IsAllEmpty()) return;
             HashSet<Seat> swappingAnimationList = new HashSet<Seat>();
@@ -122,7 +122,7 @@ namespace GamePlay.Components
             
             if (swappingAnimationList.Count > 0)
             {
-                await swappingAnimationList.ToList().AnimateSeatChanges();
+                await swappingAnimationList.ToList().AnimateSeatChanges(instant);
             }
 
         }

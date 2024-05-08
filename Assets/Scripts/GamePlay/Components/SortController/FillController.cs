@@ -1,6 +1,7 @@
 
 using System.Collections.Generic;
 using System.Linq;
+using Cysharp.Threading.Tasks;
 using GamePlay.Data;
 using GamePlay.Data.Grid;
 using UnityEngine;
@@ -85,6 +86,7 @@ namespace GamePlay.Components.SortController
                             {
                                 seat.InstantiatePreColor(passengerPrefab);
                             }
+                            vehicle.SortByType(true).Forget();
                         }
                     }
                 }

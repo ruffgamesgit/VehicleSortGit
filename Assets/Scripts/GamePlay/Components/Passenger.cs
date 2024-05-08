@@ -1,3 +1,4 @@
+using System;
 using GamePlay.Data;
 using System.Collections.Generic;
 using UnityEngine;
@@ -11,10 +12,11 @@ namespace GamePlay.Components
         private Dictionary<int, Vector3> _offsetDictionary = new Dictionary<int, Vector3>();
         const float PLACEMENT_OFFSET_MULTIPLIER = 1.6f; // Some magic mysterious golden ratio stuff
 
-        private void Start()
+        private void Awake()
         {
             CalculateOffsets();
         }
+        
         public ColorEnum GetColor()
         {
             return _color;

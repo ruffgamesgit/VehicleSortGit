@@ -60,7 +60,7 @@ namespace GamePlay.Components
             return _isAnimationOn;
         }
         
-        public void TakePassengerWithAnimation(UniTaskCompletionSource ucs)
+        public void TakePassengerWithAnimation(UniTaskCompletionSource ucs, bool instant = false)
         {
             if (_passenger == null)
             {
@@ -69,28 +69,24 @@ namespace GamePlay.Components
             }
             _isAnimationOn = true;
             List<Transform> passengerMeshes = _passenger.GetMeshTransforms();
-            
+            Sequence sequence = DOTween.Sequence();
             for (int i = 0; i < passengerMeshes.Count; i++)
             {
                 Transform meshTr = passengerMeshes[i];
-
                 meshTr.SetParent(transform);
                 Vector3 targetPos = _passenger.GetOffsetByIndex(i);
-              
-                int index = i;
-
-                meshTr.transform.DOLocalJump(targetPos, 1, 1, .5f).OnComplete(() =>
-                {
-                    if (index == passengerMeshes.Count - 1)
-                    {
-                        _passenger.transform.position = transform.position;
-                        _passenger.SetMeshesParent();
-                        _isAnimationOn = false;
-                        ucs.TrySetResult();
-                    }
-
-                }).SetEase(Ease.OutQuad).SetDelay(i * .1f);
+                sequence.Insert(i * 0.1f, meshTr.transform.DOLocalJump(targetPos, 1, 1, .5f).SetEase(Ease.OutQuad));
             }
+            sequence.OnComplete(() =>
+            {
+                _passenger.transform.position = transform.position;
+                _passenger.SetMeshesParent();
+                _isAnimationOn = false;
+                ucs.TrySetResult();
+            });
+            
+            if(instant)
+                sequence.Complete();
         }
     }
 }

@@ -7,7 +7,7 @@ namespace GamePlay.Components.SortController
     public static class SortExtensions
     {
 
-        public static UniTask AnimateSeatChanges(this List<Seat> seats) 
+        public static UniTask AnimateSeatChanges(this List<Seat> seats, bool instant) 
         {
             UniTaskCompletionSource mainTaskCompletionSource = new UniTaskCompletionSource();
             List<UniTask> ucsList = new List<UniTask>();
@@ -15,7 +15,7 @@ namespace GamePlay.Components.SortController
             {
                 var ucs = new UniTaskCompletionSource();
                 ucsList.Add(ucs.Task);
-                seats[i].TakePassengerWithAnimation(ucs);
+                seats[i].TakePassengerWithAnimation(ucs, instant);
             }
 
             UniTask.WhenAll(ucsList.ToArray()).ContinueWith(() =>
