@@ -9,12 +9,10 @@ namespace GamePlay.Components
     public class ParkingLot : MonoBehaviour
     {
         public EventHandler<Vehicle> OnParkingLotClicked;
-
+        [SerializeField] private ImageColorModifier imageColorModifier;
         private ParkingLotPosition _parkingLotPosition;
         private Vehicle _currentVehicle;
         private Sequence _sequence;
-        private ImageColorModifier _imageColorModifier => GetComponentInChildren<ImageColorModifier>();
-
         private bool _isInvisible;
         private bool _willOccupied;
         public void Initialize(bool isInvisible, ParkingLotPosition parkingLotPosition)
@@ -38,9 +36,9 @@ namespace GamePlay.Components
             }
         }
 
-        public void SetHighlight(bool activate)
+        public void SetPossibleTargetHighLight(bool activate)
         {
-            _imageColorModifier.SetHighlight(activate);
+            imageColorModifier.SetHighlight(activate);
         }
 
         public void MoveAnimation(Vehicle vehicle, UniTaskCompletionSource ucs, ParkingLot from)

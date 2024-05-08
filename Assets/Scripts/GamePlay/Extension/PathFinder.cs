@@ -31,7 +31,7 @@ namespace GamePlay.Extension
             var path =  virtualizedLines.CalculatePath(startGridLineIndex, fromPosition.GetParkingLotIndex(), 
                 targetGridLineIndex, toPosition.GetParkingLotIndex());
 
-            if (path.Count >= 3)
+            if (path is { Count: >= 3 })
             {
                 var indexOfLastNullElement = path.FindLastIndex(x => x == null);
 

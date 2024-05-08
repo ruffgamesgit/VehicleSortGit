@@ -1,5 +1,7 @@
-using System;
 using System.Collections.Generic;
+using System.Linq;
+using Cysharp.Threading.Tasks;
+using GamePlay.Components.SortController;
 using GamePlay.Data;
 using UnityEngine;
 
@@ -8,9 +10,7 @@ namespace GamePlay.Components
     public class Vehicle : MonoBehaviour
     {
         [SerializeField] private List<Seat> seats = new List<Seat>(4);
-        [SerializeField] private GameObject highLight;
-        [SerializeField] Outline outlineController => GetComponentInChildren<Outline>();
-        const float targetOutlineWidth = 2.7f;
+        [SerializeField] private Outline outline;
         public Dictionary<ColorEnum,int> GetExistingColors()
         {
             var colorCount = new Dictionary<ColorEnum, int>();
@@ -26,15 +26,10 @@ namespace GamePlay.Components
 
             return colorCount;
         }
-
-     
+        
         public void SetHighlight(bool active)
         {
-            float outlineWidth = 0;
-
-            if (active) outlineWidth = targetOutlineWidth;
-
-            outlineController.HandleOutline(outlineWidth);
+            outline.HandleOutline(active ? 2.7f : 0f);
         }
         
         public List<Seat> GetSeats()
@@ -67,15 +62,59 @@ namespace GamePlay.Components
             return false;
         }
         
-        public void SortByType()
+        public async UniTask SortByType()
         {
+            if (IsAllEmpty()) return;
+            HashSet<Seat> swappingAnimationList = new HashSet<Seat>();
+
+            if (HasEmptySeat())
+            {
+                var emptySeats = seats.FindAll(seat => seat.IsEmpty());
+                for (int i = seats.Count - 1; i > seats.Count - emptySeats.Count - 1; i--)
+                {
+                    if (!seats[i].IsEmpty())
+                    {
+                        var swappingTarget =  seats.First(s => s.IsEmpty());
+                        seats[i].Swap(swappingTarget);
+                        swappingAnimationList.Add(seats[i]);
+                        swappingAnimationList.Add(swappingTarget);
+                    }
+                }
+            }
+            var colorCount = GetExistingColors();
+            if(colorCount.Count == 1) goto finalize;
+            iterate:
+            if (colorCount.AreAllValuesEqual() && colorCount.Values.ToArray()[0] == 1) goto finalize;
+            var highestValueColor = colorCount.GetMaxValue();
+            var highestValueCount = colorCount[highestValueColor];
+            colorCount.Remove(highestValueColor);
+
+            for (int i = 0; i < highestValueCount; i++)
+            {
+                if (seats[i].GetPassenger().GetColor() != highestValueColor)
+                {
+                    var swappingTarget = seats.Last(s => s.GetPassenger() != null && s.GetPassenger().GetColor() == highestValueColor);
+                    if(swappingTarget == seats[i])continue;
+                    swappingAnimationList.Add(seats[i]);
+                    swappingAnimationList.Add(swappingTarget);
+                    seats[i].Swap(swappingTarget);
+                }
+            }
+            
+            if(colorCount.Count > 0)
+                goto iterate;
+            
+            finalize:
+            
+            if (swappingAnimationList.Count > 0)
+            {
+                await swappingAnimationList.ToList().AnimateSeatChanges();
+            }
 
         }
 
         public void Destroy()
         {
-            GameManager.instance.OnVehicleDisappears();
-            SetHighlight(false);
             Destroy(this.gameObject);
         }
     }

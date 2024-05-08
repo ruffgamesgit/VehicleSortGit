@@ -235,13 +235,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4c5365e38dda4e269356d758366f24da, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _sphere: {fileID: 1127140543806955128, guid: fae5ab953b065f541bcd17bc3d670f68, type: 3}
   seats:
   - {fileID: 2258740898556983051}
   - {fileID: 2258740899091919256}
   - {fileID: 2258740898588897505}
   - {fileID: 2258740898909771566}
-  highLight: {fileID: 2067558340221732090}
+  outline: {fileID: 489912902597946797}
 --- !u!1 &2258740898909771568
 GameObject:
   m_ObjectHideFlags: 0
