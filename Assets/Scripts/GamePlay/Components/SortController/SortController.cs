@@ -22,7 +22,7 @@ namespace GamePlay.Components.SortController
 
         private readonly SemaphoreSlim _semaphore = new(1, 1);
         private readonly ConcurrentQueue<(ParkingLot, Seat)> _affectedSortQueue = new();
-
+        private readonly object _lock = new();
         private void Awake()
         {
             _fillController = GetComponent<FillController>();
@@ -158,17 +158,35 @@ namespace GamePlay.Components.SortController
         private void SortParkingLot(object sender, Vehicle arg)
         {
             var parkingLot = (ParkingLot)sender;
-            var seatsToSort = SortSeatsByColorCount(arg);
-            if (seatsToSort.Count == 0) return;
-            foreach (var seat in seatsToSort)
+            var seats = arg.GetSeats();
+            var colorCounts = arg.GetExistingColors();
+            if (colorCounts.Count == 0) return;
+            
+            List<Seat> seatsToQueue = new List<Seat>();
+            iterate:
+            
+ 
+            var maxColor = colorCounts.GetMaxValue();
+            colorCounts.Remove(maxColor);
+            
+            var seatsToSort = seats.FirstOrDefault(s => !s.IsEmpty() && s.GetPassenger().GetColor() == maxColor);
+            if (seatsToSort == null)
             {
-                InsertItemToQueue(parkingLot, seat);
+                return;
             }
+            seatsToQueue.Add(seatsToSort);
+            
+            if(colorCounts.Count > 0) goto iterate;
 
+            for (int i = seatsToQueue.Count - 1; i >= 0; i--)
+            {
+                InsertItemToQueue(parkingLot, seatsToQueue[i]);
+            }
+            
             if(!Monitor.IsEntered(_lock)) SortAffectedParkingLots();
         }
 
-        private object _lock = new object();
+
         private async void SortAffectedParkingLots()
         {
             Monitor.Enter(_lock);
@@ -302,7 +320,6 @@ namespace GamePlay.Components.SortController
                 }
 
                 List<Seat> animateSwappingSeats = new List<Seat>();
-                List<ParkingLot> affectedNeighbors = new List<ParkingLot>();
                 for (var i = 0; i < swappingSeats.Count; i++)
                 {
                     var match = swappingSeats[i];
@@ -319,7 +336,6 @@ namespace GamePlay.Components.SortController
 
                     if (!swappingNeighbors[i].CheckIfCompleted()) // LATER AWAIT ANIMATION
                     {
-                        affectedNeighbors.Add(swappingNeighbors[i]);
                         EnqueueItem(swappingNeighbors[i], swappingSeats[i]);
                     }
                 }
