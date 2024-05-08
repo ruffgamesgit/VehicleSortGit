@@ -76,7 +76,7 @@ namespace GamePlay.Components
                     {
                         var swappingTarget =  seats.First(s => s.IsEmpty());
                         seats[i].Swap(swappingTarget);
-                        swappingAnimationList.Add(seats[i]);
+                        swappingAnimationList.Add(seats[i]);  
                         swappingAnimationList.Add(swappingTarget);
                     }
                 }
@@ -84,7 +84,21 @@ namespace GamePlay.Components
             var colorCount = GetExistingColors();
             if(colorCount.Count == 1) goto finalize;
             iterate:
-            if (colorCount.AreAllValuesEqual() && colorCount.Values.ToArray()[0] == 1) goto finalize;
+            if (colorCount.AreAllValuesEqual())
+            {
+                if (colorCount.Values.ToArray()[0] == 1)
+                {
+                    goto finalize;
+                }
+                else
+                {
+                    if (seats[0].GetPassenger().GetColor() == seats[1].GetPassenger().GetColor())
+                    {
+                        goto finalize;
+                    }
+                }
+               
+            }
             var highestValueColor = colorCount.GetMaxValue();
             var highestValueCount = colorCount[highestValueColor];
             colorCount.Remove(highestValueColor);
