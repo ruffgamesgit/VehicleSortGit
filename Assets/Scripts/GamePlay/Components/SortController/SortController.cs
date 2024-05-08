@@ -103,7 +103,7 @@ namespace GamePlay.Components.SortController
                             _lastClickedParkingLot = null;
                             ParkingLot from = null;
 
-
+                            int counter = 0;
                             foreach (var pLot in path)
                             {
                                 if (pLot != null)
@@ -115,11 +115,12 @@ namespace GamePlay.Components.SortController
                                     else
                                     {
                                         UniTaskCompletionSource ucs = new UniTaskCompletionSource();
-                                        pLot.MoveAnimation(vehicle, ucs, from);
+                                        pLot.MoveAnimation(vehicle, ucs, from, counter == 0);
                                         from = pLot;
                                         await ucs.Task;
                                     }
                                 }
+                                counter++;
                             }
 
                             parkingLot.Occupy(vehicle, false);
@@ -403,7 +404,7 @@ namespace GamePlay.Components.SortController
 
             var colorCount = vehicle.GetExistingColors();
 
-            Iterate:
+        Iterate:
             ColorEnum selectedColor = ColorEnum.NONE;
             int selectedColorCount = 0;
             foreach (var color in colorCount)

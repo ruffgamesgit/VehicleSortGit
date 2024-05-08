@@ -41,7 +41,7 @@ namespace GamePlay.Components
             imageColorModifier.SetHighlight(activate);
         }
 
-        public void MoveAnimation(Vehicle vehicle, UniTaskCompletionSource ucs, ParkingLot from)
+        public void MoveAnimation(Vehicle vehicle, UniTaskCompletionSource ucs, ParkingLot from, bool isFirstMove)
         {
 
             var sequence = DOTween.Sequence();
@@ -52,7 +52,7 @@ namespace GamePlay.Components
             var fromGridLineIndex = fromPosition.GetGridLineIndex();
             var targetParkingLotIndex = _parkingLotPosition.GetParkingLotIndex();
             var fromParkingLotIndex = fromPosition.GetParkingLotIndex();
-
+            bool goingDown;
             if (targetGridGroupIndex == fromGridGroupIndex)
             {
                 if (targetGridLineIndex == fromGridLineIndex)
@@ -65,13 +65,33 @@ namespace GamePlay.Components
                     else
                     {
                         var targetVector3 = transform.position;
-                        sequence.Append(vehicle.transform
-                            .DOMoveZ(targetVector3.z + (targetGridLineIndex == 0 ? -2 : 2), 0.25f)
-                            .SetEase(Ease.Linear));
+                        Vector3 vehiclePos = vehicle.transform.position;
+                        float tweenDuration = .35f;
 
-                        sequence.Append(vehicle.transform.DOMoveX(targetVector3.x, 0.25f).SetEase(Ease.Linear));
-                        sequence.Append(vehicle.transform.DOMoveZ(targetVector3.z, 0.25f)
-                            .SetEase(Ease.Linear));
+
+                        Ease ease1 = Ease.InBack;
+                        Vector3 pos1 = new Vector3(vehiclePos.x, vehiclePos.y, targetVector3.z + (targetGridLineIndex == 0 ? -2 : 2));
+                        goingDown = vehicle.transform.position.z > pos1.z ? false : true;
+                        sequence.Append(vehicle.transform.DOMove(pos1, tweenDuration).SetEase(ease1));
+
+                        float additionalRot = goingDown == true ? -15 : 15;
+                        //  sequence.Join(vehicle.transform.DORotate(new Vector3(vehicle.transform.rotation.x + additionalRot, vehicle.transform.rotation.y, vehicle.transform.rotation.z), .25f));
+
+                        Vector3 pos2 = new Vector3(targetVector3.x, vehiclePos.y, targetVector3.z + (targetGridLineIndex == 0 ? -2 : 2));
+                        sequence.Append(vehicle.transform.DOMoveX(targetVector3.x, tweenDuration).SetEase(Ease.Linear));
+                        DOTween.To((xx) => { }, 0, 1, tweenDuration).OnComplete(() =>
+                         {
+                             vehicle.transform.forward = -(pos2 - pos1);
+                         });
+
+                        Ease ease2 = Ease.OutBack;
+                        Vector3 pos3 = new Vector3(targetVector3.x, vehiclePos.y, targetVector3.z);
+                        sequence.Append(vehicle.transform.DOMove(pos3, tweenDuration).SetEase(ease2));
+                        //  sequence.Join(vehicle.transform.DORotate(new Vector3(vehicle.transform.rotation.x + (-additionalRot), vehicle.transform.rotation.y, vehicle.transform.rotation.z), .25f));
+                        DOTween.To((xx) => { }, 0, 1, tweenDuration * 2).OnComplete(() =>
+                        {
+                            vehicle.transform.forward = -(pos3 - pos2);
+                        });
                     }
                 }
                 else
@@ -81,19 +101,36 @@ namespace GamePlay.Components
             }
             else
             {
+
                 var targetVector3 = transform.position;
                 var midPointVector3 = (from.transform.position + targetVector3) / 2;
+                Vector3 vehiclePos = vehicle.transform.position;
+                float tweenDuration = .35f;
+                goingDown = vehicle.transform.position.z > targetVector3.z ? true : false;
 
-                sequence.Append(vehicle.transform
-                    .DOMoveZ(midPointVector3.z, 0.25f)
-                    .SetEase(Ease.Linear));
-                if (Math.Abs(targetVector3.x - from.transform.position.x) > 0.01f)
+                Vector3 pos1 = new Vector3(vehiclePos.x, vehiclePos.y, midPointVector3.z);
+                sequence.Append(vehicle.transform.DOMove(pos1, tweenDuration).SetEase(Ease.InBack))
+                    .OnStart(() => vehicle.transform.forward = -(pos1 - vehiclePos));
+
+                Vector3 pos2 = Vector3.zero;
+                if (Mathf.Abs(targetVector3.x - from.transform.position.x) > 0.01f)
                 {
-                    sequence.Append(vehicle.transform.DOMoveX(targetVector3.x, 0.25f).SetEase(Ease.Linear));
+                    pos2 = new Vector3(targetVector3.x, vehiclePos.y, midPointVector3.z);
+                    sequence.Append(vehicle.transform.DOMoveX(targetVector3.x, tweenDuration).SetEase(Ease.Linear));
+                    DOTween.To((xx) => { }, 0, 1, tweenDuration).OnComplete(() =>
+                        {
+                            vehicle.transform.forward = -(pos2 - pos1);
+                        });
                 }
 
-                sequence.Append(vehicle.transform.DOMoveZ(targetVector3.z, 0.25f)
-                    .SetEase(Ease.Linear));
+                Vector3 pos3 = new Vector3(targetVector3.x, vehicle.transform.position.y, targetVector3.z);
+                Ease ease = pos2 == Vector3.zero ? Ease.Linear : Ease.OutBack;
+                tweenDuration = Mathf.Approximately(Vector3.Distance(pos2, Vector3.zero), 0) ? tweenDuration : (tweenDuration * 2);
+                sequence.Append(vehicle.transform.DOMove(pos3, tweenDuration).SetEase(ease));
+                DOTween.To((xx) => { }, 0, 1, tweenDuration).OnComplete(() =>
+               {
+                   vehicle.transform.forward = -(pos3 - (pos2 == Vector3.zero ? pos1 : pos2));
+               });
             }
 
             sequence.OnComplete(() =>

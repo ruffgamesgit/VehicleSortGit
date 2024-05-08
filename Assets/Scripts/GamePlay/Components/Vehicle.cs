@@ -31,7 +31,7 @@ namespace GamePlay.Components
         {
             outline.HandleOutline(active ? 2.7f : 0f);
         }
-        
+
         public List<Seat> GetSeats()
         {
             return seats;
@@ -41,7 +41,7 @@ namespace GamePlay.Components
         {
             return seats.FindAll(s => s.IsEmpty()).Count == 4;
         }
-        
+
         public bool HasEmptySeat()
         {
             foreach (var seat in seats)
@@ -51,7 +51,7 @@ namespace GamePlay.Components
             }
             return false;
         }
-        
+
         public bool IsAnimationOn()
         {
             foreach (var seat in seats)
