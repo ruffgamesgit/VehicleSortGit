@@ -41,6 +41,7 @@ namespace Core.Launcher
             
             GamePlayService gamePlayService = new GamePlayService();
             ServiceLocator.Instance.Register<IGamePlayService>(gamePlayService);
+            gamePlayService.LoadLevel();
         }
         
 

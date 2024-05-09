@@ -6,5 +6,7 @@ namespace Core.Services
     public interface IGamePlayService : IService
     {
         public LevelData GetCurrentLevelData();
+        public void LoadLevel();
+        public int GetCurrentLevelIndex();
     }
 }

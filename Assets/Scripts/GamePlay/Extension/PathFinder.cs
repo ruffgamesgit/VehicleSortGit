@@ -109,7 +109,9 @@ namespace GamePlay.Extension
             {
                 for (int j = 0; j < nodes.GetLength(1); j++)
                 {
-                    nodes[i, j] = new Node(i, j, grid[i,j] == null || grid[i,j].IsWalkable());
+                    bool isGridNull = grid[i, j] == null;
+                    bool isGridWalkable = isGridNull || grid[i, j].IsWalkable();
+                    nodes[i, j] = new Node(i, j,  isGridWalkable);
                 }
             }
             return nodes;

@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using GamePlay.Data.Grid;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace Core.Services
 {
@@ -12,10 +13,22 @@ namespace Core.Services
         {
             _levelData = Resources.Load<LevelDataScriptable>("LevelData").levelData;
         }
+
+        public int GetCurrentLevelIndex()
+        {
+            return 0;
+        }
         
         public LevelData GetCurrentLevelData()
         {
-            return _levelData[0];
+            return _levelData[GetCurrentLevelIndex()];
+        }
+
+        public void LoadLevel()
+        {
+            var currentLevelData = GetCurrentLevelData();
+            Scene scene = SceneManager.GetSceneByName(currentLevelData.scene);
+            SceneManager.LoadScene(scene.buildIndex);
         }
     }
 }

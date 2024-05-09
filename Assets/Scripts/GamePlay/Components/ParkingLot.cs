@@ -334,7 +334,7 @@ namespace GamePlay.Components
 
         public bool IsWalkable()
         {
-            return !_isObstacle && _isInvisible || IsEmpty();
+            return !_isObstacle && (_isInvisible || IsEmpty());
         }
 
         public bool IsInvisible()
