@@ -103,7 +103,7 @@ Material:
     - _GlossMapScale: 0
     - _Glossiness: 0
     - _GlossyReflections: 0
-    - _HeightOffset: 0.093
+    - _HeightOffset: 0
     - _Invert_Circle: 0
     - _LinearDouble: 1
     - _MainTex_Opacity: 0
@@ -126,7 +126,7 @@ Material:
     m_Colors:
     - _BaseColor: {r: 0.5529412, g: 0.5921569, b: 0.79215693, a: 1}
     - _Color: {r: 0.55294114, g: 0.5921568, b: 0.79215693, a: 1}
-    - _Color1: {r: 0.8113208, g: 0.8113208, b: 0.8113208, a: 0}
+    - _Color1: {r: 0, g: 0, b: 0, a: 0}
     - _Color2: {r: 0.41960788, g: 0.34901962, b: 0.46274513, a: 0}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _SpecColor: {r: 0.19999996, g: 0.19999996, b: 0.19999996, a: 1}
