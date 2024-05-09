@@ -27,8 +27,7 @@ namespace Core.Services
         public void LoadLevel()
         {
             var currentLevelData = GetCurrentLevelData();
-            Scene scene = SceneManager.GetSceneByName(currentLevelData.scene);
-            SceneManager.LoadScene(scene.buildIndex);
+            SceneManager.LoadScene(currentLevelData.scene);
         }
     }
 }

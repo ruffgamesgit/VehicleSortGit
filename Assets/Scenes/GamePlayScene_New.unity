@@ -1104,6 +1104,8 @@ MonoBehaviour:
         - {fileID: 506666043}
         - {fileID: 1933964027}
         isVirtual: 0
+      hasLowerRoad: 0
+      hasUpperRoad: 0
     - lines:
       - parkingLots:
         - {fileID: 671423329}
@@ -1113,6 +1115,8 @@ MonoBehaviour:
         - {fileID: 1919020201}
         - {fileID: 457256392}
         isVirtual: 0
+      hasLowerRoad: 0
+      hasUpperRoad: 0
     - lines:
       - parkingLots:
         - {fileID: 312135169}
@@ -1122,92 +1126,8 @@ MonoBehaviour:
         - {fileID: 1728011469}
         - {fileID: 1517220567}
         isVirtual: 0
-  _levelData:
-    scene: 
-    colorVariety: 0
-    matchingPassengerCount: 0
-    vehicleCount: 0
-    levelDataGridGroups:
-    - lines:
-      - ParkingLots:
-        - IsEmpty: 1
-          IsInvisible: 0
-          IsObstacle: 0
-        - IsEmpty: 1
-          IsInvisible: 0
-          IsObstacle: 0
-        - IsEmpty: 1
-          IsInvisible: 0
-          IsObstacle: 0
-        - IsEmpty: 1
-          IsInvisible: 0
-          IsObstacle: 0
-        - IsEmpty: 1
-          IsInvisible: 0
-          IsObstacle: 0
-        - IsEmpty: 1
-          IsInvisible: 0
-          IsObstacle: 0
-      - ParkingLots:
-        - IsEmpty: 0
-          IsInvisible: 0
-          IsObstacle: 0
-        - IsEmpty: 0
-          IsInvisible: 0
-          IsObstacle: 0
-        - IsEmpty: 0
-          IsInvisible: 0
-          IsObstacle: 0
-        - IsEmpty: 0
-          IsInvisible: 0
-          IsObstacle: 0
-        - IsEmpty: 0
-          IsInvisible: 0
-          IsObstacle: 0
-        - IsEmpty: 0
-          IsInvisible: 0
-          IsObstacle: 0
-    - lines:
-      - ParkingLots:
-        - IsEmpty: 0
-          IsInvisible: 0
-          IsObstacle: 0
-        - IsEmpty: 0
-          IsInvisible: 0
-          IsObstacle: 0
-        - IsEmpty: 0
-          IsInvisible: 0
-          IsObstacle: 0
-        - IsEmpty: 0
-          IsInvisible: 0
-          IsObstacle: 0
-        - IsEmpty: 0
-          IsInvisible: 0
-          IsObstacle: 0
-        - IsEmpty: 0
-          IsInvisible: 0
-          IsObstacle: 0
-    - lines:
-      - ParkingLots:
-        - IsEmpty: 0
-          IsInvisible: 0
-          IsObstacle: 0
-        - IsEmpty: 0
-          IsInvisible: 0
-          IsObstacle: 0
-        - IsEmpty: 0
-          IsInvisible: 0
-          IsObstacle: 0
-        - IsEmpty: 0
-          IsInvisible: 0
-          IsObstacle: 0
-        - IsEmpty: 0
-          IsInvisible: 0
-          IsObstacle: 0
-        - IsEmpty: 0
-          IsInvisible: 0
-          IsObstacle: 0
-  _colorVariety: 15
+      hasLowerRoad: 0
+      hasUpperRoad: 0
 --- !u!114 &671423329 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 7830762609772586057, guid: 1215667442c890e48b5208f8f0c9f487,

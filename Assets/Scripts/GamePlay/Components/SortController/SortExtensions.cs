@@ -108,11 +108,16 @@ namespace GamePlay.Components.SortController
             List<GridLine> virtualizedLines = new List<GridLine>();
             foreach (var group in gridGroups)
             {
-                virtualizedLines.Add(GenerateVirtualLine(group.lines[0].parkingLots.Count));
+                if(group.hasLowerRoad)
+                    virtualizedLines.Add(GenerateVirtualLine(group.lines[0].parkingLots.Count));
+                
                 foreach (var line in group.lines)
                 {
                     virtualizedLines.Add(line);
                 }
+                
+                if(group.hasUpperRoad)
+                    virtualizedLines.Add(GenerateVirtualLine(group.lines[0].parkingLots.Count));
             }
             GridLine GenerateVirtualLine(int parkingLotCount)
             {
