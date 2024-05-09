@@ -7,6 +7,8 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
+using Core.Locator;
+using Core.Services;
 using UnityEngine;
 
 namespace GamePlay.Components.SortController
@@ -14,30 +16,25 @@ namespace GamePlay.Components.SortController
     public class SortController : MonoBehaviour
     {
         [SerializeField] private GridData gridData;
-        [SerializeField] private LevelData _levelData; // Removed Later
-        [SerializeField] private int _colorVariety; // Removed Later
 
         private FillController _fillController;
         private ParkingLot _lastClickedParkingLot;
-
+        private IGamePlayService _gamePlayService;
+        private LevelData _levelData; 
+        
         private readonly SemaphoreSlim _semaphore = new(1, 1);
         private readonly ConcurrentQueue<ParkingLot> _affectedSortQueue = new();
         private readonly object _lock = new();
+       
 
         private void Awake()
         {
             _fillController = GetComponent<FillController>();
+            _gamePlayService = ServiceLocator.Instance.Resolve<IGamePlayService>();
+            _levelData = _gamePlayService.GetCurrentLevelData();
             InitializeParkingLots();
-
-            if (_colorVariety == 0)
-            {
-                _colorVariety = 15;
-                Debug.LogError(
-                    "Color variety count is assigned manually, this should be pre-assigned from the hierarchy");
-            }
-
-            _fillController.FillVehicles(gridData.gridGroups, 15, 10,
-                10); // Variety , MatchingPassangerCount
+            _fillController.FillVehicles(gridData.gridGroups, _levelData.vehicleCount, _levelData.colorVariety,
+                _levelData.matchingPassengerCount);
         }
 
         private void InitializeParkingLots()
@@ -51,10 +48,14 @@ namespace GamePlay.Components.SortController
                     int parkingLotIndex = 0;
                     foreach (var parkingLot in line.parkingLots)
                     {
-                        var isParkingLotInvisible = _levelData.levelDataGridGroups[gridGroupIndex].lines[gridLineIndex]
-                            .parkingLotStatus[parkingLotIndex];
+                        var isParkingLotInvisible = _levelData.levelDataGridGroups[gridGroupIndex].lines[gridLineIndex].ParkingLots[parkingLotIndex]
+                            .IsInvisible;
+                        var isParkingLotObstacle = _levelData.levelDataGridGroups[gridGroupIndex].lines[gridLineIndex].ParkingLots[parkingLotIndex]
+                            .IsObstacle;
+                        var isEmptyAtStart = _levelData.levelDataGridGroups[gridGroupIndex].lines[gridLineIndex].ParkingLots[parkingLotIndex]
+                            .IsEmpty;
                         var parkingLotPosition = new ParkingLotPosition(gridGroupIndex, gridLineIndex, parkingLotIndex);
-                        parkingLot.Initialize(isParkingLotInvisible, parkingLotPosition);
+                        parkingLot.Initialize(isParkingLotInvisible,isParkingLotObstacle,  isEmptyAtStart, parkingLotPosition);
                         parkingLot.OnParkingLotClicked += OnParkingLotClicked;
 
                         parkingLotIndex++;
