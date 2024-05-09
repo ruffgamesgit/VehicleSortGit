@@ -43,4 +43,23 @@ public static class DictionaryExtensions
         }
         return maxValueItem.Key;
     }
+
+    public static ColorEnum GetMinValue(this Dictionary<ColorEnum, int> dict)
+    {
+        if (dict.Count == 0)
+            return default;
+
+        // Initialize max value with the first value in the dictionary.
+        var maxValueItem = dict.First();
+
+        // Iterate through the dictionary to find the maximum value.
+        foreach (var item in dict)
+        {
+            if (item.Value.CompareTo(maxValueItem.Value) < 0)
+            {
+                maxValueItem = item;
+            }
+        }
+        return maxValueItem.Key;
+    }
 }

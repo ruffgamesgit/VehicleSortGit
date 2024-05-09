@@ -45,6 +45,38 @@ namespace GamePlay.Components.SortController
             var colorCounts = GetRandomColorCounts(colorVarietyList, matchingPassengerCount);
 
             List<ParkingLot> parkingLots = GetParkingLotsShuffled(gridGroups);
+
+            foreach (var parkingLot in parkingLots)
+            {
+                if(parkingLot.GetCurrentVehicle() == null) continue;
+                List<ColorEnum> availableColors = new List<ColorEnum>();
+                foreach (var color in colorCounts)
+                {
+                    bool canPlaceable = CheckIfPlaceable(gridGroups, parkingLot, color.Key) != null;
+                    if(canPlaceable)
+                        availableColors.Add(color.Key);
+                }
+
+                if (availableColors.Count == 0)
+                {
+                    ResetAllSeats(gridGroups);
+                    goto startOver;
+                }
+                
+                var colorToPlace = availableColors.GetRandomObjectType();
+                var seat = CheckIfPlaceable(gridGroups, parkingLot, colorToPlace);
+                if (seat == null)
+                {
+                    ResetAllSeats(gridGroups);
+                    goto startOver;
+                }
+                seat.SetPreColor(colorToPlace);
+                
+                colorCounts[colorToPlace]--;
+                if(colorCounts[colorToPlace] == 0)
+                    colorCounts.Remove(colorToPlace);
+            }
+            
             while (colorCounts.Count > 0)
             {
                 var color = GetRandomColorFromDictionary(colorCounts);

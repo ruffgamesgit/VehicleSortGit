@@ -36,8 +36,8 @@ namespace GamePlay.Components.SortController
                     "Color variety count is assigned manually, this should be pre-assigned from the hierarchy");
             }
 
-            _fillController.FillVehicles(gridData.gridGroups, 20, 15,
-                15); // Variety , MatchingPassangerCount
+            _fillController.FillVehicles(gridData.gridGroups, 15, 10,
+                10); // Variety , MatchingPassangerCount
         }
 
         private void InitializeParkingLots()
@@ -116,7 +116,6 @@ namespace GamePlay.Components.SortController
                                         await ucs.Task;
                                     }
                                 }
-                               
                             }
 
                             parkingLot.Occupy(vehicle, false);
@@ -216,7 +215,8 @@ namespace GamePlay.Components.SortController
             try
             {
                 if (parkingLot == null) return;
-              
+                if (parkingLot.GetCurrentVehicle() == null) return;
+
 
                 var parkingLotPosition = parkingLot.GetParkingLotPosition();
                 var neighborParkingLots =
@@ -227,22 +227,29 @@ namespace GamePlay.Components.SortController
                 {
                     return;
                 }
-                
+
                 var sortPriorityList = GetSortPriorityList(parkingLot);
-                if (sortPriorityList.Count == 0) return;
-                
+                ParkingLotSortData targetSort = null;
+                if (sortPriorityList.Count == 0)
+                {
+                    var oneTypeFromNeighbor = GetOneTypeFromNeighbor(parkingLot, neighborParkingLots);
+                    if (oneTypeFromNeighbor == null) return;
+                    targetSort = oneTypeFromNeighbor;
+                    goto targetIsSet;
+                }
+
                 List<ParkingLotSortData> sortOptions = new List<ParkingLotSortData>();
 
                 foreach (var seat in sortPriorityList)
                 {
-                    var sortOptionData = CalculateSortingOptions(parkingLot,seat, neighborParkingLots);
+                    var sortOptionData = CalculateSortingOptions(parkingLot, seat, neighborParkingLots);
                     if (sortOptionData != null)
                         sortOptions.Add(sortOptionData);
                 }
 
                 if (sortOptions.Count == 0) return;
 
-                ParkingLotSortData targetSort = null;
+
                 foreach (var current in sortOptions)
                 {
                     if (targetSort == null)
@@ -279,6 +286,8 @@ namespace GamePlay.Components.SortController
                     }
                 }
 
+                targetIsSet:
+
                 if (targetSort != null)
                 {
                     if (targetSort.SecondNeighborMatch == null)
@@ -291,9 +300,6 @@ namespace GamePlay.Components.SortController
                         if (!Monitor.IsEntered(_lock)) SortAffectedParkingLots();
                     }
                 }
-              
-           
-                
             }
             catch (Exception e)
             {
@@ -306,7 +312,64 @@ namespace GamePlay.Components.SortController
             }
         }
 
-        private ParkingLotSortData CalculateSortingOptions(ParkingLot parkingLot, Seat arg, List<ParkingLot> neighborParkingLots)
+        private ParkingLotSortData GetOneTypeFromNeighbor(ParkingLot parkingLot, List<ParkingLot> neighbors)
+        {
+            var neighborsWithMultipleVariety =
+                neighbors.FindAll(pLot => pLot.GetCurrentVehicle().GetExistingColors().Count > 1);
+
+            if (neighborsWithMultipleVariety.Count == 0) return null;
+
+            neighborsWithMultipleVariety.Shuffle();
+            ParkingLot targetParkingLot = null;
+            List<Seat> targetSeats = null;
+            foreach (var neighbor in neighborsWithMultipleVariety)
+            {
+                var neighborVehicle = neighbor.GetCurrentVehicle();
+                var colorCounts = neighborVehicle.GetExistingColors();
+                var minColor = colorCounts.GetMinValue();
+                if (targetSeats == null || targetParkingLot == null)
+                {
+                    targetParkingLot = neighbor;
+                    targetSeats = neighborVehicle.GetSeats()
+                        .FindAll(seat => !seat.IsEmpty() && seat.GetPassenger().GetColor() == minColor);
+                    continue;
+                }
+
+                if (colorCounts[minColor] == 1)
+                {
+                    targetParkingLot = neighbor;
+                    targetSeats = neighborVehicle.GetSeats()
+                        .FindAll(seat => !seat.IsEmpty() && seat.GetPassenger().GetColor() == minColor);
+                    break;
+                }
+            }
+
+
+            if (targetSeats != null && targetParkingLot != null)
+            {
+                List<ParkingLot> matchedNeighbors = new();
+                foreach (var seat in targetSeats)
+                {
+                    matchedNeighbors.Add(targetParkingLot);
+                }
+
+                var sortData = new ParkingLotSortData()
+                {
+                    ParkingLot = parkingLot,
+                    Seat = targetSeats[0],
+                    MatchedNeighbors = matchedNeighbors,
+                    MatchedSeats = targetSeats,
+                    CountToLookFor = 4 - targetSeats.Count
+                };
+                return sortData;
+            }
+
+
+            return null;
+        }
+
+        private ParkingLotSortData CalculateSortingOptions(ParkingLot parkingLot, Seat arg,
+            List<ParkingLot> neighborParkingLots)
         {
             ParkingLotSortData sortOptionData = new()
             {
@@ -347,7 +410,7 @@ namespace GamePlay.Components.SortController
             if (matchedSeats.Count == 0) return null;
             if (matchedSeats.Count < countToLookFor && matchedNeighbors.Count == 1)
             {
-                ParkingLot IsMatchedBySecondNeighbor()
+                (bool, ParkingLot) IsMatchedBySecondNeighbor()
                 {
                     var parkingLotPosition = parkingLot.GetParkingLotPosition();
                     var secondNeighbors = matchedNeighbors[0]
@@ -367,24 +430,46 @@ namespace GamePlay.Components.SortController
 
                         if (remainingCount <= 0)
                         {
-                            return (matchedNeighbors[0]);
+                            return (true, matchedNeighbors[0]);
+                        }
+
+                        if (LookForMatchingTypes(matchedNeighbors[0],
+                                arg.GetPassenger().GetColor()).Count > 0)
+                        {
+                            return (false, matchedNeighbors[0]);
                         }
                     }
+                    else
+                    {
+                        return (false, matchedNeighbors[0]);
+                    }
 
-                    return null;
+
+                    return (false, null);
                 }
 
                 var secondNeighborMatch = IsMatchedBySecondNeighbor();
 
-                if (secondNeighborMatch != null)
+                if (secondNeighborMatch.Item2 != null && secondNeighborMatch.Item1)
                 {
-                    sortOptionData.SecondNeighborMatch = secondNeighborMatch;
+                    sortOptionData.SecondNeighborMatch = secondNeighborMatch.Item2;
                 }
                 else
                 {
                     if (DoesParkingLotHasAnotherMatchingItem(parkingLot, arg.GetPassenger().GetColor()))
                     {
-                        return null;
+                        if (secondNeighborMatch.Item2 != null)
+                        {
+                            if (DoesParkingLotHasAnotherMatchingItem(secondNeighborMatch.Item2,
+                                    arg.GetPassenger().GetColor()))
+                                return null;
+
+                            sortOptionData.SecondNeighborMatch = secondNeighborMatch.Item2;
+                        }
+                        else
+                        {
+                            return null;
+                        }
                     }
                 }
             }
@@ -402,6 +487,7 @@ namespace GamePlay.Components.SortController
 
                 if (swappingSeat == null)
                 {
+                    EnqueueItem(sortData.MatchedNeighbors[i]);
                     break;
                 }
 
@@ -417,7 +503,7 @@ namespace GamePlay.Components.SortController
 
             await animateSwappingSeats.AnimateSeatChanges(false);
 
-            if (sortData.ParkingLot.CheckIfCompleted())
+            if (!sortData.ParkingLot.CheckIfCompleted())
             {
                 InsertItemToQueue(sortData.ParkingLot);
             } // LATER ASYNC 
@@ -634,9 +720,9 @@ namespace GamePlay.Components.SortController
 
         private void EnqueueItem(ParkingLot parkingLot)
         {
-                _affectedSortQueue.Enqueue((parkingLot));
+            _affectedSortQueue.Enqueue((parkingLot));
         }
-        
+
         private void InsertItemToQueue(ParkingLot parkingLot)
         {
             var items = _affectedSortQueue.ToArray();
