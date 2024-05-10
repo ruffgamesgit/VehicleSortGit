@@ -4,6 +4,7 @@ using Cysharp.Threading.Tasks;
 using DG.Tweening;
 using GamePlay.Data;
 using GamePlay.Data.Grid;
+using GamePlay.Extension;
 using UnityEngine;
 using UnityEngine.Rendering.Universal;
 
@@ -86,7 +87,7 @@ namespace GamePlay.Components
             return 0;
         }
 
-        public void MoveAnimation(GridData gridData, Vehicle vehicle, UniTaskCompletionSource ucs, ParkingLot from,
+        public Sequence MoveAnimation(GridData gridData, Vehicle vehicle, UniTaskCompletionSource ucs, ParkingLot from,
             bool isFirstMove, bool isLastMove)
         {
             var sequence = DOTween.Sequence();
@@ -211,7 +212,8 @@ namespace GamePlay.Components
                 }
             }
 
-            sequence.OnComplete(() => { ucs.TrySetResult(); });
+            sequence.OnComplete(() => { ucs?.TrySetResult(); });
+            return sequence;
         }
 
         float GetDurationByDistance(Vector3 pos1, Vector3 pos2)
@@ -281,7 +283,7 @@ namespace GamePlay.Components
             return _isEmptyAtStart;
         }
 
-        public bool CheckIfCompleted()
+        public bool CheckIfCompleted(GridData gridData)
         {
             var seats = _currentVehicle.GetSeats();
 
@@ -294,9 +296,154 @@ namespace GamePlay.Components
                     return false;
             }
 
-            _currentVehicle.Destroy(); // LATER ANİMATON
+            var offset = CalculateZOffset(gridData.gridGroups[_parkingLotPosition.GetGridGroupIndex()],
+                _parkingLotPosition.GetGridLineIndex());
+
+
+            var vehicle = _currentVehicle;
+            SetEmpty();
+            var gridGroup = gridData.gridGroups[_parkingLotPosition.GetGridGroupIndex()];
+            var parkingLotGridLineIndex = _parkingLotPosition.GetGridLineIndex();
+            var parkingLotIndex = _parkingLotPosition.GetParkingLotIndex();
+            Sequence sequence = DOTween.Sequence();
+            if (offset != 0)
+            {
+                sequence.Append(vehicle.transform.DOMoveZ(vehicle.transform.position.z + offset, 0.35f)
+                    .SetEase(Ease.InBack));
+                var parkingLotCount = gridGroup.lines[parkingLotGridLineIndex].parkingLots.Count -1 ;
+                bool isRightTurn =  parkingLotIndex > parkingLotCount / 2;
+                sequence.Append(vehicle.transform.DOMoveX(isRightTurn ? 10 : -10, 0.75f).SetEase(Ease.Linear));
+                sequence.Insert(0.2f,
+                    vehicle.transform.DORotate(new Vector3(0, isRightTurn ? offset > 0 ? 90 : -90 : offset > 0 ? -90 : 90, 0), 0.3f, RotateMode.LocalAxisAdd)
+                        .SetEase(Ease.InOutQuad));
+            }
+            else
+            {
+                var hasUpperRoad = gridGroup.hasUpperRoad;
+                var hasLowerRoad = gridGroup.hasLowerRoad;
+                bool isCloseToUpperRoad = parkingLotGridLineIndex >= (gridGroup.lines.Count - 1) / 2;
+
+                bool hasDirectPathToUp = HasDirectRoadAvailable(gridGroup, parkingLotGridLineIndex, parkingLotIndex,
+                    true);
+                bool hasDirectPathToDown = HasDirectRoadAvailable(gridGroup, parkingLotGridLineIndex, parkingLotIndex,
+                    false);
+
+
+                if (hasDirectPathToUp || hasDirectPathToDown)
+                {
+                    var lineIndex = hasDirectPathToUp && isCloseToUpperRoad ? gridGroup.lines.Count - 1
+                        : hasDirectPathToDown && !isCloseToUpperRoad ? 0
+                        : hasDirectPathToUp ? gridGroup.lines.Count - 1 : 0;
+
+                    var newOffset =
+                        CalculateZOffset(gridGroup, lineIndex);
+                    var newTargetPosition = gridGroup.lines[lineIndex].parkingLots[parkingLotIndex].transform
+                        .position.z + newOffset;
+                    sequence.Append(vehicle.transform.DOMoveZ(newTargetPosition, 0.35f)
+                        .SetEase(Ease.InBack));
+                    var parkingLotCount = gridGroup.lines[lineIndex].parkingLots.Count -1 ;
+                    bool isRightTurn = parkingLotIndex > parkingLotCount / 2;
+                    sequence.Append(vehicle.transform.DOMoveX(isRightTurn ? 10 : -10, 0.75f).SetEase(Ease.Linear));
+                    sequence.Insert(0.2f,
+                        vehicle.transform.DORotate(new Vector3(0, isRightTurn ? newOffset > 0 ? 90 : -90 : newOffset > 0 ? -90 : 90, 0), 0.3f,
+                                RotateMode.LocalAxisAdd)
+                            .SetEase(Ease.InOutQuad));
+                }
+                else
+                {
+                    if (parkingLotGridLineIndex != 0 && parkingLotGridLineIndex != gridGroup.lines.Count - 1)
+                    {
+                        List<ParkingLot> availableFrontParkingLots = new List<ParkingLot>();
+                        List<GridLine> frontLines = new List<GridLine>();
+                        if (hasUpperRoad)
+                            frontLines.Add(gridGroup.lines[isCloseToUpperRoad ? ^1 : 0]);
+                        if (hasLowerRoad)
+                            frontLines.Add(gridGroup.lines[isCloseToUpperRoad ? 0 : ^1]);
+
+                        foreach (var line in frontLines)
+                        {
+                            for (int i = 0; i < line.parkingLots.Count; i++)
+                            {
+                                if (line.parkingLots[i].IsWalkable())
+                                {
+                                    availableFrontParkingLots.Add(line.parkingLots[i]);
+                                }
+                            }
+                        }
+
+                        List<List<ParkingLot>> paths = new List<List<ParkingLot>>();
+                        foreach (var parkingLot in availableFrontParkingLots)
+                        {
+                            var path = gridData.FindPath(this, parkingLot);
+                            if(path == null) continue;
+                            path.RemoveAll(lot => lot == null);
+                            if (path.Count > 0)
+                                paths.Add(path);
+                        }
+
+                        if (paths.Count == 0) return false;  // COMPLETE BUT NO WAY HANDLE!
+
+                        List<ParkingLot> shortestPath = null;
+                        foreach (var path in paths)
+                        {
+                            if (shortestPath == null || path.Count < shortestPath.Count)
+                            {
+                                shortestPath = path;
+                            }
+                        }
+
+                        if (shortestPath == null) return false; // COMPLETE BUT NO WAY 
+                        
+                        foreach (var pLot in shortestPath)
+                        {
+                            sequence.Append(pLot.MoveAnimation(gridData, vehicle, null, this,
+                                pLot == shortestPath[0], pLot == shortestPath[^1]));
+                        }
+                        
+                        var lastParkingLot = shortestPath[^1];
+                        var newOffset =
+                            CalculateZOffset(gridGroup, isCloseToUpperRoad ? gridGroup.lines.Count - 1 : 0);
+                        sequence.Append(vehicle.transform.DOMoveZ(lastParkingLot.transform.position.z + newOffset, 0.35f)
+                            .SetEase(Ease.InBack));
+                        var parkingLotCount = gridGroup.lines[lastParkingLot.GetParkingLotPosition().GetGridLineIndex()].parkingLots.Count -1 ;
+                        bool isRightTurn = lastParkingLot.GetParkingLotPosition().GetParkingLotIndex() > parkingLotCount / 2; 
+                        sequence.Append(vehicle.transform.DOMoveX(isRightTurn ? 10 : -10, 0.75f).SetEase(Ease.Linear));
+                        sequence.Insert(0.2f,
+                            vehicle.transform.DORotate(new Vector3(0, isRightTurn ? newOffset > 0 ? 90 : -90 : newOffset > 0 ? -90 : 90, 0), 0.3f,
+                                    RotateMode.LocalAxisAdd)
+                                .SetEase(Ease.InOutQuad));
+                    }
+
+                    return false;
+                    // COMPLETE BUT NO WAY
+                }
+            }
+
+            sequence.OnComplete(() => { vehicle.Destroy(); });
             return true;
             // COMPLETE
+        }
+
+        private bool HasDirectRoadAvailable(GridGroup gridGroup, int parkingLotGridLineIndex, int parkingLotIndex,
+            bool isUpper)
+        {
+            if (isUpper && !gridGroup.hasUpperRoad)
+                return false;
+            if (!isUpper && !gridGroup.hasLowerRoad)
+                return false;
+
+            for (int i = 0; i < gridGroup.lines.Count; i++)
+            {
+                if (isUpper ? i > parkingLotGridLineIndex : i < parkingLotGridLineIndex)
+                {
+                    if (!gridGroup.lines[i].parkingLots[parkingLotIndex].IsWalkable())
+                    {
+                        return false;
+                    }
+                }
+            }
+
+            return true;
         }
     }
 }
