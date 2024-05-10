@@ -1,7 +1,9 @@
 using System;
+using System.Collections.Generic;
 using Cysharp.Threading.Tasks;
 using DG.Tweening;
 using GamePlay.Data;
+using GamePlay.Data.Grid;
 using UnityEngine;
 using UnityEngine.Rendering.Universal;
 
@@ -21,7 +23,9 @@ namespace GamePlay.Components
         const float SECONDS_FOR_PER_METER = 0.085f;
         const float MIN_TWEEN_DURATION = 0.25f;
         const float TWEEN_DURATION_DIVIDER = 10;
-        public void Initialize(bool isInvisible,bool isObstacle, bool isEmptyAtStart, ParkingLotPosition parkingLotPosition)
+
+        public void Initialize(bool isInvisible, bool isObstacle, bool isEmptyAtStart,
+            ParkingLotPosition parkingLotPosition)
         {
             _isInvisible = isInvisible;
             _isObstacle = isObstacle;
@@ -30,6 +34,7 @@ namespace GamePlay.Components
             {
                 gameObject.SetActive(false);
             }
+
             _parkingLotPosition = parkingLotPosition;
         }
 
@@ -49,9 +54,41 @@ namespace GamePlay.Components
             imageColorModifier.SetHighlight(activate);
         }
 
-        public void MoveAnimation(Vehicle vehicle, UniTaskCompletionSource ucs, ParkingLot from, bool isFirstMove, bool isLastMove)
+        private int CalculateRotation(Vector3 current, Vector3 target, Vector3 next)
         {
+            bool isFirstMoveVertical = Mathf.Approximately(target.x, current.x);
+            bool isVerticalMoveGoingUp = isFirstMoveVertical ? target.z - current.z > 0 : next.z - target.z > 0;
+            bool isHorizontalMoveGoingRight = isFirstMoveVertical ? next.x - target.x > 0 : target.x - current.x > 0;
 
+            return isFirstMoveVertical ? isVerticalMoveGoingUp ? isHorizontalMoveGoingRight ? 90 : -90 :
+                isHorizontalMoveGoingRight ? -90 : 90
+                : isHorizontalMoveGoingRight ? isVerticalMoveGoingUp ? -90 : 90
+                : isVerticalMoveGoingUp ? 90 : -90;
+        }
+
+        private float CalculateZOffset(GridGroup gridGroup, int lineIndex)
+        {
+            if (lineIndex == 0)
+            {
+                if (gridGroup.lines.Count == 1)
+                {
+                    return gridGroup.hasUpperRoad ? 1.65f : gridGroup.hasLowerRoad ? -1.65f : 0f;
+                }
+
+                return gridGroup.hasLowerRoad ? -1.65f : 0f;
+            }
+
+            if (lineIndex == gridGroup.lines.Count - 1)
+            {
+                return gridGroup.hasUpperRoad ? 1.65f : 0f;
+            }
+
+            return 0;
+        }
+
+        public void MoveAnimation(GridData gridData, Vehicle vehicle, UniTaskCompletionSource ucs, ParkingLot from,
+            bool isFirstMove, bool isLastMove)
+        {
             var sequence = DOTween.Sequence();
             var fromPosition = from.GetParkingLotPosition();
             var targetGridGroupIndex = _parkingLotPosition.GetGridGroupIndex();
@@ -60,225 +97,121 @@ namespace GamePlay.Components
             var fromGridLineIndex = fromPosition.GetGridLineIndex();
             var targetParkingLotIndex = _parkingLotPosition.GetParkingLotIndex();
             var fromParkingLotIndex = fromPosition.GetParkingLotIndex();
-            bool goingDown;
-            int rotSign = 1;
+            var vehiclePos = vehicle.transform.position;
 
             if (targetGridGroupIndex == fromGridGroupIndex)
             {
                 if (targetGridLineIndex == fromGridLineIndex)
                 {
-                    bool isNext = Mathf.Abs(targetParkingLotIndex - fromParkingLotIndex) == 1;
-                    if (isNext)
+                    bool isNextToEachOther = Mathf.Abs(targetParkingLotIndex - fromParkingLotIndex) == 1;
+                    if (isNextToEachOther)
                     {
                         float duration = GetDurationByDistance(transform.position, vehicle.transform.position);
-                        sequence.Append(vehicle.transform.DOMove(transform.position, duration).SetEase(isLastMove ? Ease.OutBack : Ease.Linear));
-                        
+                        sequence.Append(vehicle.transform.DOMove(transform.position, duration)
+                            .SetEase(isLastMove ? Ease.OutBack : Ease.Linear));
                     }
                     else
                     {
-                        var targetVector3 = transform.position;
-                        Vector3 vehiclePos = vehicle.transform.position;
-                        float tweenDuration = .35f;
-                        #region First Movement
+                        var targetParkingLotPosition = transform.position;
+                        var gridGroup = gridData.gridGroups[targetGridGroupIndex];
+                        float zOffsetOfMovement = CalculateZOffset(gridGroup, targetGridLineIndex);
 
-                        Vector3 pos1 = new Vector3(vehicle.transform.position.x, vehicle.transform.position.y, targetVector3.z + (targetGridLineIndex == 0 ? -2 : 2));
-                        goingDown = vehicle.transform.position.z > pos1.z ? true : false;
-                        tweenDuration = GetDurationByDistance(pos1, vehiclePos);
-                        sequence.Append(vehicle.transform.DOMove(pos1, tweenDuration).SetEase(isFirstMove ? Ease.InBack : Ease.Linear));
-                        if (isFirstMove) vehicle.SwingAnimation(isFirstMove);
+                        List<Vector3> targetPositions = new List<Vector3>();
+                        targetPositions.Add(new Vector3(vehiclePos.x, vehiclePos.y, vehiclePos.z + zOffsetOfMovement));
+                        targetPositions.Add(new Vector3(targetParkingLotPosition.x, vehiclePos.y,
+                            vehiclePos.z + zOffsetOfMovement));
+                        targetPositions.Add(new Vector3(targetParkingLotPosition.x, vehicle.transform.position.y,
+                            targetParkingLotPosition.z));
 
-                        #endregion
-
-                        #region Second Movement
-
-                        Vector3 pos2 = new Vector3(targetVector3.x, vehicle.transform.position.y, targetVector3.z + (targetGridLineIndex == 0 ? -2 : 2));
-                        tweenDuration = GetDurationByDistance(pos1, pos2);
-                        bool goingRight = pos2.x > pos1.x ? true : false;
-                        sequence.Append(vehicle.transform.DOMoveX(targetVector3.x, tweenDuration).SetEase(Ease.Linear));
-                        sequence.Join(DOTween.To((xx) => { }, 0, 1, tweenDuration / TWEEN_DURATION_DIVIDER).OnComplete(() =>
+                        List<float> targetDurations = new List<float>();
+                        targetDurations.Add(GetDurationByDistance(vehiclePos, targetPositions[0]));
+                        for (int i = 1; i < targetPositions.Count; i++)
                         {
-                            if (goingDown)
-                            {
-                                if (goingRight) rotSign = -1;
-                            }
-                            else
-                            {
-                                if (!goingRight) rotSign = -1;
-                            }
+                            targetDurations.Add(GetDurationByDistance(targetPositions[i - 1], targetPositions[i]));
+                        }
 
-                            vehicle.RotateOnY(90 * rotSign);
-                        }));
-
-                        #endregion
-
-                        #region Third Movement
-
-                        Vector3 pos3 = new Vector3(targetVector3.x, vehicle.transform.position.y, targetVector3.z);
-                        tweenDuration = GetDurationByDistance(pos3, pos2);
-                        bool goingDown2 = pos2.z > pos3.z ? true : false;
-                        if (isLastMove) vehicle.SwingAnimation(isLastMove);
-                        sequence.Append(vehicle.transform.DOMove(pos3, tweenDuration * 2).SetEase(isLastMove ? Ease.OutBack : Ease.Linear));
-                        sequence.Join(DOTween.To((xx) => { }, 0, 1, tweenDuration / TWEEN_DURATION_DIVIDER).OnComplete(() =>
+                        float totalTime = 0;
+                        for (int i = 0; i < targetPositions.Count; i++)
                         {
-                            if (goingDown)
-                            {
-                                if (goingRight)
-                                {
-                                    if (goingDown2)
-                                        vehicle.RotateOnY(90);
-                                    else
-                                        vehicle.RotateOnY(-90);
-                                }
-                                else
-                                {
-                                    if (goingDown2)
-                                        vehicle.RotateOnY(-90);
-                                    else
-                                        vehicle.RotateOnY(90);
-                                }
-                            }
-                            else
-                            {
-                                if (goingRight)
-                                {
-                                    if (goingDown2)
-                                        vehicle.RotateOnY(90);
-                                    else
-                                        vehicle.RotateOnY(-90);
-                                }
-                                else
-                                {
-                                    if (goingDown2)
-                                        vehicle.RotateOnY(-90);
-                                    else
-                                        vehicle.RotateOnY(90);
-                                }
+                            var subSequence = DOTween.Sequence();
 
+                            subSequence.Append(vehicle.transform.DOMove(targetPositions[i], targetDurations[i])
+                                .SetEase(isFirstMove && i == 0 ? Ease.InBack :
+                                    isLastMove && i == targetPositions.Count - 1 ? Ease.OutBack : Ease.Linear));
+                            sequence.Append(subSequence);
+
+                            if (i + 2 <= targetPositions.Count)
+                            {
+                                var rotation = CalculateRotation(i == 0 ? vehiclePos : targetPositions[i - 1],
+                                    targetPositions[i],
+                                    targetPositions[i + 1]);
+
+                                sequence.Insert(totalTime + targetDurations[i] * 0.75f, vehicle.transform.DORotate(
+                                    new Vector3(0, rotation, 0)
+                                    , targetDurations[i] * 0.3f, RotateMode.LocalAxisAdd).SetEase(Ease.InOutQuad));
                             }
-                        }));
-                        #endregion
+
+                            totalTime += targetDurations[i];
+                        }
                     }
                 }
                 else
                 {
-                    float tweenDuration = GetDurationByDistance(transform.position, vehicle.transform.position);
-                    if (isFirstMove) vehicle.SwingAnimation(isFirstMove);
-                    sequence.Append(vehicle.transform.DOMove(transform.position, tweenDuration).SetEase(isFirstMove ? Ease.InBack : Ease.Linear));
-                    sequence.Join(DOTween.To((xx) => { }, 0, 1, tweenDuration).OnComplete(() =>
-                    {
-                        vehicle.transform.forward = (transform.position - vehicle.transform.position);
-                    }));
-
+                    float duration = GetDurationByDistance(transform.position, vehicle.transform.position);
+                    sequence.Append(vehicle.transform.DOMove(transform.position, duration)
+                        .SetEase(isFirstMove ? Ease.InBack : Ease.Linear));
                 }
             }
             else
             {
+                var targetParkingLotPosition = transform.position;
+                var midPointVector3 = (from.transform.position + targetParkingLotPosition) / 2;
 
-                var targetVector3 = transform.position;
-                var midPointVector3 = (from.transform.position + targetVector3) / 2;
-                Vector3 vehiclePos = vehicle.transform.position;
-                float tweenDuration = 5f;
-                goingDown = vehicle.transform.position.z > targetVector3.z ? true : false;
+                List<Vector3> targetPositions = new List<Vector3>();
 
-                #region First Movement
-
-                Vector3 pos1 = new Vector3(vehiclePos.x, vehiclePos.y, midPointVector3.z);
-                tweenDuration = GetDurationByDistance(pos1, vehiclePos);
-
-                sequence.Append(vehicle.transform.DOMove(pos1, tweenDuration).SetEase(isFirstMove ? Ease.InBack : Ease.Linear));
-                if (isFirstMove) vehicle.SwingAnimation(isFirstMove);
-
-                #endregion
-
-
-                #region Second Movement
-
-                Vector3 pos2 = Vector3.zero;
-                bool goingRight = false;
-                if (Mathf.Abs(targetVector3.x - from.transform.position.x) > 0.01f)
+                if (Mathf.Abs(vehiclePos.x - targetParkingLotPosition.x) > 0.05)
                 {
-                    pos2 = new Vector3(targetVector3.x, vehiclePos.y, midPointVector3.z);
-                    tweenDuration = GetDurationByDistance(pos1, pos2);
-                    goingRight = pos2.x > pos1.x ? true : false;
-                    sequence.Append(vehicle.transform.DOMoveX(targetVector3.x, tweenDuration).SetEase(Ease.Linear));
-                    sequence.Join(DOTween.To((xx) => { }, 0, 1, tweenDuration / TWEEN_DURATION_DIVIDER).OnComplete(() =>
-                    {
-                        if (goingDown)
-                        {
-                            if (goingRight) rotSign = -1;
-                        }
-                        else
-                        {
-                            if (!goingRight) rotSign = -1;
-
-                        }
-
-                        vehicle.RotateOnY(90 * rotSign);
-                    }));
-
+                    targetPositions.Add(new Vector3(vehiclePos.x, vehiclePos.y, midPointVector3.z));
+                    targetPositions.Add(new Vector3(targetParkingLotPosition.x, vehiclePos.y,
+                        midPointVector3.z));
                 }
-                #endregion
 
+                targetPositions.Add(new Vector3(targetParkingLotPosition.x, vehicle.transform.position.y,
+                    targetParkingLotPosition.z));
 
-                #region Third Movement
-                Vector3 pos3 = new Vector3(targetVector3.x, vehicle.transform.position.y, targetVector3.z);
-                float zValue = (pos2 == Vector3.zero ? pos1.z : pos2.z);
-                bool goingDown2 = zValue > pos3.z ? true : false;
-                tweenDuration = GetDurationByDistance(pos2 == Vector3.zero ? pos1 : pos2, pos3);
-                if (isLastMove) vehicle.SwingAnimation(isLastMove);
-                sequence.Append(vehicle.transform.DOMove(pos3, tweenDuration).SetEase(isLastMove ? Ease.OutBack : Ease.Linear));
-                sequence.Join(DOTween.To((xx) => { }, 0, 1, tweenDuration / TWEEN_DURATION_DIVIDER).OnComplete(() =>
+                List<float> targetDurations = new List<float>();
+                targetDurations.Add(GetDurationByDistance(vehiclePos, targetPositions[0]));
+                for (int i = 1; i < targetPositions.Count; i++)
                 {
-                    if (goingDown)
+                    targetDurations.Add(GetDurationByDistance(targetPositions[i - 1], targetPositions[i]));
+                }
+
+                float totalTime = 0;
+                for (int i = 0; i < targetPositions.Count; i++)
+                {
+                    var subSequence = DOTween.Sequence();
+
+                    subSequence.Append(vehicle.transform.DOMove(targetPositions[i], targetDurations[i])
+                        .SetEase(isFirstMove && i == 0 ? Ease.InBack :
+                            isLastMove && i == targetPositions.Count - 1 ? Ease.OutBack : Ease.Linear));
+                    sequence.Append(subSequence);
+
+                    if (i + 2 <= targetPositions.Count)
                     {
-                        if (pos2 != Vector3.zero)
-                        {
+                        var rotation = CalculateRotation(i == 0 ? vehiclePos : targetPositions[i - 1],
+                            targetPositions[i],
+                            targetPositions[i + 1]);
 
-                            if (goingRight)
-                            {
-                                if (!goingDown2) rotSign = -1;
-                                else rotSign = 1;
-                            }
-                            else
-                            {
-                                if (goingDown2) rotSign = -1;
-                                else rotSign = 1;
-                            }
-                        }
-                        else
-
-                            rotSign = 0;
-                    }
-                    else
-                    {
-                        if (pos2 != Vector3.zero)
-                        {
-                            if (goingRight)
-                            {
-                                if (!goingDown2) rotSign = -1;
-                                else rotSign = 1;
-                            }
-                            else
-                            {
-                                if (goingDown2) rotSign = -1;
-                                else rotSign = 1;
-                            }
-                        }
-                        else
-
-                            rotSign = 0;
+                        sequence.Insert(totalTime + targetDurations[i] * 0.75f, vehicle.transform.DORotate(
+                            new Vector3(0, rotation, 0)
+                            , targetDurations[i] * 0.3f, RotateMode.LocalAxisAdd).SetEase(Ease.InOutQuad));
                     }
 
-                    vehicle.RotateOnY(90 * rotSign);
-                }));
-
-                #endregion
+                    totalTime += targetDurations[i];
+                }
             }
 
-            sequence.OnComplete(() =>
-            {
-                ucs.TrySetResult();
-            });
+            sequence.OnComplete(() => { ucs.TrySetResult(); });
         }
 
         float GetDurationByDistance(Vector3 pos1, Vector3 pos2)
@@ -287,7 +220,7 @@ namespace GamePlay.Components
             float duration = distance * SECONDS_FOR_PER_METER;
             float finalValue = Mathf.Max(duration, MIN_TWEEN_DURATION);
 
-            return finalValue;
+            return finalValue * 1;
         }
 
         private void OnMouseDown()
@@ -298,6 +231,7 @@ namespace GamePlay.Components
                 OnParkingLotClicked?.Invoke(null, null);
                 return;
             }
+
             OnParkingLotClicked?.Invoke(this, _currentVehicle);
         }
 
@@ -346,7 +280,7 @@ namespace GamePlay.Components
         {
             return _isEmptyAtStart;
         }
-        
+
         public bool CheckIfCompleted()
         {
             var seats = _currentVehicle.GetSeats();
@@ -364,6 +298,5 @@ namespace GamePlay.Components
             return true;
             // COMPLETE
         }
-
     }
 }

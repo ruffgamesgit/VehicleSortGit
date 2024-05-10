@@ -144,7 +144,7 @@ namespace GamePlay.Components
 
         }
 
-        public void SwingAnimation(bool isArrived)
+        public void SwingAnimation()
         {
             //float xRot = isArrived ? -15 : 15;
             //Vector3 rot = new Vector3(transform.rotation.x + xRot, transform.rotation.y, transform.rotation.z);

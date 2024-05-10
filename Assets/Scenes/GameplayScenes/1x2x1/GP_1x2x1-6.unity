@@ -15942,7 +15942,7 @@ MonoBehaviour:
         - {fileID: 3726153482334199376}
         isVirtual: 0
       hasLowerRoad: 0
-      hasUpperRoad: 0
+      hasUpperRoad: 1
     - lines:
       - parkingLots:
         - {fileID: 3726153483198849055}
@@ -15971,7 +15971,7 @@ MonoBehaviour:
         - {fileID: 931489348}
         - {fileID: 1025278810}
         isVirtual: 0
-      hasLowerRoad: 0
+      hasLowerRoad: 1
       hasUpperRoad: 0
 --- !u!114 &6852650983174013329
 MonoBehaviour:
