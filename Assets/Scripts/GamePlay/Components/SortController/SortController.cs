@@ -87,15 +87,20 @@ namespace GamePlay.Components.SortController
                 if (parkingLot.GetCurrentVehicle() == null)
                 {
                     var path = gridData.FindPath(_lastClickedParkingLot, parkingLot);
-
+                    if (path != null)
+                    {
+                        path.RemoveAll(lot => lot == null);
+                    }
                     if (path is { Count: > 0 })
                     {
                         if (path[^1] == parkingLot)
                         {
+                            
                             parkingLot.SetWillOccupied();
                             var vehicle = _lastClickedParkingLot.GetCurrentVehicle();
                             _lastClickedParkingLot.GetCurrentVehicle()?.SetHighlight(false);
                             _lastClickedParkingLot.SetEmpty();
+                            CheckWaitingVehiclesThatCompleted();
                             _lastClickedParkingLot = null;
                             ParkingLot from = null;
 
@@ -120,11 +125,11 @@ namespace GamePlay.Components.SortController
                             }
 
                             parkingLot.Occupy(vehicle, false);
-                            var neighbors =
+                            var targetNeighbors =
                                 parkingLot.FindNeighbors(
                                     gridData.gridGroups[parkingLot.GetParkingLotPosition().GetGridGroupIndex()].lines);
-                            neighbors = neighbors.ExtractUnSortableParkingLots();
-                            foreach (var neighbor in neighbors)
+                            targetNeighbors = targetNeighbors.ExtractUnSortableParkingLots();
+                            foreach (var neighbor in targetNeighbors)
                             {
                                 if (_lastClickedParkingLot == neighbor)
                                 {
@@ -512,8 +517,25 @@ namespace GamePlay.Components.SortController
             if (!Monitor.IsEntered(_lock)) SortAffectedParkingLots();
         }
 
-      
+        private void CheckWaitingVehiclesThatCompleted()
+        {
+            foreach (var group in gridData.gridGroups)
+            {
+                foreach (var line in group.lines)
+                {
+                    foreach (var parkingLot in line.parkingLots)
+                    {
+                        if(parkingLot.IsWalkable())continue;
+                        var vehicle = parkingLot.GetCurrentVehicle();
+                        if(vehicle == null) continue;
+                        if(vehicle.HasEmptySeat())continue;
 
+                        parkingLot.CheckIfCompleted(gridData);
+                    }
+                }
+            }
+        }
+        
         private List<Seat> LookForMatchingTypes(ParkingLot neighbor, ColorEnum color)
         {
             var seats = new List<Seat>();
