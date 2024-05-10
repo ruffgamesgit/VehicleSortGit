@@ -373,7 +373,7 @@ MonoBehaviour:
   m_FallbackScreenDPI: 96
   m_DefaultSpriteDPI: 96
   m_DynamicPixelsPerUnit: 1
-  m_PresetInfoIsWorld: 0
+  m_PresetInfoIsWorld: 1
 --- !u!114 &6912295384458572607
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -404,6 +404,5 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   image: {fileID: 6830540902057475013}
-  alphaDuration: 0.5
-  loopInterval: 0.5
+  tweenDuration: 0.5
   stopLoop: 0
