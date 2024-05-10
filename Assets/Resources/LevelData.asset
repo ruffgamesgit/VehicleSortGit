@@ -14,9 +14,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   levelData:
   - scene: GP_1x2x1-6
-    colorVariety: 10
-    matchingPassengerCount: 12
-    vehicleCount: 14
+    colorVariety: 15
+    matchingPassengerCount: 15
+    vehicleCount: 20
     levelDataGridGroups:
     - lines:
       - ParkingLots:
@@ -39,6 +39,25 @@ MonoBehaviour:
           IsInvisible: 0
           IsObstacle: 0
     - lines:
+      - ParkingLots:
+        - IsEmpty: 0
+          IsInvisible: 0
+          IsObstacle: 0
+        - IsEmpty: 0
+          IsInvisible: 0
+          IsObstacle: 0
+        - IsEmpty: 0
+          IsInvisible: 0
+          IsObstacle: 0
+        - IsEmpty: 0
+          IsInvisible: 0
+          IsObstacle: 0
+        - IsEmpty: 0
+          IsInvisible: 0
+          IsObstacle: 0
+        - IsEmpty: 0
+          IsInvisible: 0
+          IsObstacle: 0
       - ParkingLots:
         - IsEmpty: 0
           IsInvisible: 0

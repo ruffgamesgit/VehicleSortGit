@@ -23,7 +23,6 @@ namespace GamePlay.Components
         private bool _willOccupied;
         const float SECONDS_FOR_PER_METER = 0.085f;
         const float MIN_TWEEN_DURATION = 0.25f;
-        const float TWEEN_DURATION_DIVIDER = 10;
 
         public void Initialize(bool isInvisible, bool isObstacle, bool isEmptyAtStart,
             ParkingLotPosition parkingLotPosition)
@@ -270,7 +269,7 @@ namespace GamePlay.Components
 
         public bool IsWalkable()
         {
-            return !_isObstacle && (_isInvisible || IsEmpty());
+            return !_isObstacle && !_willOccupied & (_isInvisible || IsEmpty());
         }
 
         public bool IsInvisible()
@@ -285,6 +284,7 @@ namespace GamePlay.Components
 
         public bool CheckIfCompleted(GridData gridData)
         {
+            if(_currentVehicle == null) return false;
             var seats = _currentVehicle.GetSeats();
 
             foreach (var seat in seats)
@@ -422,9 +422,13 @@ namespace GamePlay.Components
                                 .SetEase(Ease.InOutQuad));
                         sequence.Append(secondSequence);
                     }
+                    else
+                    {
+                        return false;
+                        // COMPLETE BUT NO WAY
+                    }
 
-                    return false;
-                    // COMPLETE BUT NO WAY
+                   
                 }
             }
 

@@ -11,7 +11,7 @@ namespace Core.Services
         
         public GamePlayService()
         {
-            _levelData = Resources.Load<LevelDataScriptable>("LevelData 1").levelData;
+            _levelData = Resources.Load<LevelDataScriptable>("LevelData").levelData;
         }
 
         public int GetCurrentLevelIndex()
