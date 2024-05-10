@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Core.Locator;
+using Core.Services;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -11,15 +12,15 @@ namespace Core.Launcher
         private static readonly HashSet<GameObject> DontDestroyOnLoadObjects = new ();
         
         #region Initialize
-        // #if UNITY_EDITOR
-        // [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
-        // public static void Initialize()
-        // {
-        //     Debug.Log("ServicesInitializeEditor");
-        //     Application.targetFrameRate = 60;
-        //     InitializeServices();
-        // }
-        // #else
+        #if UNITY_EDITOR
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
+        public static void Initialize()
+        {
+            Debug.Log("ServicesInitializeEditor");
+            Application.targetFrameRate = 60;
+            InitializeServices();
+        }
+        #else
         public void Awake()
         {
             Debug.Log("ServicesInitialize");
@@ -31,12 +32,16 @@ namespace Core.Launcher
             Debug.Log("ByteBrewInitialize");
             //ByteBrew.InitializeByteBrew();   
         }
-        //#endif
+        #endif
 
         
         private static void InitializeServices()
         {
             ServiceLocator.Initialize();
+            
+            GamePlayService gamePlayService = new GamePlayService();
+            ServiceLocator.Instance.Register<IGamePlayService>(gamePlayService);
+            gamePlayService.LoadLevel();
         }
         
 

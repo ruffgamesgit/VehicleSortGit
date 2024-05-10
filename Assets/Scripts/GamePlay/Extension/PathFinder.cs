@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using GamePlay.Components;
 using GamePlay.Components.SortController;
 using GamePlay.Data;
@@ -17,10 +18,11 @@ namespace GamePlay.Extension
                 int offset = 0;
                 for (int i = 0; i < position.GetGridGroupIndex(); i++)
                 {
-                    offset += gridData.gridGroups[i].lines.Count + 1;
+                    var gridGroup = gridData.gridGroups[i];
+                    offset += gridGroup.lines.Count + (gridGroup.hasUpperRoad ? 1 : 0) + (gridGroup.hasLowerRoad ? 1 : 0) ;
                 }
-
-                offset += 1;
+                var currentGridGroup = gridData.gridGroups[position.GetGridGroupIndex()];
+                offset += (currentGridGroup.hasLowerRoad ? 1 : 0);
                 return offset;
             }
             List<GridLine> virtualizedLines = gridData.gridGroups.GenerateVirtualGrid();
@@ -83,7 +85,7 @@ namespace GamePlay.Extension
         private static ParkingLot[,] GenerateArray(List<GridLine> lines)
         {
             var dimension1 = lines.Count;
-            var dimension2 = lines[1].parkingLots.Count;
+            var dimension2 = lines.First(pLot => !pLot.isVirtual).parkingLots.Count;
             ParkingLot[,] array = new ParkingLot[dimension1, dimension2];
 
             int x = 0;
@@ -109,7 +111,9 @@ namespace GamePlay.Extension
             {
                 for (int j = 0; j < nodes.GetLength(1); j++)
                 {
-                    nodes[i, j] = new Node(i, j, grid[i,j] == null || grid[i,j].IsWalkable());
+                    bool isGridNull = grid[i, j] == null;
+                    bool isGridWalkable = isGridNull || grid[i, j].IsWalkable();
+                    nodes[i, j] = new Node(i, j,  isGridWalkable);
                 }
             }
             return nodes;

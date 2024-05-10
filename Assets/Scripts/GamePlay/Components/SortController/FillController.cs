@@ -263,7 +263,7 @@ namespace GamePlay.Components.SortController
                 {
                     foreach (var parkingLot in gridLine.parkingLots)
                     {
-                        if (!parkingLot.IsInvisible())
+                        if (!parkingLot.IsInvisible() && !parkingLot.IsEmptyAtStart())
                         {
                             parkingLots.Add(parkingLot);
                         }
