@@ -301,7 +301,6 @@ namespace GamePlay.Components
 
 
             var vehicle = _currentVehicle;
-            SetEmpty();
             var gridGroup = gridData.gridGroups[_parkingLotPosition.GetGridGroupIndex()];
             var parkingLotGridLineIndex = _parkingLotPosition.GetGridLineIndex();
             var parkingLotIndex = _parkingLotPosition.GetParkingLotIndex();
@@ -393,25 +392,35 @@ namespace GamePlay.Components
                         }
 
                         if (shortestPath == null) return false; // COMPLETE BUT NO WAY 
-                        
+
+                        ParkingLot lastMovedParkingLot = this;
+                        var subSequence = DOTween.Sequence();
                         foreach (var pLot in shortestPath)
                         {
-                            sequence.Append(pLot.MoveAnimation(gridData, vehicle, null, this,
+                            if (pLot == this)
+                            {
+                                continue;
+                            }
+                            subSequence.Append(pLot.MoveAnimation(gridData, vehicle, null, lastMovedParkingLot,
                                 pLot == shortestPath[0], pLot == shortestPath[^1]));
+                            lastMovedParkingLot = pLot;
                         }
-                        
+
+                        sequence.Append(subSequence);
                         var lastParkingLot = shortestPath[^1];
                         var newOffset =
-                            CalculateZOffset(gridGroup, isCloseToUpperRoad ? gridGroup.lines.Count - 1 : 0);
-                        sequence.Append(vehicle.transform.DOMoveZ(lastParkingLot.transform.position.z + newOffset, 0.35f)
+                            CalculateZOffset(gridGroup, lastParkingLot.GetParkingLotPosition().GetGridLineIndex());
+                        var secondSequence = DOTween.Sequence();
+                        secondSequence.Append(vehicle.transform.DOMoveZ(lastParkingLot.transform.position.z + newOffset, 0.35f)
                             .SetEase(Ease.InBack));
                         var parkingLotCount = gridGroup.lines[lastParkingLot.GetParkingLotPosition().GetGridLineIndex()].parkingLots.Count -1 ;
                         bool isRightTurn = lastParkingLot.GetParkingLotPosition().GetParkingLotIndex() > parkingLotCount / 2; 
-                        sequence.Append(vehicle.transform.DOMoveX(isRightTurn ? 10 : -10, 0.75f).SetEase(Ease.Linear));
-                        sequence.Insert(0.2f,
+                        secondSequence.Append(vehicle.transform.DOMoveX(isRightTurn ? 10 : -10, 0.75f).SetEase(Ease.Linear));
+                        secondSequence.Insert(0.2f,
                             vehicle.transform.DORotate(new Vector3(0, isRightTurn ? newOffset > 0 ? 90 : -90 : newOffset > 0 ? -90 : 90, 0), 0.3f,
                                     RotateMode.LocalAxisAdd)
                                 .SetEase(Ease.InOutQuad));
+                        sequence.Append(secondSequence);
                     }
 
                     return false;
@@ -420,6 +429,7 @@ namespace GamePlay.Components
             }
 
             sequence.OnComplete(() => { vehicle.Destroy(); });
+            SetEmpty();
             return true;
             // COMPLETE
         }
