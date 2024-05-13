@@ -6,7 +6,7 @@ namespace GamePlay.Data.Grid
     public class GridGroup
     {
          public List<GridLine> lines;
-         public bool hasLowerRoad = true;
          public bool hasUpperRoad = false;
+         public bool hasLowerRoad = true;
     }
 }
