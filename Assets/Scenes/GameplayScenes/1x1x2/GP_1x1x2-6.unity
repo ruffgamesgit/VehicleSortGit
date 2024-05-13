@@ -14676,8 +14676,8 @@ MonoBehaviour:
         - {fileID: 1262100665}
         - {fileID: 2089223995}
         isVirtual: 0
-      hasLowerRoad: 0
       hasUpperRoad: 1
+      hasLowerRoad: 0
     - lines:
       - parkingLots:
         - {fileID: 2119266609}
@@ -14687,8 +14687,8 @@ MonoBehaviour:
         - {fileID: 581218234}
         - {fileID: 1561842613}
         isVirtual: 0
-      hasLowerRoad: 1
       hasUpperRoad: 1
+      hasLowerRoad: 1
     - lines:
       - parkingLots:
         - {fileID: 341118168}
@@ -14706,8 +14706,8 @@ MonoBehaviour:
         - {fileID: 958217573}
         - {fileID: 875090439}
         isVirtual: 0
-      hasLowerRoad: 1
       hasUpperRoad: 0
+      hasLowerRoad: 1
 --- !u!4 &1168669586
 Transform:
   m_ObjectHideFlags: 0
