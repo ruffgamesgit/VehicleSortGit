@@ -8,7 +8,7 @@ namespace GamePlay.Components
     public class GarageController : MonoBehaviour
     {
         public ParkingLot neighborParkingLot;
-        public int vehicleNeed;
+        [HideInInspector]public int vehicleNeed;
         private List<Vehicle> _vehicles = new List<Vehicle>();
         
         public void Initialize()

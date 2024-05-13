@@ -4679,7 +4679,7 @@ Transform:
   - {fileID: 858814052}
   - {fileID: 1497577848}
   m_Father: {fileID: 0}
-  m_RootOrder: 6
+  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 90, y: 0, z: 0}
 --- !u!1 &481902556
 GameObject:
@@ -4898,7 +4898,7 @@ Transform:
   - {fileID: 348588412}
   - {fileID: 808287322}
   m_Father: {fileID: 0}
-  m_RootOrder: 5
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 90, y: 0, z: 0}
 --- !u!1 &493745699
 GameObject:
@@ -8643,6 +8643,39 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 858814051}
   m_Mesh: {fileID: 10210, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!1 &885084019
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 885084020}
+  m_Layer: 0
+  m_Name: Garages
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &885084020
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 885084019}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: -0.97872126, y: 1.8185362, z: -5.3729944}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 895163645}
+  - {fileID: 2005196525}
+  m_Father: {fileID: 7148906039752071104}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &892044131
 GameObject:
   m_ObjectHideFlags: 0
@@ -8868,12 +8901,17 @@ PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Modification:
-    m_TransformParent: {fileID: 0}
+    m_TransformParent: {fileID: 885084020}
     m_Modifications:
+    - target: {fileID: 5557409107340812227, guid: d2ddaf7ab93303944bb52fa210315d95,
+        type: 3}
+      propertyPath: neighborParkingLot
+      value: 
+      objectReference: {fileID: 1124335509387507277}
     - target: {fileID: 6990123268571866889, guid: d2ddaf7ab93303944bb52fa210315d95,
         type: 3}
       propertyPath: m_RootOrder
-      value: 2
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6990123268571866889, guid: d2ddaf7ab93303944bb52fa210315d95,
         type: 3}
@@ -8883,27 +8921,27 @@ PrefabInstance:
     - target: {fileID: 6990123268571866889, guid: d2ddaf7ab93303944bb52fa210315d95,
         type: 3}
       propertyPath: m_LocalScale.y
-      value: 0.20000009
+      value: 0.2000001
       objectReference: {fileID: 0}
     - target: {fileID: 6990123268571866889, guid: d2ddaf7ab93303944bb52fa210315d95,
         type: 3}
       propertyPath: m_LocalScale.z
-      value: 0.20000009
+      value: 0.2000001
       objectReference: {fileID: 0}
     - target: {fileID: 6990123268571866889, guid: d2ddaf7ab93303944bb52fa210315d95,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: -3
+      value: -2.0212789
       objectReference: {fileID: 0}
     - target: {fileID: 6990123268571866889, guid: d2ddaf7ab93303944bb52fa210315d95,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0
+      value: -1.8185362
       objectReference: {fileID: 0}
     - target: {fileID: 6990123268571866889, guid: d2ddaf7ab93303944bb52fa210315d95,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: -1.3000002
+      value: 1.9229941
       objectReference: {fileID: 0}
     - target: {fileID: 6990123268571866889, guid: d2ddaf7ab93303944bb52fa210315d95,
         type: 3}
@@ -8953,7 +8991,7 @@ PrefabInstance:
     - target: {fileID: 7658996510593088947, guid: d2ddaf7ab93303944bb52fa210315d95,
         type: 3}
       propertyPath: m_Name
-      value: Garage (1)
+      value: Garage1
       objectReference: {fileID: 0}
     - target: {fileID: 8163553669970975846, guid: d2ddaf7ab93303944bb52fa210315d95,
         type: 3}
@@ -8973,6 +9011,18 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 895163644}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &895163646 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 5557409107340812227, guid: d2ddaf7ab93303944bb52fa210315d95,
+    type: 3}
+  m_PrefabInstance: {fileID: 895163644}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0cfbd6603d924aa090de73df0f33e7b8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &903339984
 GameObject:
   m_ObjectHideFlags: 0
@@ -9770,7 +9820,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1044062414}
   m_Layer: 0
-  m_Name: Group1 (1)
+  m_Name: Group2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -9791,7 +9841,7 @@ Transform:
   - {fileID: 984828621}
   - {fileID: 600234716}
   m_Father: {fileID: 7148906039752071104}
-  m_RootOrder: 2
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1045231874
 GameObject:
@@ -12015,7 +12065,7 @@ Transform:
   - {fileID: 1689888675}
   - {fileID: 1222685313}
   m_Father: {fileID: 0}
-  m_RootOrder: 4
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1296552387
 GameObject:
@@ -18311,12 +18361,17 @@ PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Modification:
-    m_TransformParent: {fileID: 0}
+    m_TransformParent: {fileID: 885084020}
     m_Modifications:
+    - target: {fileID: 5557409107340812227, guid: d2ddaf7ab93303944bb52fa210315d95,
+        type: 3}
+      propertyPath: neighborParkingLot
+      value: 
+      objectReference: {fileID: 819338365}
     - target: {fileID: 6990123268571866889, guid: d2ddaf7ab93303944bb52fa210315d95,
         type: 3}
       propertyPath: m_RootOrder
-      value: 3
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6990123268571866889, guid: d2ddaf7ab93303944bb52fa210315d95,
         type: 3}
@@ -18326,27 +18381,27 @@ PrefabInstance:
     - target: {fileID: 6990123268571866889, guid: d2ddaf7ab93303944bb52fa210315d95,
         type: 3}
       propertyPath: m_LocalScale.y
-      value: 0.20000009
+      value: 0.2000001
       objectReference: {fileID: 0}
     - target: {fileID: 6990123268571866889, guid: d2ddaf7ab93303944bb52fa210315d95,
         type: 3}
       propertyPath: m_LocalScale.z
-      value: 0.20000009
+      value: 0.2000001
       objectReference: {fileID: 0}
     - target: {fileID: 6990123268571866889, guid: d2ddaf7ab93303944bb52fa210315d95,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: -3
+      value: -2.0212789
       objectReference: {fileID: 0}
     - target: {fileID: 6990123268571866889, guid: d2ddaf7ab93303944bb52fa210315d95,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0
+      value: -1.8185362
       objectReference: {fileID: 0}
     - target: {fileID: 6990123268571866889, guid: d2ddaf7ab93303944bb52fa210315d95,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: 7.6
+      value: 10.822994
       objectReference: {fileID: 0}
     - target: {fileID: 6990123268571866889, guid: d2ddaf7ab93303944bb52fa210315d95,
         type: 3}
@@ -18396,7 +18451,7 @@ PrefabInstance:
     - target: {fileID: 7658996510593088947, guid: d2ddaf7ab93303944bb52fa210315d95,
         type: 3}
       propertyPath: m_Name
-      value: Garage (1)
+      value: Garage2
       objectReference: {fileID: 0}
     - target: {fileID: 8163553669970975846, guid: d2ddaf7ab93303944bb52fa210315d95,
         type: 3}
@@ -18416,6 +18471,18 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 2005196524}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &2005196526 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 5557409107340812227, guid: d2ddaf7ab93303944bb52fa210315d95,
+    type: 3}
+  m_PrefabInstance: {fileID: 2005196524}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0cfbd6603d924aa090de73df0f33e7b8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &2008582589
 GameObject:
   m_ObjectHideFlags: 0
@@ -27784,11 +27851,12 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 1
   m_Children:
+  - {fileID: 885084020}
   - {fileID: 7148906040187316041}
   - {fileID: 7148906040595850471}
   - {fileID: 1044062414}
   m_Father: {fileID: 0}
-  m_RootOrder: 7
+  m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &7148906039752071105
 GameObject:
@@ -27839,8 +27907,8 @@ MonoBehaviour:
         - {fileID: 1124335508721236477}
         - {fileID: 1124335509498931378}
         isVirtual: 0
-      hasLowerRoad: 0
       hasUpperRoad: 1
+      hasLowerRoad: 0
     - lines:
       - parkingLots:
         - {fileID: 1124335508598673725}
@@ -27850,8 +27918,8 @@ MonoBehaviour:
         - {fileID: 1124335509061831011}
         - {fileID: 1124335508640352258}
         isVirtual: 0
-      hasLowerRoad: 1
       hasUpperRoad: 1
+      hasLowerRoad: 1
     - lines:
       - parkingLots:
         - {fileID: 819338365}
@@ -27869,8 +27937,11 @@ MonoBehaviour:
         - {fileID: 1579502704}
         - {fileID: 26983182}
         isVirtual: 0
-      hasLowerRoad: 1
       hasUpperRoad: 0
+      hasLowerRoad: 1
+  garages:
+  - {fileID: 895163646}
+  - {fileID: 2005196526}
 --- !u!114 &7148906039752071107
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -27939,7 +28010,7 @@ Transform:
   - {fileID: 7148906040007765995}
   - {fileID: 7148906039101414798}
   m_Father: {fileID: 7148906039752071104}
-  m_RootOrder: 0
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &7148906040187316046
 GameObject:
@@ -27951,7 +28022,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7148906040187316041}
   m_Layer: 0
-  m_Name: Group1
+  m_Name: Group0
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -27967,7 +28038,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7148906040595850471}
   m_Layer: 0
-  m_Name: Group0
+  m_Name: Group1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -27987,7 +28058,7 @@ Transform:
   m_Children:
   - {fileID: 7148906041031799066}
   m_Father: {fileID: 7148906039752071104}
-  m_RootOrder: 1
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!4 &7148906041031799066
 Transform:
