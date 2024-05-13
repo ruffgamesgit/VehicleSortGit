@@ -13,6 +13,7 @@ namespace GamePlay.Components
     {
         [SerializeField] private List<Seat> seats = new List<Seat>(4);
         [SerializeField] private Outline outline;
+        private bool _isCompleted = false;
         public Dictionary<ColorEnum, int> GetExistingColors()
         {
             var colorCount = new Dictionary<ColorEnum, int>();
@@ -34,6 +35,15 @@ namespace GamePlay.Components
             outline.HandleOutline(active ? 2.7f : 0f);
         }
 
+        public bool IsCompleted()
+        {
+            return _isCompleted;
+        }
+
+        public void SetCompleted()
+        {
+            _isCompleted = true;
+        }
         public List<Seat> GetSeats()
         {
             return seats;

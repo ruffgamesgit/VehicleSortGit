@@ -11,6 +11,7 @@ namespace GamePlay.Components
         private Passenger _passenger;
         private ColorEnum _preColor;
         private bool _isAnimationOn;
+        private const float TWEEN_DURATION = .3f;
         public void Occupy(Passenger passenger)
         {
             _passenger = passenger;
@@ -75,7 +76,7 @@ namespace GamePlay.Components
                 Transform meshTr = passengerMeshes[i];
                 meshTr.SetParent(transform);
                 Vector3 targetPos = _passenger.GetOffsetByIndex(i);
-                sequence.Insert(i * 0.1f, meshTr.transform.DOLocalJump(targetPos, 1, 1, .5f).SetEase(Ease.OutQuad));
+                sequence.Insert(i * 0.1f, meshTr.transform.DOLocalJump(targetPos, 1, 1, TWEEN_DURATION).SetEase(Ease.OutQuad));
             }
             sequence.OnComplete(() =>
             {
