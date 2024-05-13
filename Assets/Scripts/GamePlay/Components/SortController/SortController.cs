@@ -414,43 +414,51 @@ namespace GamePlay.Components.SortController
             sortOptionData.MatchedNeighbors = matchedNeighbors;
 
             if (matchedSeats.Count == 0) return null;
-            if (matchedSeats.Count < countToLookFor && matchedNeighbors.Count == 1)
+            if (matchedSeats.Count < countToLookFor)
             {
                 (bool, ParkingLot) IsMatchedBySecondNeighbor()
                 {
-                    var parkingLotPosition = parkingLot.GetParkingLotPosition();
-                    var secondNeighbors = matchedNeighbors[0]
-                        .FindNeighbors(gridData.gridGroups[parkingLotPosition.GetGridGroupIndex()].lines);
-                    secondNeighbors = secondNeighbors.ExtractUnSortableParkingLots();
-                    secondNeighbors.Remove(parkingLot);
-                    if (secondNeighbors.Count != 0)
+                    ParkingLot selectedSecondNeighbor = null;
+                    int remaining = 4;
+                    for (int i = 0; i < matchedNeighbors.Count; i++)
                     {
-                        int remainingCount = countToLookFor - matchedSeats.Count;
-                        foreach (var secondNeighborParkingLot in secondNeighbors)
+                        var parkingLotPosition = matchedNeighbors[i].GetParkingLotPosition();
+                        var secondNeighbors = matchedNeighbors[i]
+                            .FindNeighbors(gridData.gridGroups[parkingLotPosition.GetGridGroupIndex()].lines);
+                        secondNeighbors = secondNeighbors.ExtractUnSortableParkingLots();
+                        var neighborCountToLookFor = 4 - matchedNeighbors[i].GetCurrentVehicle().GetSeats().FindAll(seat => !seat.IsEmpty()
+                            && seat.GetPassenger().GetColor()
+                            == arg.GetPassenger().GetColor()).Count;
+                        int remainingCount = neighborCountToLookFor;
+                        if (secondNeighbors.Count != 0)
                         {
-                            var matchingSlots = LookForMatchingTypes(secondNeighborParkingLot,
-                                arg.GetPassenger().GetColor());
-                            if (matchingSlots.Count == 0) continue;
-                            remainingCount--;
-                        }
+                            foreach (var secondNeighborParkingLot in secondNeighbors)
+                            {
+                                var matchingSlots = LookForMatchingTypes(secondNeighborParkingLot,
+                                    arg.GetPassenger().GetColor());
+                                if (matchingSlots.Count == 0) continue;
+                                remainingCount--;
+                            }
 
-                        if (remainingCount <= 0)
-                        {
-                            return (true, matchedNeighbors[0]);
-                        }
+                            if (remainingCount <= 0)
+                            {
+                                return (true, matchedNeighbors[i]);
+                            }
 
-                        if (LookForMatchingTypes(matchedNeighbors[0],
-                                arg.GetPassenger().GetColor()).Count > 0)
-                        {
-                            return (false, matchedNeighbors[0]);
+                            if (remainingCount < countToLookFor)
+                            {
+                                if (remainingCount < remaining)
+                                {
+                                    remaining = remainingCount;
+                                    selectedSecondNeighbor = matchedNeighbors[i];
+                                }
+                            }
                         }
                     }
-                    else
+                    if (selectedSecondNeighbor != null)
                     {
-                        return (false, matchedNeighbors[0]);
+                        return (false, selectedSecondNeighbor);
                     }
-
-
                     return (false, null);
                 }
 
