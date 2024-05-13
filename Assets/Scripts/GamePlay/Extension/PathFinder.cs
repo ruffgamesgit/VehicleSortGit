@@ -10,8 +10,7 @@ namespace GamePlay.Extension
 {
     public static class PathFinder
     {
-        
-        public static List<ParkingLot> FindPath(this GridData gridData,ParkingLot from, ParkingLot to)
+        public static List<ParkingLot> FindPath(this GridData gridData, ParkingLot from, ParkingLot to)
         {
             int GetGridLineOffset(ParkingLotPosition position)
             {
@@ -19,52 +18,134 @@ namespace GamePlay.Extension
                 for (int i = 0; i < position.GetGridGroupIndex(); i++)
                 {
                     var gridGroup = gridData.gridGroups[i];
-                    offset += gridGroup.lines.Count + (gridGroup.hasUpperRoad ? 1 : 0) + (gridGroup.hasLowerRoad ? 1 : 0) ;
+                    offset += gridGroup.lines.Count + (gridGroup.hasUpperRoad ? 1 : 0) +
+                              (gridGroup.hasLowerRoad ? 1 : 0);
                 }
+
                 var currentGridGroup = gridData.gridGroups[position.GetGridGroupIndex()];
                 offset += (currentGridGroup.hasLowerRoad ? 1 : 0);
                 return offset;
             }
+
             List<GridLine> virtualizedLines = gridData.gridGroups.GenerateVirtualGrid();
             var fromPosition = from.GetParkingLotPosition();
             var toPosition = to.GetParkingLotPosition();
             var startGridLineIndex = fromPosition.GetGridLineIndex() + GetGridLineOffset(fromPosition);
             var targetGridLineIndex = toPosition.GetGridLineIndex() + GetGridLineOffset(toPosition);
-            var path =  virtualizedLines.CalculatePath(startGridLineIndex, fromPosition.GetParkingLotIndex(), 
+            var path = virtualizedLines.CalculatePath(startGridLineIndex, fromPosition.GetParkingLotIndex(),
                 targetGridLineIndex, toPosition.GetParkingLotIndex());
 
+            // if (path is { Count: >= 3 })
+            // {
+            //     var indexOfLastNullElement = path.FindLastIndex(x => x == null);
+            //
+            //     if (indexOfLastNullElement != -1)
+            //     {
+            //         var lastElementLine = path[^1].GetParkingLotPosition().GetGridLineIndex();
+            //         var elementsAfterNull =
+            //             path.GetRange(indexOfLastNullElement + 1, path.Count - 1 - indexOfLastNullElement);
+            //
+            //         foreach (var element in elementsAfterNull)
+            //         {
+            //             if (element.GetParkingLotPosition().GetGridLineIndex() != lastElementLine)
+            //             {
+            //                 return TrimPath(path);
+            //             }
+            //         }
+            //
+            //         for (int i = path.Count - 2; i > indexOfLastNullElement; i--)
+            //         {
+            //             if (path[i].GetParkingLotPosition().GetGridLineIndex() == lastElementLine)
+            //             {
+            //                 path[i] = null;
+            //             }
+            //         }
+            //     }
+            // }
+
+            // if (path is { Count: < 3 })
+            // {
+            //     return path;
+            // }
             if (path is { Count: >= 3 })
             {
-                var indexOfLastNullElement = path.FindLastIndex(x => x == null);
-
-                if (indexOfLastNullElement != -1)
-                {
-                    var lastElementLine = path[^1].GetParkingLotPosition().GetGridLineIndex();
-                    var elementsAfterNull = path.GetRange(indexOfLastNullElement + 1, path.Count - 1 - indexOfLastNullElement);
-
-                    foreach (var element in elementsAfterNull)
-                    {
-                        if (element.GetParkingLotPosition().GetGridLineIndex() != lastElementLine)
-                        {
-                            return path;
-                        }
-                    }
-                    
-                    for(int i = path.Count -2 ; i > indexOfLastNullElement; i--)
-                    {
-                        if (path[i].GetParkingLotPosition().GetGridLineIndex() == lastElementLine)
-                        {
-                            path[i] = null;
-                        }
-                    }
-
-                }
-                   
+                return TrimPath(path);
             }
 
             return path;
         }
-        private static List<ParkingLot> CalculatePath(this List<GridLine> gridLines, int startX, int startY, int targetX, int targetY)
+
+        private static List<ParkingLot> TrimPath(List<ParkingLot> path)
+        {
+            ParkingLot referenceLot = null;
+            List<ParkingLot> itemsToRemove = new List<ParkingLot>();
+            int lastGridGroup = -1;
+            path.RemoveAll(x => x == null);
+            int matchCounter = 0;
+            for (int i = 0; i < path.Count; i++)
+            {
+                if (path[i] != null && referenceLot != null && path[i].GetParkingLotPosition().GetGridGroupIndex() ==
+                    referenceLot.GetParkingLotPosition().GetGridGroupIndex() &&
+                    path[i].GetParkingLotPosition().GetGridLineIndex() ==
+                    referenceLot.GetParkingLotPosition().GetGridLineIndex())
+                {
+                    matchCounter++;
+                }
+                else
+                {
+                    if (matchCounter >= 2)
+                    {
+                        int offset = lastGridGroup != -1 && referenceLot != null 
+                                                         && lastGridGroup != referenceLot.GetParkingLotPosition().GetGridGroupIndex() 
+                                                         && lastGridGroup != path[^1].GetParkingLotPosition().GetGridGroupIndex()
+                            ? -1
+                            : 0;
+                        
+                        for (int y = i - 2; y > i - matchCounter + offset; y--)
+                        {
+                            itemsToRemove.Add(path[y]);
+                        }
+                    }
+
+                    matchCounter = 0;
+                    if (path[i] != null)
+                    {
+                        matchCounter = 1;
+                        if (referenceLot != null)
+                        {
+                            lastGridGroup = referenceLot.GetParkingLotPosition().GetGridGroupIndex();
+                        }
+
+                        referenceLot = path[i];
+                    }
+                }
+            }
+
+            if (matchCounter >= 2)
+            {
+                int offset = lastGridGroup != -1 && referenceLot != null 
+                                                 && lastGridGroup != referenceLot.GetParkingLotPosition().GetGridGroupIndex() 
+                                                 && lastGridGroup != path[^1].GetParkingLotPosition().GetGridGroupIndex()
+                    ? -1
+                    : 0;
+                for (int y = path.Count - 2; y > path.Count - matchCounter + offset; y--)
+                {
+                    itemsToRemove.Add(path[y]);
+                }
+            }
+
+
+            foreach (var item in itemsToRemove)
+            {
+                path.Remove(item);
+            }
+
+
+            return path;
+        }
+
+        private static List<ParkingLot> CalculatePath(this List<GridLine> gridLines, int startX, int startY,
+            int targetX, int targetY)
         {
             var grid = GenerateArray(gridLines);
             var nodes = ConvertGridToNode(grid);
@@ -77,8 +158,9 @@ namespace GamePlay.Extension
             List<ParkingLot> result = new List<ParkingLot>();
             foreach (var node in calculatedPath)
             {
-                result.Add(grid[node.X,node.Y]);
+                result.Add(grid[node.X, node.Y]);
             }
+
             return result;
         }
 
@@ -103,7 +185,7 @@ namespace GamePlay.Extension
 
             return array;
         }
-        
+
         private static Node[,] ConvertGridToNode(ParkingLot[,] grid)
         {
             Node[,] nodes = new Node[grid.GetLength(0), grid.GetLength(1)];
@@ -113,9 +195,10 @@ namespace GamePlay.Extension
                 {
                     bool isGridNull = grid[i, j] == null;
                     bool isGridWalkable = isGridNull || grid[i, j].IsWalkable();
-                    nodes[i, j] = new Node(i, j,  isGridWalkable);
+                    nodes[i, j] = new Node(i, j, isGridWalkable);
                 }
             }
+
             return nodes;
         }
 
@@ -133,6 +216,7 @@ namespace GamePlay.Extension
                 {
                     return ReconstructPath(current);
                 }
+
                 openSet.Remove(current);
                 closedSet.Add(current);
 
@@ -153,6 +237,7 @@ namespace GamePlay.Extension
                     }
                 }
             }
+
             return null;
         }
 
@@ -201,6 +286,7 @@ namespace GamePlay.Extension
                 path.Insert(0, node);
                 node = node.Parent;
             }
+
             return path;
         }
     }
@@ -213,7 +299,7 @@ namespace GamePlay.Extension
         public List<Node> Neighbors { get; set; }
         public Node Parent { get; set; }
         public int G { get; set; }
-        public int H { get; set; } 
+        public int H { get; set; }
         public int F => G + H;
 
         public Node(int x, int y, bool isWalkable)
