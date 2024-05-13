@@ -14,7 +14,25 @@ namespace GamePlay.Components.SortController
         [SerializeField] private Passenger passengerPrefab;
         private readonly Random _rng = new Random();
 
-        private void GenerateVehicles(List<GridGroup> gridGroups, int vehicleCount)
+        private List<Vehicle> GenerateVehiclesForFeeders(List<GarageController> garages)
+        {
+            if(garages == null || garages.Count == 0) return new List<Vehicle>();
+            List<Vehicle> vehiclesOnFeeder = new List<Vehicle>();
+            for (int i = 0; i < garages.Count; i++)
+            {
+                garages[i].Clear();
+                for(int j = 0; j < garages[i].vehicleNeed; j++)
+                {
+                    var vehicle = Instantiate(vehiclePrefab, garages[i].transform.position, Quaternion.identity);
+                    garages[i].PushVehicle(vehicle);
+                    vehiclesOnFeeder.Add(vehicle);
+                }
+            }
+            return vehiclesOnFeeder;
+        }
+        
+        
+        private void GenerateVehicles(List<GridGroup> gridGroups, int vehicleCount, List<GarageController> garages)
         {
             List<ParkingLot> parkingLots = GetParkingLotsShuffled(gridGroups);
 
@@ -29,10 +47,22 @@ namespace GamePlay.Components.SortController
                 }
                 parkingLot.SetEmpty();
             }
-
-            Queue<ParkingLot> parkingLotQueue = new Queue<ParkingLot>(parkingLots);
-
+            
             int vehicleCounter = 0;
+            if(garages != null && garages.Count > 0)
+            {
+                foreach (var garage in garages)
+                {
+                    var parkingLot = garage.neighborParkingLot;
+                    parkingLots.Remove(parkingLot);
+                    var vehicle = Instantiate(vehiclePrefab, parkingLot.transform.position, Quaternion.identity);
+                    parkingLot.Occupy(vehicle, true);
+                    vehicle.transform.position = parkingLot.transform.position;
+                    vehicleCounter++;
+                }
+            }
+         
+            Queue<ParkingLot> parkingLotQueue = new Queue<ParkingLot>(parkingLots);
             while (vehicleCounter < vehicleCount && parkingLotQueue.Count > 0)
             {
                 var parkingLot = parkingLotQueue.Dequeue();
@@ -44,7 +74,7 @@ namespace GamePlay.Components.SortController
         }
 
         public void FillVehicles(List<GridGroup> gridGroups, int vehicleCount, int colorVariety,
-            int matchingPassengerCount)
+            int matchingPassengerCount, List<GarageController> garages)
         {
             if (vehicleCount < matchingPassengerCount)
             {
@@ -53,58 +83,59 @@ namespace GamePlay.Components.SortController
             }
 
             startOver:
-            GenerateVehicles(gridGroups, vehicleCount);
+            var vehiclesOnFeeders = GenerateVehiclesForFeeders(garages);
+            GenerateVehicles(gridGroups, vehicleCount - vehiclesOnFeeders.Count, garages);
             List<ColorEnum> colorVarietyList = ColorEnumExtension.GetAsList();
             colorVarietyList = colorVarietyList.Take(colorVariety).ToList();
             var colorCounts = GetRandomColorCounts(colorVarietyList, matchingPassengerCount);
 
             List<ParkingLot> parkingLots = GetParkingLotsShuffled(gridGroups);
+            parkingLots.RemoveAll(p => p.GetCurrentVehicle() == null);
+            List<object> allVehicles = new List<object>(parkingLots);
+            allVehicles.AddRange(vehiclesOnFeeders);
+            allVehicles.Shuffle();
 
-            foreach (var parkingLot in parkingLots)
+            foreach (var item in allVehicles)
             {
-                if (parkingLot.GetCurrentVehicle() == null) continue;
+                if(item == null) return;
                 List<ColorEnum> availableColors = new List<ColorEnum>();
                 foreach (var color in colorCounts)
                 {
-                    bool canPlaceable = CheckIfPlaceable(gridGroups, parkingLot, color.Key) != null;
+                    bool canPlaceable = item.GetType() == typeof(ParkingLot) ? CheckIfPlaceable(gridGroups, item as ParkingLot, color.Key) != null : CheckIfPlaceable(item as Vehicle, color.Key) != null;
                     if (canPlaceable)
                         availableColors.Add(color.Key);
                 }
-
+                
                 if (availableColors.Count == 0)
                 {
-                    ResetAllSeats(gridGroups);
                     goto startOver;
                 }
-
+                
                 var colorToPlace = availableColors.GetRandomObjectType();
-                var seat = CheckIfPlaceable(gridGroups, parkingLot, colorToPlace);
+                var seat =  item.GetType() == typeof(ParkingLot) ? CheckIfPlaceable(gridGroups, item as ParkingLot, colorToPlace) : CheckIfPlaceable(item as Vehicle,colorToPlace);
                 if (seat == null)
                 {
-                    ResetAllSeats(gridGroups);
                     goto startOver;
                 }
-
                 seat.SetPreColor(colorToPlace);
 
                 colorCounts[colorToPlace]--;
                 if (colorCounts[colorToPlace] == 0)
                     colorCounts.Remove(colorToPlace);
             }
-
+            
             while (colorCounts.Count > 0)
             {
                 var color = GetRandomColorFromDictionary(colorCounts);
-                parkingLots.Shuffle();
-                foreach (var parkingLot in parkingLots)
+                allVehicles.Shuffle();
+                foreach (var item in allVehicles)
                 {
-                    var availableSeat = CheckIfPlaceable(gridGroups, parkingLot, color);
+                    var availableSeat = item.GetType() == typeof(ParkingLot) ? CheckIfPlaceable(gridGroups, item as ParkingLot, color) : CheckIfPlaceable(item as Vehicle, color);
                     if (availableSeat == null) continue;
                     availableSeat.SetPreColor(color);
                     goto placementFound;
                 }
-
-                ResetAllSeats(gridGroups);
+                
                 goto startOver;
 
                 placementFound:
@@ -114,55 +145,69 @@ namespace GamePlay.Components.SortController
                     colorCounts.Remove(color);
             }
 
-            InitializeAllSeats(gridGroups);
+            InitializeAllSeats(allVehicles);
         }
 
-        private void InitializeAllSeats(List<GridGroup> gridGroups)
+        private void InitializeAllSeats(List<object> items)
         {
-            foreach (var gridGroup in gridGroups)
-            {
-                foreach (var gridLine in gridGroup.lines)
-                {
-                    foreach (var parkingLot in gridLine.parkingLots)
-                    {
-                        if (!parkingLot.IsInvisible())
-                        {
-                            var vehicle = parkingLot.GetCurrentVehicle();
-                            if (vehicle == null) continue;
-                            foreach (var seat in vehicle.GetSeats())
-                            {
-                                seat.InstantiatePreColor(passengerPrefab);
-                            }
 
-                            vehicle.SortByType(true).Forget();
-                        }
+            foreach (var item in items)
+            {
+                if (item.GetType() == typeof(ParkingLot))
+                {
+                    var parkingLot = item as ParkingLot;
+                    if(parkingLot == null)continue;
+                    var vehicle = parkingLot.GetCurrentVehicle();
+                    if(vehicle == null)continue;
+                    foreach (var seat in vehicle.GetSeats())
+                    {
+                        seat.InstantiatePreColor(passengerPrefab);
                     }
+                    vehicle.SortByType(true).Forget();
+                }
+                else
+                {
+                    var vehicle = item as Vehicle;
+                    if(vehicle == null) continue;
+                    foreach (var seat in vehicle.GetSeats())
+                    {
+                        seat.InstantiatePreColor(passengerPrefab);
+                    }
+                    vehicle.SortByType(true).Forget();
                 }
             }
         }
-
-        private void ResetAllSeats(List<GridGroup> gridGroups)
+        
+        private Seat CheckIfPlaceable(Vehicle vehicle, ColorEnum color)
         {
-            foreach (var gridGroup in gridGroups)
+            var availableSeat = CheckAvailabilityByPreColor(vehicle);
+
+            if (availableSeat == null)
             {
-                foreach (var gridLine in gridGroup.lines)
+                return null;
+            }
+            
+            var seats = vehicle.GetSeats();
+            var filledSeats = GetFilledSeats(seats);
+            
+            if (filledSeats.Count == seats.Count - 1)
+            {
+                bool isAllMatching = true;
+                foreach (var filledSeat in filledSeats)
                 {
-                    foreach (var parkingLot in gridLine.parkingLots)
+                    if (filledSeat.GetPreColor() != color)
                     {
-                        if (!parkingLot.IsInvisible())
-                        {
-                            var vehicle = parkingLot.GetCurrentVehicle();
-                            if (vehicle == null) continue;
-                            foreach (var seat in vehicle.GetSeats())
-                            {
-                                seat.ResetPreColor();
-                            }
-                        }
+                        isAllMatching = false;
+                        break;
                     }
                 }
-            }
-        }
 
+                if (isAllMatching) return null;
+            }
+            
+            return availableSeat;
+        }
+        
         private Seat CheckIfPlaceable(List<GridGroup> gridGroups, ParkingLot parkingLot, ColorEnum color)
         {
             if (parkingLot.IsInvisible())

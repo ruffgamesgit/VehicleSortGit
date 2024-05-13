@@ -12,6 +12,7 @@ namespace GamePlay.Data.Grid
         public int colorVariety;
         public int matchingPassengerCount;
         public int vehicleCount;
+        public List<int> garageVehicleCounts;
         public List<LevelDataGridGroup> levelDataGridGroups;
     }
     

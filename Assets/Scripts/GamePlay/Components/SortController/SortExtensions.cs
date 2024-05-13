@@ -98,7 +98,7 @@ namespace GamePlay.Components.SortController
         
         public static List<ParkingLot> ExtractUnSortableParkingLots(this List<ParkingLot> parkingLots)
         {
-            parkingLots.RemoveAll(lot => lot.IsInvisible() || lot.IsEmpty());
+            parkingLots.RemoveAll(lot => lot.IsInvisible() || lot.IsEmpty() || lot.GetCurrentVehicle() != null && lot.GetCurrentVehicle().IsCompleted());
             return parkingLots;
         }
         

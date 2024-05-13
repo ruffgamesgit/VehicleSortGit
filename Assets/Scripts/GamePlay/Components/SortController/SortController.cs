@@ -10,13 +10,14 @@ using System.Threading;
 using Core.Locator;
 using Core.Services;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace GamePlay.Components.SortController
 {
     public class SortController : MonoBehaviour
     {
         [SerializeField] private GridData gridData;
-
+        [SerializeField] private List<GarageController> garages;
         private FillController _fillController;
         private ParkingLot _lastClickedParkingLot;
         private IGamePlayService _gamePlayService;
@@ -33,10 +34,29 @@ namespace GamePlay.Components.SortController
             _gamePlayService = ServiceLocator.Instance.Resolve<IGamePlayService>();
             _levelData = _gamePlayService.GetCurrentLevelData();
             InitializeParkingLots();
+            InitializeFeeders();
             _fillController.FillVehicles(gridData.gridGroups, _levelData.vehicleCount, _levelData.colorVariety,
-                _levelData.matchingPassengerCount);
+                _levelData.matchingPassengerCount,garages);
+            ActivateFeeders();
         }
 
+
+        private void ActivateFeeders()
+        {
+            if(garages.Count == 0)return;
+            for (int i = 0; i < garages.Count; i++)
+            {
+                garages[i].Initialize();
+            }
+        }
+        private void InitializeFeeders()
+        {
+            if(garages.Count == 0)return;
+            for (int i = 0; i < garages.Count; i++)
+            {
+                garages[i].vehicleNeed = _levelData.garageVehicleCounts[i];
+            }
+        }
         private void InitializeParkingLots()
         {
             int gridGroupIndex = 0;
@@ -133,7 +153,7 @@ namespace GamePlay.Components.SortController
                             var targetNeighbors =
                                 parkingLot.FindNeighbors(
                                     gridData.gridGroups[parkingLot.GetParkingLotPosition().GetGridGroupIndex()].lines);
-                            targetNeighbors = targetNeighbors.ExtractUnSortableParkingLots();
+                            targetNeighbors = targetNeighbors.ExtractUnSortableParkingLots(); // WRONG CHANGE LATER 
                             foreach (var neighbor in targetNeighbors)
                             {
                                 if (_lastClickedParkingLot == neighbor)
@@ -180,14 +200,14 @@ namespace GamePlay.Components.SortController
                 {
                     if (this == null) break;
                     var vehicle = parkingLot.GetCurrentVehicle();
-                    if (vehicle == null) continue;
-                    if (vehicle.IsCompleted()) continue;
-                    SortParkingLotAlgorithmNew(parkingLot);
+                    if (vehicle != null && !vehicle.IsCompleted())
+                    {
+                        SortParkingLotAlgorithmNew(parkingLot);
+                        continue;
+                    }
                 }
-                else
-                {
-                    _semaphore.Release();
-                }
+                
+                _semaphore.Release();
             }
 
             Monitor.Exit(_lock);
@@ -314,6 +334,7 @@ namespace GamePlay.Components.SortController
                         if (!Monitor.IsEntered(_lock)) SortAffectedParkingLots();
                     }
                 }
+                
             }
             catch (Exception e)
             {

@@ -13,6 +13,7 @@ namespace GamePlay.Components
     public class ParkingLot : MonoBehaviour
     {
         public EventHandler<Vehicle> OnParkingLotClicked;
+        public EventHandler OnEmptied;
         [SerializeField] private ImageColorModifier imageColorModifier;
         private ParkingLotPosition _parkingLotPosition;
         private Vehicle _currentVehicle;
@@ -43,9 +44,9 @@ namespace GamePlay.Components
             _willOccupied = false;
             _currentVehicle = vehicle;
             _currentVehicle.transform.parent = this.transform;
-            if (!moveTransform)
+            if (moveTransform)
             {
-                _currentVehicle.transform.position = this.transform.position;
+                _currentVehicle.transform.DOMove(transform.position, 0.35f).SetEase(Ease.InBack);
             }
         }
 
@@ -260,6 +261,7 @@ namespace GamePlay.Components
         public void SetEmpty()
         {
             _currentVehicle = null;
+            OnEmptied?.Invoke(this, null);
         }
 
         public bool IsEmpty()
