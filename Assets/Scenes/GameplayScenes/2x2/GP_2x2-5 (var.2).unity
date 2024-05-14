@@ -1910,12 +1910,17 @@ PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Modification:
-    m_TransformParent: {fileID: 0}
+    m_TransformParent: {fileID: 1006843011}
     m_Modifications:
+    - target: {fileID: 5557409107340812227, guid: d2ddaf7ab93303944bb52fa210315d95,
+        type: 3}
+      propertyPath: neighborParkingLot
+      value: 
+      objectReference: {fileID: 1744305650}
     - target: {fileID: 6990123268571866889, guid: d2ddaf7ab93303944bb52fa210315d95,
         type: 3}
       propertyPath: m_RootOrder
-      value: 3
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6990123268571866889, guid: d2ddaf7ab93303944bb52fa210315d95,
         type: 3}
@@ -1925,12 +1930,12 @@ PrefabInstance:
     - target: {fileID: 6990123268571866889, guid: d2ddaf7ab93303944bb52fa210315d95,
         type: 3}
       propertyPath: m_LocalScale.y
-      value: 0.20000009
+      value: 0.2000001
       objectReference: {fileID: 0}
     - target: {fileID: 6990123268571866889, guid: d2ddaf7ab93303944bb52fa210315d95,
         type: 3}
       propertyPath: m_LocalScale.z
-      value: 0.20000009
+      value: 0.2000001
       objectReference: {fileID: 0}
     - target: {fileID: 6990123268571866889, guid: d2ddaf7ab93303944bb52fa210315d95,
         type: 3}
@@ -1995,7 +2000,7 @@ PrefabInstance:
     - target: {fileID: 7658996510593088947, guid: d2ddaf7ab93303944bb52fa210315d95,
         type: 3}
       propertyPath: m_Name
-      value: Garage (1)
+      value: Garage (0)
       objectReference: {fileID: 0}
     - target: {fileID: 8163553669970975846, guid: d2ddaf7ab93303944bb52fa210315d95,
         type: 3}
@@ -2015,6 +2020,18 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 191294636}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &191294638 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 5557409107340812227, guid: d2ddaf7ab93303944bb52fa210315d95,
+    type: 3}
+  m_PrefabInstance: {fileID: 191294636}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0cfbd6603d924aa090de73df0f33e7b8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &204396958
 GameObject:
   m_ObjectHideFlags: 0
@@ -3426,6 +3443,8 @@ MonoBehaviour:
         isVirtual: 0
       hasUpperRoad: 0
       hasLowerRoad: 1
+  garages:
+  - {fileID: 191294638}
 --- !u!4 &313488585
 Transform:
   m_ObjectHideFlags: 0
@@ -11916,6 +11935,38 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1002053436}
   m_Mesh: {fileID: 10210, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!1 &1006843010
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1006843011}
+  m_Layer: 0
+  m_Name: Garages
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1006843011
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1006843010}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 191294637}
+  m_Father: {fileID: 0}
+  m_RootOrder: 4
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1007855982
 GameObject:
   m_ObjectHideFlags: 0
@@ -17109,7 +17160,7 @@ Transform:
   - {fileID: 1239142140}
   - {fileID: 1020505070}
   m_Father: {fileID: 0}
-  m_RootOrder: 4
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1525741740
 GameObject:

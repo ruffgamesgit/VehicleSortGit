@@ -19,6 +19,174 @@ MonoBehaviour:
     vehicleCount: 0
     garageVehicleCounts: 
     levelDataGridGroups: []
+  - scene: GP_2x2-5 (var.2)
+    colorVariety: 5
+    matchingPassengerCount: 6
+    vehicleCount: 7
+    garageVehicleCounts: 
+    levelDataGridGroups:
+    - lines:
+      - ParkingLots:
+        - IsEmpty: 0
+          IsInvisible: 1
+          IsObstacle: 1
+        - IsEmpty: 0
+          IsInvisible: 0
+          IsObstacle: 0
+        - IsEmpty: 0
+          IsInvisible: 1
+          IsObstacle: 0
+        - IsEmpty: 0
+          IsInvisible: 0
+          IsObstacle: 0
+        - IsEmpty: 0
+          IsInvisible: 1
+          IsObstacle: 0
+        - IsEmpty: 0
+          IsInvisible: 0
+          IsObstacle: 0
+      - ParkingLots:
+        - IsEmpty: 0
+          IsInvisible: 1
+          IsObstacle: 1
+        - IsEmpty: 0
+          IsInvisible: 0
+          IsObstacle: 0
+        - IsEmpty: 0
+          IsInvisible: 1
+          IsObstacle: 0
+        - IsEmpty: 0
+          IsInvisible: 1
+          IsObstacle: 1
+        - IsEmpty: 0
+          IsInvisible: 1
+          IsObstacle: 0
+        - IsEmpty: 0
+          IsInvisible: 0
+          IsObstacle: 0
+    - lines:
+      - ParkingLots:
+        - IsEmpty: 0
+          IsInvisible: 1
+          IsObstacle: 1
+        - IsEmpty: 0
+          IsInvisible: 0
+          IsObstacle: 0
+        - IsEmpty: 0
+          IsInvisible: 0
+          IsObstacle: 0
+        - IsEmpty: 0
+          IsInvisible: 1
+          IsObstacle: 0
+        - IsEmpty: 0
+          IsInvisible: 0
+          IsObstacle: 0
+        - IsEmpty: 0
+          IsInvisible: 0
+          IsObstacle: 0
+      - ParkingLots:
+        - IsEmpty: 0
+          IsInvisible: 1
+          IsObstacle: 1
+        - IsEmpty: 0
+          IsInvisible: 0
+          IsObstacle: 0
+        - IsEmpty: 0
+          IsInvisible: 0
+          IsObstacle: 0
+        - IsEmpty: 0
+          IsInvisible: 1
+          IsObstacle: 0
+        - IsEmpty: 0
+          IsInvisible: 0
+          IsObstacle: 0
+        - IsEmpty: 0
+          IsInvisible: 0
+          IsObstacle: 0
+  - scene: GP_2x2-5
+    colorVariety: 5
+    matchingPassengerCount: 6
+    vehicleCount: 7
+    garageVehicleCounts: 
+    levelDataGridGroups:
+    - lines:
+      - ParkingLots:
+        - IsEmpty: 0
+          IsInvisible: 1
+          IsObstacle: 1
+        - IsEmpty: 0
+          IsInvisible: 0
+          IsObstacle: 0
+        - IsEmpty: 0
+          IsInvisible: 0
+          IsObstacle: 0
+        - IsEmpty: 0
+          IsInvisible: 1
+          IsObstacle: 0
+        - IsEmpty: 0
+          IsInvisible: 0
+          IsObstacle: 0
+        - IsEmpty: 0
+          IsInvisible: 0
+          IsObstacle: 0
+      - ParkingLots:
+        - IsEmpty: 0
+          IsInvisible: 1
+          IsObstacle: 1
+        - IsEmpty: 0
+          IsInvisible: 0
+          IsObstacle: 0
+        - IsEmpty: 0
+          IsInvisible: 0
+          IsObstacle: 0
+        - IsEmpty: 0
+          IsInvisible: 1
+          IsObstacle: 0
+        - IsEmpty: 0
+          IsInvisible: 0
+          IsObstacle: 0
+        - IsEmpty: 0
+          IsInvisible: 0
+          IsObstacle: 0
+    - lines:
+      - ParkingLots:
+        - IsEmpty: 0
+          IsInvisible: 1
+          IsObstacle: 1
+        - IsEmpty: 0
+          IsInvisible: 0
+          IsObstacle: 0
+        - IsEmpty: 0
+          IsInvisible: 0
+          IsObstacle: 0
+        - IsEmpty: 0
+          IsInvisible: 1
+          IsObstacle: 1
+        - IsEmpty: 0
+          IsInvisible: 0
+          IsObstacle: 0
+        - IsEmpty: 0
+          IsInvisible: 0
+          IsObstacle: 0
+      - ParkingLots:
+        - IsEmpty: 0
+          IsInvisible: 1
+          IsObstacle: 1
+        - IsEmpty: 0
+          IsInvisible: 0
+          IsObstacle: 0
+        - IsEmpty: 0
+          IsInvisible: 0
+          IsObstacle: 0
+        - IsEmpty: 0
+          IsInvisible: 1
+          IsObstacle: 1
+        - IsEmpty: 0
+          IsInvisible: 0
+          IsObstacle: 0
+        - IsEmpty: 0
+          IsInvisible: 0
+          IsObstacle: 0
   - scene: GP_2x1x2-6
     colorVariety: 10
     matchingPassengerCount: 11
@@ -366,90 +534,6 @@ MonoBehaviour:
           IsObstacle: 0
         - IsEmpty: 0
           IsInvisible: 0
-          IsObstacle: 0
-        - IsEmpty: 0
-          IsInvisible: 0
-          IsObstacle: 0
-        - IsEmpty: 0
-          IsInvisible: 0
-          IsObstacle: 0
-  - scene: GP_2x2-5 (var.2)
-    colorVariety: 5
-    matchingPassengerCount: 6
-    vehicleCount: 7
-    garageVehicleCounts: 
-    levelDataGridGroups:
-    - lines:
-      - ParkingLots:
-        - IsEmpty: 0
-          IsInvisible: 1
-          IsObstacle: 1
-        - IsEmpty: 0
-          IsInvisible: 0
-          IsObstacle: 0
-        - IsEmpty: 0
-          IsInvisible: 1
-          IsObstacle: 0
-        - IsEmpty: 0
-          IsInvisible: 0
-          IsObstacle: 0
-        - IsEmpty: 0
-          IsInvisible: 1
-          IsObstacle: 0
-        - IsEmpty: 0
-          IsInvisible: 0
-          IsObstacle: 0
-      - ParkingLots:
-        - IsEmpty: 0
-          IsInvisible: 1
-          IsObstacle: 1
-        - IsEmpty: 0
-          IsInvisible: 0
-          IsObstacle: 0
-        - IsEmpty: 0
-          IsInvisible: 1
-          IsObstacle: 0
-        - IsEmpty: 0
-          IsInvisible: 1
-          IsObstacle: 1
-        - IsEmpty: 0
-          IsInvisible: 1
-          IsObstacle: 0
-        - IsEmpty: 0
-          IsInvisible: 0
-          IsObstacle: 0
-    - lines:
-      - ParkingLots:
-        - IsEmpty: 0
-          IsInvisible: 1
-          IsObstacle: 1
-        - IsEmpty: 0
-          IsInvisible: 0
-          IsObstacle: 0
-        - IsEmpty: 0
-          IsInvisible: 0
-          IsObstacle: 0
-        - IsEmpty: 0
-          IsInvisible: 1
-          IsObstacle: 0
-        - IsEmpty: 0
-          IsInvisible: 0
-          IsObstacle: 0
-        - IsEmpty: 0
-          IsInvisible: 0
-          IsObstacle: 0
-      - ParkingLots:
-        - IsEmpty: 0
-          IsInvisible: 1
-          IsObstacle: 1
-        - IsEmpty: 0
-          IsInvisible: 0
-          IsObstacle: 0
-        - IsEmpty: 0
-          IsInvisible: 0
-          IsObstacle: 0
-        - IsEmpty: 0
-          IsInvisible: 1
           IsObstacle: 0
         - IsEmpty: 0
           IsInvisible: 0
@@ -2246,90 +2330,6 @@ MonoBehaviour:
         - IsEmpty: 0
           IsInvisible: 1
           IsObstacle: 1
-  - scene: GP_2x2-5
-    colorVariety: 5
-    matchingPassengerCount: 6
-    vehicleCount: 7
-    garageVehicleCounts: 
-    levelDataGridGroups:
-    - lines:
-      - ParkingLots:
-        - IsEmpty: 0
-          IsInvisible: 1
-          IsObstacle: 1
-        - IsEmpty: 0
-          IsInvisible: 0
-          IsObstacle: 0
-        - IsEmpty: 0
-          IsInvisible: 0
-          IsObstacle: 0
-        - IsEmpty: 0
-          IsInvisible: 1
-          IsObstacle: 0
-        - IsEmpty: 0
-          IsInvisible: 0
-          IsObstacle: 0
-        - IsEmpty: 0
-          IsInvisible: 0
-          IsObstacle: 0
-      - ParkingLots:
-        - IsEmpty: 0
-          IsInvisible: 1
-          IsObstacle: 1
-        - IsEmpty: 0
-          IsInvisible: 0
-          IsObstacle: 0
-        - IsEmpty: 0
-          IsInvisible: 0
-          IsObstacle: 0
-        - IsEmpty: 0
-          IsInvisible: 1
-          IsObstacle: 0
-        - IsEmpty: 0
-          IsInvisible: 0
-          IsObstacle: 0
-        - IsEmpty: 0
-          IsInvisible: 0
-          IsObstacle: 0
-    - lines:
-      - ParkingLots:
-        - IsEmpty: 0
-          IsInvisible: 1
-          IsObstacle: 1
-        - IsEmpty: 0
-          IsInvisible: 0
-          IsObstacle: 0
-        - IsEmpty: 0
-          IsInvisible: 0
-          IsObstacle: 0
-        - IsEmpty: 0
-          IsInvisible: 1
-          IsObstacle: 1
-        - IsEmpty: 0
-          IsInvisible: 0
-          IsObstacle: 0
-        - IsEmpty: 0
-          IsInvisible: 0
-          IsObstacle: 0
-      - ParkingLots:
-        - IsEmpty: 0
-          IsInvisible: 1
-          IsObstacle: 1
-        - IsEmpty: 0
-          IsInvisible: 0
-          IsObstacle: 0
-        - IsEmpty: 0
-          IsInvisible: 0
-          IsObstacle: 0
-        - IsEmpty: 0
-          IsInvisible: 1
-          IsObstacle: 1
-        - IsEmpty: 0
-          IsInvisible: 0
-          IsObstacle: 0
-        - IsEmpty: 0
-          IsInvisible: 0
-          IsObstacle: 0
   - scene: GP_4-5
     colorVariety: 4
     matchingPassengerCount: 5
