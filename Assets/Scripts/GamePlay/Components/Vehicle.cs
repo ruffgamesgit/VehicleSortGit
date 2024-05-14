@@ -139,10 +139,21 @@ namespace GamePlay.Components
 
         public void ReverseSeats()
         {
+            if(IsAllEmpty()) return;
+            if (!HasEmptySeat() && GetExistingColors().AreAllValuesEqual())
+            {
+                goto rotatePassengers;
+            }
             seats.Reverse(0, seats.Count);
             seats[^1].Swap(seats[0]);
             seats[^2].Swap(seats[1]);
             seats.AnimateSeatChanges(false);
+            
+            rotatePassengers:
+            foreach (var seat in seats)
+            {
+             seat.RotatePassengers();   
+            }
 
         }
         

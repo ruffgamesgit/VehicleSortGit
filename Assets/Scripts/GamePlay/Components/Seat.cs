@@ -13,6 +13,7 @@ namespace GamePlay.Components
         private bool _isAnimationOn;
         private Sequence _sequence;
         private const float TWEEN_DURATION = .3f;
+
         public void Occupy(Passenger passenger)
         {
             _passenger = passenger;
@@ -61,25 +62,29 @@ namespace GamePlay.Components
         {
             return _isAnimationOn;
         }
-        
-        public void TakePassengerWithAnimation(UniTaskCompletionSource ucs, bool instant = false)
+
+        public void TakePassengerWithAnimation(UniTaskCompletionSource ucs, bool instant)
         {
             if (_passenger == null)
             {
                 ucs.TrySetResult();
                 return;
             }
+
             _sequence?.Kill(true);
             _isAnimationOn = true;
             List<Transform> passengerMeshes = _passenger.GetMeshTransforms();
+            
             _sequence = DOTween.Sequence();
             for (int i = 0; i < passengerMeshes.Count; i++)
             {
                 Transform meshTr = passengerMeshes[i];
                 meshTr.SetParent(transform);
                 Vector3 targetPos = _passenger.GetOffsetByIndex(i);
-                _sequence.Insert(i * 0.1f, meshTr.transform.DOLocalJump(targetPos, 1, 1, TWEEN_DURATION).SetEase(Ease.OutQuad));
+                _sequence.Insert(i * 0.1f,
+                    meshTr.transform.DOLocalJump(targetPos, 1, 1, TWEEN_DURATION).SetEase(Ease.OutQuad));
             }
+            
             _sequence.OnComplete(() =>
             {
                 _passenger.transform.position = transform.position;
@@ -87,9 +92,20 @@ namespace GamePlay.Components
                 _isAnimationOn = false;
                 ucs.TrySetResult();
             });
-            
-            if(instant)
+
+            if (instant)
                 _sequence.Complete();
+        }
+
+        public void RotatePassengers()
+        {
+            if(_passenger == null) return;
+            List<Transform> passengerMeshes = _passenger.GetMeshTransforms();
+            foreach (var meshTr in passengerMeshes)
+            {
+                meshTr.transform.DORotate(new Vector3(0, 180, 0), 0, RotateMode.LocalAxisAdd)
+                    .SetEase(Ease.OutQuad).SetDelay(passengerMeshes.Count * 0.05f);
+            }
         }
     }
 }
