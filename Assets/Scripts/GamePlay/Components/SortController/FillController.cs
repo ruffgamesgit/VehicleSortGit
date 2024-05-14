@@ -20,7 +20,12 @@ namespace GamePlay.Components.SortController
             List<Vehicle> vehiclesOnFeeder = new List<Vehicle>();
             for (int i = 0; i < garages.Count; i++)
             {
-                garages[i].Clear();
+                var vehiclesOnGarage = garages[i].Clear();
+                if (vehiclesOnGarage.Count != 0)
+                {
+                    vehiclesOnFeeder.AddRange(vehiclesOnGarage);
+                    continue;
+                }
                 for(int j = 0; j < garages[i].vehicleNeed; j++)
                 {
                     var vehicle = Instantiate(vehiclePrefab, garages[i].transform.position, Quaternion.identity);
@@ -32,7 +37,7 @@ namespace GamePlay.Components.SortController
         }
         
         
-        private void GenerateVehicles(List<GridGroup> gridGroups, int vehicleCount, List<GarageController> garages)
+        private void GenerateVehicles(List<GridGroup> gridGroups, int vehicleCount, List<GarageController> garages) // OPTİMİZE EDİLEBİLİR
         {
             List<ParkingLot> parkingLots = GetParkingLotsShuffled(gridGroups);
 
@@ -57,7 +62,6 @@ namespace GamePlay.Components.SortController
                     parkingLots.Remove(parkingLot);
                     var vehicle = Instantiate(vehiclePrefab, parkingLot.transform.position, Quaternion.identity);
                     parkingLot.Occupy(vehicle, true);
-                    vehicle.transform.position = parkingLot.transform.position;
                     vehicleCounter++;
                 }
             }

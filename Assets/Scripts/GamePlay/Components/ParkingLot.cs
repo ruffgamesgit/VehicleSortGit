@@ -43,14 +43,21 @@ namespace GamePlay.Components
             _parkingLotPosition = parkingLotPosition;
         }
 
-        public void Occupy(Vehicle vehicle, bool moveTransform)
+        public void Occupy(Vehicle vehicle, bool moveTransform, Action onComplete = null)
         {
             _willOccupied = false;
             _currentVehicle = vehicle;
             _currentVehicle.transform.parent = this.transform;
             if (moveTransform)
             {
-                _currentVehicle.transform.DOMove(transform.position, 0.35f).SetEase(Ease.InBack);
+                _currentVehicle.transform.DOMove(transform.position, 0.45f).SetEase(Ease.InOutBack).OnComplete(() =>
+                {
+                    DOVirtual.DelayedCall(0.2f, () =>
+                    {
+                        onComplete?.Invoke();
+                    });
+                }).SetDelay(0.15f);
+                
             }
         }
 

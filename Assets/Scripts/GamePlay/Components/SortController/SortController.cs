@@ -47,6 +47,7 @@ namespace GamePlay.Components.SortController
             if(garages.Count == 0)return;
             for (int i = 0; i < garages.Count; i++)
             {
+                garages[i].OnVehicleReleased += (obj,pLot) => SortParkingLot(pLot);
                 garages[i].Initialize();
             }
         }
