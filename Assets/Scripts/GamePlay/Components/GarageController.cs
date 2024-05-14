@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using DG.Tweening;
+using TMPro;
 using UnityEngine;
 
 namespace GamePlay.Components
@@ -8,6 +9,7 @@ namespace GamePlay.Components
     public class GarageController : MonoBehaviour
     {
         public ParkingLot neighborParkingLot;
+        [SerializeField] private TextMeshPro vehicleCountTxt;
         [HideInInspector]public int vehicleNeed;
         private List<Vehicle> _vehicles = new List<Vehicle>();
         
@@ -23,6 +25,7 @@ namespace GamePlay.Components
                 vehicle.transform.DOScale(Vector3.zero, 0f);
             }
             _vehicles.Add(vehicle);
+            vehicleCountTxt.text = _vehicles.Count.ToString();
         }
 
         private void OnNeighborEmptied(object sender, EventArgs e)
@@ -35,6 +38,7 @@ namespace GamePlay.Components
             {
                 _vehicles[0].transform.DOScale(Vector3.one, 0.35f).SetEase(Ease.OutQuad);
             }
+            vehicleCountTxt.text = _vehicles.Count.ToString();
         }
 
         public void Clear()
