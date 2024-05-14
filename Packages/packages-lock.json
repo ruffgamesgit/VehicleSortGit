@@ -7,6 +7,182 @@
       "dependencies": {},
       "url": "https://package.openupm.com"
     },
+    "com.lionstudios.release.adjust.unity-sdk": {
+      "version": "4.34.1",
+      "depth": 0,
+      "source": "registry",
+      "dependencies": {},
+      "url": "http://packages.lionstudios.cc:4873"
+    },
+    "com.lionstudios.release.autobuilder": {
+      "version": "1.4.0",
+      "depth": 1,
+      "source": "registry",
+      "dependencies": {
+        "com.lionstudios.release.lionkitcore": "3.5.0"
+      },
+      "url": "http://packages.lionstudios.cc:4873"
+    },
+    "com.lionstudios.release.bundle": {
+      "version": "1.5.0",
+      "depth": 0,
+      "source": "registry",
+      "dependencies": {
+        "com.lionstudios.release.heroiclabs.nakama-unity": "3.8.0",
+        "com.lionstudios.release.lionkitcore": "3.5.0",
+        "com.lionstudios.release.lionsdkservice": "3.4.0",
+        "com.lionstudios.release.lionanalytics": "3.5.0",
+        "com.lionstudios.release.nakamaclient": "1.4.0",
+        "com.lionstudios.release.iap": "1.4.0",
+        "com.lionstudios.release.splash": "1.0.0",
+        "com.lionstudios.release.autobuilder": "1.4.0",
+        "com.lionstudios.release.ingamemessaging": "1.3.0",
+        "com.lionstudios.release.settingsmenu": "1.4.0"
+      },
+      "url": "http://packages.lionstudios.cc:4873"
+    },
+    "com.lionstudios.release.facebook.unity-sdk": {
+      "version": "14.1.0",
+      "depth": 0,
+      "source": "registry",
+      "dependencies": {},
+      "url": "http://packages.lionstudios.cc:4873"
+    },
+    "com.lionstudios.release.firebase.analytics": {
+      "version": "11.5.0",
+      "depth": 1,
+      "source": "registry",
+      "dependencies": {
+        "com.lionstudios.release.firebase.core": "11.5.0"
+      },
+      "url": "http://packages.lionstudios.cc:4873"
+    },
+    "com.lionstudios.release.firebase.bundle": {
+      "version": "11.5.0",
+      "depth": 0,
+      "source": "registry",
+      "dependencies": {
+        "com.lionstudios.release.firebase.core": "11.5.0",
+        "com.lionstudios.release.firebase.remote-config": "11.5.0",
+        "com.lionstudios.release.firebase.crashlytics": "11.5.0",
+        "com.lionstudios.release.firebase.analytics": "11.5.0"
+      },
+      "url": "http://packages.lionstudios.cc:4873"
+    },
+    "com.lionstudios.release.firebase.core": {
+      "version": "11.5.0",
+      "depth": 1,
+      "source": "registry",
+      "dependencies": {},
+      "url": "http://packages.lionstudios.cc:4873"
+    },
+    "com.lionstudios.release.firebase.crashlytics": {
+      "version": "11.5.0",
+      "depth": 1,
+      "source": "registry",
+      "dependencies": {
+        "com.lionstudios.release.firebase.core": "11.5.0"
+      },
+      "url": "http://packages.lionstudios.cc:4873"
+    },
+    "com.lionstudios.release.firebase.remote-config": {
+      "version": "11.5.0",
+      "depth": 1,
+      "source": "registry",
+      "dependencies": {
+        "com.lionstudios.release.firebase.core": "11.5.0"
+      },
+      "url": "http://packages.lionstudios.cc:4873"
+    },
+    "com.lionstudios.release.heroiclabs.nakama-unity": {
+      "version": "3.8.0",
+      "depth": 1,
+      "source": "registry",
+      "dependencies": {
+        "com.unity.modules.unitywebrequest": "1.0.0"
+      },
+      "url": "http://packages.lionstudios.cc:4873"
+    },
+    "com.lionstudios.release.iap": {
+      "version": "1.4.0",
+      "depth": 1,
+      "source": "registry",
+      "dependencies": {
+        "com.lionstudios.release.lionanalytics": "3.5.0",
+        "com.lionstudios.release.nakamaclient": "1.4.0"
+      },
+      "url": "http://packages.lionstudios.cc:4873"
+    },
+    "com.lionstudios.release.ingamemessaging": {
+      "version": "1.3.0",
+      "depth": 1,
+      "source": "registry",
+      "dependencies": {
+        "com.lionstudios.release.lionanalytics": "3.4.0",
+        "com.lionstudios.release.lionkitcore": "3.4.0",
+        "com.lionstudios.release.nakamaclient": "1.3.0"
+      },
+      "url": "http://packages.lionstudios.cc:4873"
+    },
+    "com.lionstudios.release.lionanalytics": {
+      "version": "3.5.0",
+      "depth": 1,
+      "source": "registry",
+      "dependencies": {
+        "com.lionstudios.release.lionkitcore": "3.5.0"
+      },
+      "url": "http://packages.lionstudios.cc:4873"
+    },
+    "com.lionstudios.release.lionkitcore": {
+      "version": "3.5.0",
+      "depth": 1,
+      "source": "registry",
+      "dependencies": {
+        "com.unity.nuget.newtonsoft-json": "3.0.2"
+      },
+      "url": "http://packages.lionstudios.cc:4873"
+    },
+    "com.lionstudios.release.lionsdkservice": {
+      "version": "3.4.0",
+      "depth": 1,
+      "source": "registry",
+      "dependencies": {
+        "com.lionstudios.release.lionkitcore": "3.4.0",
+        "com.unity.nuget.newtonsoft-json": "3.0.2",
+        "com.lionstudios.release.lionanalytics": "3.4.0"
+      },
+      "url": "http://packages.lionstudios.cc:4873"
+    },
+    "com.lionstudios.release.nakamaclient": {
+      "version": "1.4.0",
+      "depth": 1,
+      "source": "registry",
+      "dependencies": {
+        "com.unity.textmeshpro": "3.0.6",
+        "com.lionstudios.release.lionanalytics": "3.5.0"
+      },
+      "url": "http://packages.lionstudios.cc:4873"
+    },
+    "com.lionstudios.release.settingsmenu": {
+      "version": "1.4.0",
+      "depth": 1,
+      "source": "registry",
+      "dependencies": {
+        "com.lionstudios.release.lionanalytics": "3.4.0"
+      },
+      "url": "http://packages.lionstudios.cc:4873"
+    },
+    "com.lionstudios.release.splash": {
+      "version": "1.0.0",
+      "depth": 1,
+      "source": "registry",
+      "dependencies": {
+        "com.unity.render-pipelines.universal": "10.8.1",
+        "com.unity.render-pipelines.core": "10.8.1",
+        "com.lionstudios.release.lionanalytics": "3.0.0"
+      },
+      "url": "http://packages.lionstudios.cc:4873"
+    },
     "com.unity.2d.sprite": {
       "version": "1.0.0",
       "depth": 0,
@@ -64,6 +240,13 @@
     "com.unity.mathematics": {
       "version": "1.2.6",
       "depth": 1,
+      "source": "registry",
+      "dependencies": {},
+      "url": "https://packages.unity.com"
+    },
+    "com.unity.nuget.newtonsoft-json": {
+      "version": "3.2.1",
+      "depth": 2,
       "source": "registry",
       "dependencies": {},
       "url": "https://packages.unity.com"

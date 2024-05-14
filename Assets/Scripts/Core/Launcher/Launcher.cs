@@ -2,6 +2,9 @@ using System;
 using System.Collections.Generic;
 using Core.Locator;
 using Core.Services;
+using Core.Services.Analytics;
+using Core.Services.GamePlay;
+using Services.Analytics;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -39,9 +42,10 @@ namespace Core.Launcher
         {
             ServiceLocator.Initialize();
             
+            AnalyticsService analyticsService = new AnalyticsService();
+            ServiceLocator.Instance.Register<IAnalyticsService>(analyticsService);
             GamePlayService gamePlayService = new GamePlayService();
             ServiceLocator.Instance.Register<IGamePlayService>(gamePlayService);
-            gamePlayService.LoadLevel();
         }
         
 

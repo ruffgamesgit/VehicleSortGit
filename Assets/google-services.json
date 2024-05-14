@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "702314743721",
+    "project_id": "sort-the-passengers",
+    "storage_bucket": "sort-the-passengers.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:702314743721:android:a5ae331072685767d4e6b8",
+        "android_client_info": {
+          "package_name": "com.ruffgames.sortthepassengers"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAoUWRJsQ7BTHmyONGM0FEWj5SOCgjWszU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

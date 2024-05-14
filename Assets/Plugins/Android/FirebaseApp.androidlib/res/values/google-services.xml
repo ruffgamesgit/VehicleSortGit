@@ -1,0 +1,9 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources xmlns:tools="http://schemas.android.com/tools" tools:keep="@string/gcm_defaultSenderId,@string/google_storage_bucket,@string/project_id,@string/google_api_key,@string/google_crash_reporting_api_key,@string/google_app_id">
+  <string name="gcm_defaultSenderId" translatable="false">702314743721</string>
+  <string name="google_storage_bucket" translatable="false">sort-the-passengers.appspot.com</string>
+  <string name="project_id" translatable="false">sort-the-passengers</string>
+  <string name="google_api_key" translatable="false">AIzaSyAoUWRJsQ7BTHmyONGM0FEWj5SOCgjWszU</string>
+  <string name="google_crash_reporting_api_key" translatable="false">AIzaSyAoUWRJsQ7BTHmyONGM0FEWj5SOCgjWszU</string>
+  <string name="google_app_id" translatable="false">1:702314743721:android:a5ae331072685767d4e6b8</string>
+</resources>
