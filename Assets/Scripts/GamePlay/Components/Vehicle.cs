@@ -1,10 +1,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using Cysharp.Threading.Tasks;
-using DG.Tweening;
 using GamePlay.Components.SortController;
 using GamePlay.Data;
-using Unity.VisualScripting;
 using UnityEngine;
 
 namespace GamePlay.Components
@@ -139,31 +137,15 @@ namespace GamePlay.Components
 
         }
 
-        public void RotateOnY(float rotValue)
+        public void ReverseSeats()
         {
-            // transform.Rotate(0, rotValue, 0);  
-            Quaternion currentRotation = transform.rotation;
-
-            float eulerAngle = rotValue == 0 ? rotValue : currentRotation.eulerAngles.y;
-            Quaternion targetRotation = Quaternion.Euler(currentRotation.eulerAngles.x, currentRotation.eulerAngles.y + rotValue, currentRotation.eulerAngles.z);
-
-            DOTween.To((t) =>
-            {
-                transform.rotation = Quaternion.Slerp(currentRotation, targetRotation, t);
-            }, 0, 1, .125f);
+            seats.Reverse(0, seats.Count);
+            seats[^1].Swap(seats[0]);
+            seats[^2].Swap(seats[1]);
+            seats.AnimateSeatChanges(false);
 
         }
-
-        public void SwingAnimation()
-        {
-            //float xRot = isArrived ? -15 : 15;
-            //Vector3 rot = new Vector3(transform.rotation.x + xRot, transform.rotation.y, transform.rotation.z);
-            //transform.DORotate(rot, .25f).OnComplete(() =>
-            //{
-            //    transform.DORotate(Vector3.zero, .125f);
-            //});
-        }
-
+        
         public void Destroy()
         {
             Destroy(this.gameObject);

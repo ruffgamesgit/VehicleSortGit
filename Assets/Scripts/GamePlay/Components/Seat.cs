@@ -11,6 +11,7 @@ namespace GamePlay.Components
         private Passenger _passenger;
         private ColorEnum _preColor;
         private bool _isAnimationOn;
+        private Sequence _sequence;
         private const float TWEEN_DURATION = .3f;
         public void Occupy(Passenger passenger)
         {
@@ -68,17 +69,18 @@ namespace GamePlay.Components
                 ucs.TrySetResult();
                 return;
             }
+            _sequence?.Kill(true);
             _isAnimationOn = true;
             List<Transform> passengerMeshes = _passenger.GetMeshTransforms();
-            Sequence sequence = DOTween.Sequence();
+            _sequence = DOTween.Sequence();
             for (int i = 0; i < passengerMeshes.Count; i++)
             {
                 Transform meshTr = passengerMeshes[i];
                 meshTr.SetParent(transform);
                 Vector3 targetPos = _passenger.GetOffsetByIndex(i);
-                sequence.Insert(i * 0.1f, meshTr.transform.DOLocalJump(targetPos, 1, 1, TWEEN_DURATION).SetEase(Ease.OutQuad));
+                _sequence.Insert(i * 0.1f, meshTr.transform.DOLocalJump(targetPos, 1, 1, TWEEN_DURATION).SetEase(Ease.OutQuad));
             }
-            sequence.OnComplete(() =>
+            _sequence.OnComplete(() =>
             {
                 _passenger.transform.position = transform.position;
                 _passenger.SetMeshesParent();
@@ -87,7 +89,7 @@ namespace GamePlay.Components
             });
             
             if(instant)
-                sequence.Complete();
+                _sequence.Complete();
         }
     }
 }

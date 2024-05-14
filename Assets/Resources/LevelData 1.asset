@@ -13,6 +13,12 @@ MonoBehaviour:
   m_Name: LevelData 1
   m_EditorClassIdentifier: 
   levelData:
+  - scene: EMPTY
+    colorVariety: 0
+    matchingPassengerCount: 0
+    vehicleCount: 0
+    garageVehicleCounts: 
+    levelDataGridGroups: []
   - scene: GP_2x1x2-6
     colorVariety: 10
     matchingPassengerCount: 11

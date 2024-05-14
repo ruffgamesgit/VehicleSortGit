@@ -141,7 +141,7 @@ namespace GamePlay.Components.SortController
                                     else
                                     {
                                         UniTaskCompletionSource ucs = new UniTaskCompletionSource();
-                                        pLot.MoveAnimation(gridData, vehicle, ucs, from, counter == 0,
+                                        pLot.OccupyAnimation(gridData, vehicle, ucs, from, counter == 0,
                                             pLot == parkingLot);
                                         counter++;
                                         from = pLot;
