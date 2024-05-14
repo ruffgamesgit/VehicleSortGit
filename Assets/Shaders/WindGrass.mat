@@ -43,11 +43,12 @@ Material:
     m_Ints: []
     m_Floats:
     - _AlphaCutoff: 0.5
-    - _Intensity: 0.187
+    - _Float0: 0.1
+    - _Intensity: 0.443
     - _QueueControl: 0
     - _QueueOffset: 0
     m_Colors:
     - _EmissionColor: {r: 1, g: 1, b: 1, a: 1}
-    - _MainColor: {r: 0.38400427, g: 0.7735849, b: 0.15082464, a: 0}
+    - _MainColor: {r: 0.5290361, g: 0.8773585, b: 0.32004267, a: 0}
     - _vertexSStep: {r: -0.45, g: 1, b: 0, a: 0}
   m_BuildTextureStacks: []
