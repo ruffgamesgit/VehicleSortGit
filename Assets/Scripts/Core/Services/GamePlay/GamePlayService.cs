@@ -11,7 +11,7 @@ namespace Core.Services.GamePlay
 {
     public class GamePlayService : IGamePlayService
     {
-        private const string LevelDataPath = "LevelData_Ordered";
+        private const string LevelDataPath = "LevelData 1";
         private const string LastLevelKey = "LastLevel";
         private readonly System.Random _random = new();
         
