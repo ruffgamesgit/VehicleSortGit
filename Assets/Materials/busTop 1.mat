@@ -127,7 +127,7 @@ Material:
     - _Radius: 0.1
     - _ReceiveShadows: 1
     - _Rotate: 0
-    - _Smoothness: 0.5
+    - _Smoothness: 0
     - _SmoothnessTextureChannel: 0
     - _SpecularHighlights: 1
     - _SrcBlend: 1
@@ -141,14 +141,14 @@ Material:
     m_Colors:
     - _BaseColor: {r: 1, g: 1, b: 1, a: 1}
     - _BiasScalePower: {r: 0, g: 1, b: 5, a: 0}
-    - _Color: {r: 0.60784316, g: 0.6117647, b: 0.7294118, a: 0.7490196}
+    - _Color: {r: 0.654902, g: 0.6392157, b: 0.7294118, a: 0.7490196}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _FresnelColor: {r: 0, g: 0, b: 0, a: 0}
     - _MatCap_SS: {r: 0, g: 0, b: 0, a: 0}
     - _Offset: {r: 0, g: 0, b: 0, a: 0}
     - _SStep: {r: 0, g: 1, b: 0, a: 0}
     - _SpecColor: {r: 0.19999996, g: 0.19999996, b: 0.19999996, a: 1}
-    - _matcapColor: {r: 1, g: 1, b: 1, a: 0}
+    - _matcapColor: {r: 0, g: 0, b: 0, a: 0}
     - _newSS: {r: 1.9, g: -0.71, b: 0, a: 0}
   m_BuildTextureStacks: []
 --- !u!114 &2733275698296400434
