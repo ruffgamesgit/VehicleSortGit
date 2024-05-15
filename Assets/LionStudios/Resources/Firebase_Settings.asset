@@ -12,4 +12,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 34fd3bd8ae02454593a26c69a4b5edc7, type: 3}
   m_Name: Firebase_Settings
   m_EditorClassIdentifier: 
-  EnableInitialization: 0
+  EnableInitialization: 1

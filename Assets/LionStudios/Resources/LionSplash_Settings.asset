@@ -12,10 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e783dadff53944738b0133ace8ad9b71, type: 3}
   m_Name: LionSplash_Settings
   m_EditorClassIdentifier: 
-  UseSecondLogo: 0
+  UseSecondLogo: 1
   SecondLogoLength: 1.5
-  SecondLogo: {fileID: 0}
+  SecondLogo: {fileID: 21300000, guid: d690c9fbe365dd147a6301aaf45fe0e9, type: 3}
   ForceLoadAfterTimeout: 0
   ForceLoadTimeout: 6
   UseAsyncLoading: 1
-  DisableLionLogo: 0
+  DisableLionLogo: 1
