@@ -11448,7 +11448,7 @@ MonoBehaviour:
         - {fileID: 1066844167}
         isVirtual: 0
       hasUpperRoad: 1
-      hasLowerRoad: 1
+      hasLowerRoad: 0
     - lines:
       - parkingLots:
         - {fileID: 1113104196}
