@@ -43,13 +43,14 @@ namespace GamePlay.Components
 
         public void SetCompleted()
         {
-            _isCompleted = true; 
+            _isCompleted = true;
         }
 
-        public void EnableTopObject()
+        public void OnBusIsCompleted()
         {
             if (busTopObject.gameObject.activeInHierarchy) return;
 
+            transform.DOScaleY(1.015f, .43f).SetLoops(-1, LoopType.Yoyo);
             busTopObject.gameObject.SetActive(true);
             busTopObject.DOScaleZ(1, .2f);
         }

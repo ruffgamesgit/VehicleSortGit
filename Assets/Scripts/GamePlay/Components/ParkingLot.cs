@@ -329,7 +329,7 @@ namespace GamePlay.Components
             var parkingLotIndex = _parkingLotPosition.GetParkingLotIndex();
             _sequence?.Kill(true);
             _sequence = DOTween.Sequence();
-            vehicle.EnableTopObject();  
+            vehicle.OnBusIsCompleted();  
             
             if (offset != 0)
             {
