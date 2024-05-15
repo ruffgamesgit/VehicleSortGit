@@ -48,6 +48,9 @@ EditorBuildSettings:
     path: Assets/Scenes/GameplayScenes/1x2x1/GP_1x2x1-5.unity
     guid: 2a84b7fa32be42448bd1910b24c7aedf
   - enabled: 1
+    path: Assets/Scenes/GameplayScenes/1x2x1/GP_1x2x1-6 (var.2).unity
+    guid: 3c4b78ffa4e6f324a93785118be6d6d9
+  - enabled: 1
     path: Assets/Scenes/GameplayScenes/1x2x1/GP_1x2x1-6.unity
     guid: 1e3562b78b6a64f41889d2c64bf38dcb
   - enabled: 1
@@ -62,6 +65,9 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/GameplayScenes/2x1/GP_2x1-3.unity
     guid: 3e6084604c2758a4dbd9e8ae14a2ab63
+  - enabled: 1
+    path: Assets/Scenes/GameplayScenes/2x1/GP_2x1-4.unity
+    guid: 78d6a0f5895c38843908261dfa8f7a47
   - enabled: 1
     path: Assets/Scenes/GameplayScenes/2x1/GP_2x1-5 (var.2).unity
     guid: e46c2a7bc3f7a55438c084ed685570dc
@@ -80,6 +86,9 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/GameplayScenes/2x2/GP_2x2-3.unity
     guid: 31dbcd89fb15c8646a3e1af18f3b568d
+  - enabled: 1
+    path: Assets/Scenes/GameplayScenes/2x2/GP_2x2-4.unity
+    guid: f3a4ecdb34c64424287ac67284edc151
   - enabled: 1
     path: Assets/Scenes/GameplayScenes/2x2/GP_2x2-5 (var.2).unity
     guid: 99f74d0d5459028448c9b732b9bdc4be
@@ -110,7 +119,4 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/GameplayScenes/5/GP_5x1-5.unity
     guid: c4439c1a41166a44fbac5d1330395ed7
-  - enabled: 1
-    path: Assets/Scenes/GameplayScenes/1x2x1/GP_1x2x1-6 (var.2).unity
-    guid: 3c4b78ffa4e6f324a93785118be6d6d9
   m_configObjects: {}
