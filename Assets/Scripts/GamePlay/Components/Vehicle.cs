@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Cysharp.Threading.Tasks;
+using DG.Tweening;
 using GamePlay.Components.SortController;
 using GamePlay.Data;
 using UnityEngine;
@@ -11,7 +12,9 @@ namespace GamePlay.Components
     {
         [SerializeField] private List<Seat> seats = new List<Seat>(4);
         [SerializeField] private Outline outline;
+        [SerializeField] private Transform busTopObject;
         private bool _isCompleted = false;
+
         public Dictionary<ColorEnum, int> GetExistingColors()
         {
             var colorCount = new Dictionary<ColorEnum, int>();
@@ -40,8 +43,17 @@ namespace GamePlay.Components
 
         public void SetCompleted()
         {
-            _isCompleted = true;
+            _isCompleted = true; 
         }
+
+        public void EnableTopObject()
+        {
+            if (busTopObject.gameObject.activeInHierarchy) return;
+
+            busTopObject.gameObject.SetActive(true);
+            busTopObject.DOScaleZ(1, .2f);
+        }
+
         public List<Seat> GetSeats()
         {
             return seats;
@@ -59,6 +71,7 @@ namespace GamePlay.Components
                 if (seat.IsEmpty())
                     return true;
             }
+
             return false;
         }
 
@@ -69,9 +82,10 @@ namespace GamePlay.Components
                 if (seat.IsAnimating())
                     return true;
             }
+
             return false;
         }
-        
+
         public async UniTask SortByType(bool instant)
         {
             if (IsAllEmpty()) return;
@@ -91,6 +105,7 @@ namespace GamePlay.Components
                     }
                 }
             }
+
             var colorCount = GetExistingColors();
             if (colorCount.Count == 1) goto finalize;
             iterate:
@@ -107,8 +122,8 @@ namespace GamePlay.Components
                         goto finalize;
                     }
                 }
-
             }
+
             var highestValueColor = colorCount.GetMaxValue();
             var highestValueCount = colorCount[highestValueColor];
             colorCount.Remove(highestValueColor);
@@ -117,7 +132,8 @@ namespace GamePlay.Components
             {
                 if (seats[i].GetPassenger().GetColor() != highestValueColor)
                 {
-                    var swappingTarget = seats.Last(s => s.GetPassenger() != null && s.GetPassenger().GetColor() == highestValueColor);
+                    var swappingTarget = seats.Last(s =>
+                        s.GetPassenger() != null && s.GetPassenger().GetColor() == highestValueColor);
                     if (swappingTarget == seats[i]) continue;
                     swappingAnimationList.Add(seats[i]);
                     swappingAnimationList.Add(swappingTarget);
@@ -134,29 +150,28 @@ namespace GamePlay.Components
             {
                 await swappingAnimationList.ToList().AnimateSeatChanges(instant);
             }
-
         }
 
         public void ReverseSeats()
         {
-            if(IsAllEmpty()) return;
+            if (IsAllEmpty()) return;
             if (!HasEmptySeat() && GetExistingColors().AreAllValuesEqual())
             {
                 goto rotatePassengers;
             }
+
             seats.Reverse(0, seats.Count);
             seats[^1].Swap(seats[0]);
             seats[^2].Swap(seats[1]);
             seats.AnimateSeatChanges(false);
-            
+
             rotatePassengers:
             foreach (var seat in seats)
             {
-             seat.RotatePassengers();   
+                seat.RotatePassengers();
             }
-
         }
-        
+
         public void Destroy()
         {
             Destroy(this.gameObject);

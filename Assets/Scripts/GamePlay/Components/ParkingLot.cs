@@ -329,6 +329,8 @@ namespace GamePlay.Components
             var parkingLotIndex = _parkingLotPosition.GetParkingLotIndex();
             _sequence?.Kill(true);
             _sequence = DOTween.Sequence();
+            vehicle.EnableTopObject();  
+            
             if (offset != 0)
             {
                 _sequence.Append(vehicle.transform.DOMoveZ(vehicle.transform.position.z + offset, 0.35f)
