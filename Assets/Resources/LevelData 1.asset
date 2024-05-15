@@ -22,8 +22,8 @@ MonoBehaviour:
   - scene: GP_5x1-5
     colorVariety: 6
     matchingPassengerCount: 15
-    vehicleCount: 17
-    garageVehicleCounts: 0500000005000000
+    vehicleCount: 20
+    garageVehicleCounts: 0800000005000000
     levelDataGridGroups:
     - lines:
       - ParkingLots:

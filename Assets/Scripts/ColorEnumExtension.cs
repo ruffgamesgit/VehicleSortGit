@@ -40,43 +40,71 @@ public static class ColorEnumExtension
     }
 
     public static Color GetColorCode(this ColorEnum colorEnum)
-    {
+    { 
         switch (colorEnum)
         {
             case ColorEnum.NONE:
                 return Color.clear;
             case ColorEnum.RED:
-                return Color.red;
+                ColorUtility.TryParseHtmlString("#E93B32", out var color0);
+                return color0;
             case ColorEnum.BLUE:
-                return Color.blue;
-            case ColorEnum.GREEN:
-                return Color.green;
+                ColorUtility.TryParseHtmlString("#06B8FF", out var color1);
+                return color1;
+            case ColorEnum.GREEN:  
+                ColorUtility.TryParseHtmlString("#4EC030", out var color2);
+                return color2;
             case ColorEnum.YELLOW:
-                return Color.yellow;
+                ColorUtility.TryParseHtmlString("#F3DE3F", out var color3);
+                return color3;
             case ColorEnum.PURPLE:
-                return new Color(0.5f, 0, 0.5f);
+                ColorUtility.TryParseHtmlString("#A945FF", out var color4);
+                return color4;
             case ColorEnum.ORANGE:
-                return new Color(1, 0.5f, 0);
+                ColorUtility.TryParseHtmlString("#F3943F", out var color5);
+                return color5;
             case ColorEnum.PINK:
-                return new Color(1, 0.5f, 0.5f);
+                ColorUtility.TryParseHtmlString("#F36B7B", out var color6);
+                return color6;
             case ColorEnum.WHITE:
-                return Color.white;
+                ColorUtility.TryParseHtmlString("#F8D9DD", out var color7);
+                return color7;
             case ColorEnum.BLACK:
-                return Color.black;
-            case ColorEnum.MAGENTA:
-                return Color.magenta;
-            case ColorEnum.CYAN:
-                return Color.cyan;
+                ColorUtility.TryParseHtmlString("#555555", out var color8);
+                return color8;
+            case ColorEnum.MILITARY_GREEN:
+                ColorUtility.TryParseHtmlString("#617150", out var color9);
+                return color9;
+            case ColorEnum.DARK_BLUE:
+                ColorUtility.TryParseHtmlString("#3F74F3", out var color10);
+                return color10;
             case ColorEnum.GREY:
-                return Color.grey;
+                ColorUtility.TryParseHtmlString("#898989", out var color11);
+                return color11;
             case ColorEnum.TURQUOISE:
-                return new Color(0, 0.6f, 1f);
-            case ColorEnum.LIME:
-                return new Color(0.6f, 0.7f, 0.5f);
-            case ColorEnum.MAROON:
-                return new Color(0, 1f, 0.7f);
-            case ColorEnum.OLIVE:
-                return new Color(0.3f, 0.7f, 0);
+                ColorUtility.TryParseHtmlString("#81FABF", out var color12);
+                return color12;
+            case ColorEnum.PEACH:
+                ColorUtility.TryParseHtmlString("#FFB37A", out var color13);
+                return color13; 
+            case ColorEnum.NAVY_BLUE:
+                ColorUtility.TryParseHtmlString("#433FF3", out var color14);
+                return color14;
+            case ColorEnum.MAGENTA:
+                ColorUtility.TryParseHtmlString("#DF3FF3", out var color15);
+                return color15;
+            case ColorEnum.CLARET_RED:
+                ColorUtility.TryParseHtmlString("#A62D1D", out var color16);
+                return color16;
+            case ColorEnum.DARK_GREEN:
+                ColorUtility.TryParseHtmlString("#0E6339", out var color17);
+                return color17;
+            case ColorEnum.SHADOWY_PURPLE:
+                ColorUtility.TryParseHtmlString("#330476", out var color18);
+                return color18;
+            case ColorEnum.BROWNISH_RED:
+                ColorUtility.TryParseHtmlString("#6F150A", out var color19);
+                return color19;
             default:
                 throw new ArgumentOutOfRangeException(nameof(colorEnum), colorEnum, null);
         }
