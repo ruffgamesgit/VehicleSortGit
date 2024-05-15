@@ -61,7 +61,7 @@ namespace GamePlay.Components.SortController
                     var parkingLot = garage.neighborParkingLot;
                     parkingLots.Remove(parkingLot);
                     var vehicle = Instantiate(vehiclePrefab, parkingLot.transform.position, Quaternion.identity);
-                    parkingLot.Occupy(vehicle, true);
+                    parkingLot.Occupy(vehicle, false);
                     vehicleCounter++;
                 }
             }
@@ -71,8 +71,7 @@ namespace GamePlay.Components.SortController
             {
                 var parkingLot = parkingLotQueue.Dequeue();
                 var vehicle = Instantiate(vehiclePrefab, parkingLot.transform.position, Quaternion.identity);
-                parkingLot.Occupy(vehicle, true);
-                vehicle.transform.position = parkingLot.transform.position;
+                parkingLot.Occupy(vehicle, false);
                 vehicleCounter++;
             }
         }

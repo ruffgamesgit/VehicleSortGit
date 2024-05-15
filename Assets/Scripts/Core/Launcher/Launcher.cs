@@ -23,13 +23,15 @@ namespace Core.Launcher
             Application.targetFrameRate = 60;
             InitializeServices();
         }
+       
         #else
         public void Awake()
         {
             Debug.Log("ServicesInitialize");
-            Application.targetFrameRate = 60;
+            Application.targetFrameRate = Screen.currentResolution.refreshRate;
             InitializeServices();
         }
+        
         private void Start()
         {
             Debug.Log("ByteBrewInitialize");

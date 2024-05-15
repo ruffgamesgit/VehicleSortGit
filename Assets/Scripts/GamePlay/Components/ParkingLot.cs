@@ -50,12 +50,14 @@ namespace GamePlay.Components
             _currentVehicle.transform.parent = this.transform;
             if (moveTransform)
             {
+                _isInvisible = true;
                 _currentVehicle.transform.DOMove(transform.position, 0.45f).SetEase(Ease.InOutBack).OnComplete(() =>
                 {
                     DOVirtual.DelayedCall(0.2f, () =>
                     {
                         onComplete?.Invoke();
                     });
+                    _isInvisible = false;
                 }).SetDelay(0.15f);
                 
             }
@@ -380,9 +382,9 @@ namespace GamePlay.Components
                         List<ParkingLot> availableFrontParkingLots = new List<ParkingLot>();
                         List<GridLine> frontLines = new List<GridLine>();
                         if (hasUpperRoad)
-                            frontLines.Add(gridGroup.lines[isCloseToUpperRoad ? ^1 : 0]);
+                            frontLines.Add(gridGroup.lines[^1]);
                         if (hasLowerRoad)
-                            frontLines.Add(gridGroup.lines[isCloseToUpperRoad ? 0 : ^1]);
+                            frontLines.Add(gridGroup.lines[0]);
 
                         foreach (var line in frontLines)
                         {

@@ -88,7 +88,21 @@ namespace Core.Services.GamePlay
             }
             _levelStartTime = Time.realtimeSinceStartup;
         }
-        
+
+        public void LoadPrevious()
+        {
+            if (_currentLevel == 1) return;
+            _currentLevel--;
+            LoadLevel();
+        }
+
+        public void LoadNext()
+        {
+            if(_currentLevel == _levelData.Count -1)return;
+            _currentLevel++;
+            LoadLevel();
+        }
+
         private void LevelStartAnalyticsEvent()
         {
             LevelEventArgs args = new LevelEventArgs()

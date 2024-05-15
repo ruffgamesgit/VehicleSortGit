@@ -31,6 +31,7 @@ namespace GamePlay.Components.SortController
 
         private void Awake()
         {
+            if(ServiceLocator.Instance == null) return;
             _fillController = GetComponent<FillController>();
             _gamePlayService = ServiceLocator.Instance.Resolve<IGamePlayService>();
             _levelData = _gamePlayService.GetCurrentLevelData();
@@ -84,6 +85,7 @@ namespace GamePlay.Components.SortController
                         parkingLot.Initialize(isParkingLotInvisible, isParkingLotObstacle, isEmptyAtStart,
                             parkingLotPosition);
                         parkingLot.OnParkingLotClicked += OnParkingLotClicked;
+                        parkingLot.OnEmptied += (obj,arg) => CheckWaitingVehiclesThatCompleted();
 
                         parkingLotIndex++;
                     }
@@ -127,7 +129,6 @@ namespace GamePlay.Components.SortController
                             var vehicle = _lastClickedParkingLot.GetCurrentVehicle();
                             _lastClickedParkingLot.GetCurrentVehicle()?.SetHighlight(false);
                             _lastClickedParkingLot.SetEmpty();
-                            CheckWaitingVehiclesThatCompleted();
                             _lastClickedParkingLot = null;
                             ParkingLot from = null;
 
@@ -529,6 +530,7 @@ namespace GamePlay.Components.SortController
         private async UniTask SwapSeats(ParkingLotSortData sortData)
         {
             List<Seat> animateSwappingSeats = new List<Seat>();
+            List<ParkingLot> checkAfterAnimationNeighbors = new List<ParkingLot>();
             for (var i = 0; i < sortData.MatchedSeats.Count; i++)
             {
                 var match = sortData.MatchedSeats[i];
@@ -544,10 +546,7 @@ namespace GamePlay.Components.SortController
                 animateSwappingSeats.Add(match);
                 swappingSeat.Swap(match);
 
-                if (!sortData.MatchedNeighbors[i].CheckIfCompleted(gridData)) // LATER AWAIT ANIMATION
-                {
-                    EnqueueItem(sortData.MatchedNeighbors[i]);
-                }
+                checkAfterAnimationNeighbors.Add(sortData.MatchedNeighbors[i]);
             }
 
             await animateSwappingSeats.AnimateSeatChanges(false);
@@ -555,7 +554,15 @@ namespace GamePlay.Components.SortController
             if (!sortData.ParkingLot.CheckIfCompleted(gridData))
             {
                 InsertItemToQueue(sortData.ParkingLot);
-            } // LATER ASYNC 
+            } 
+            foreach (var neighbor in checkAfterAnimationNeighbors)
+            {
+                if (!neighbor.CheckIfCompleted(gridData)) 
+                {
+                    EnqueueItem(neighbor);
+                }
+            }
+           
 
             if (!Monitor.IsEntered(_lock)) SortAffectedParkingLots();
         }

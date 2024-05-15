@@ -70,9 +70,9 @@ public static class ColorEnumExtension
             case ColorEnum.GREY:
                 return Color.grey;
             case ColorEnum.TURQUOISE:
-                return new Color(0, 0.9f, 1f);
+                return new Color(0, 0.6f, 1f);
             case ColorEnum.LIME:
-                return new Color(1, 0.95f, 0.5f);
+                return new Color(0.6f, 0.7f, 0.5f);
             case ColorEnum.MAROON:
                 return new Color(0, 1f, 0.7f);
             case ColorEnum.OLIVE:

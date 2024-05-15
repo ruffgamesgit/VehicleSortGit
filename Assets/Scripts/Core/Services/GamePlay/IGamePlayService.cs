@@ -12,5 +12,8 @@ namespace Core.Services.GamePlay
         public int GetCurrentLevel();
         public void LoadLevel();
 
+        public void LoadPrevious();
+        public void LoadNext();
+
     }
 }

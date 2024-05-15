@@ -20,7 +20,7 @@ MonoBehaviour:
     garageVehicleCounts: 
     levelDataGridGroups: []
   - scene: GP_5x1-5
-    colorVariety: 15
+    colorVariety: 6
     matchingPassengerCount: 15
     vehicleCount: 17
     garageVehicleCounts: 0500000005000000
@@ -123,7 +123,7 @@ MonoBehaviour:
           IsInvisible: 1
           IsObstacle: 1
   - scene: GP_5-4
-    colorVariety: 10
+    colorVariety: 8
     matchingPassengerCount: 10
     vehicleCount: 12
     garageVehicleCounts: 04000000
@@ -225,7 +225,7 @@ MonoBehaviour:
           IsInvisible: 1
           IsObstacle: 1
   - scene: GP_4-5
-    colorVariety: 18
+    colorVariety: 14
     matchingPassengerCount: 18
     vehicleCount: 18
     garageVehicleCounts: 0500000005000000
@@ -308,7 +308,7 @@ MonoBehaviour:
           IsInvisible: 1
           IsObstacle: 0
   - scene: GP_3x1-6
-    colorVariety: 20
+    colorVariety: 14
     matchingPassengerCount: 20
     vehicleCount: 24
     garageVehicleCounts: 050000000500000005000000
@@ -392,7 +392,7 @@ MonoBehaviour:
           IsInvisible: 1
           IsObstacle: 1
   - scene: GP_3x1-5
-    colorVariety: 14
+    colorVariety: 12
     matchingPassengerCount: 14
     vehicleCount: 14
     garageVehicleCounts: 0300000003000000
@@ -476,7 +476,7 @@ MonoBehaviour:
           IsInvisible: 1
           IsObstacle: 1
   - scene: GP_3-4
-    colorVariety: 14
+    colorVariety: 12
     matchingPassengerCount: 14
     vehicleCount: 15
     garageVehicleCounts: 08000000
@@ -540,7 +540,7 @@ MonoBehaviour:
           IsInvisible: 1
           IsObstacle: 1
   - scene: GP_3-4 (var.2)
-    colorVariety: 12
+    colorVariety: 10
     matchingPassengerCount: 12
     vehicleCount: 17
     garageVehicleCounts: 040000000400000004000000
@@ -604,7 +604,7 @@ MonoBehaviour:
           IsInvisible: 1
           IsObstacle: 1
   - scene: GP_2x2-5 (var.2)
-    colorVariety: 12
+    colorVariety: 10
     matchingPassengerCount: 12
     vehicleCount: 14
     garageVehicleCounts: 05000000
@@ -688,7 +688,7 @@ MonoBehaviour:
           IsInvisible: 0
           IsObstacle: 0
   - scene: GP_2x1x2-6
-    colorVariety: 15
+    colorVariety: 12
     matchingPassengerCount: 15
     vehicleCount: 20
     garageVehicleCounts: 0500000005000000
@@ -792,7 +792,7 @@ MonoBehaviour:
           IsInvisible: 0
           IsObstacle: 0
   - scene: GP_2x1-5
-    colorVariety: 15
+    colorVariety: 12
     matchingPassengerCount: 15
     vehicleCount: 20
     garageVehicleCounts: 040000000400000004000000
@@ -857,7 +857,7 @@ MonoBehaviour:
           IsInvisible: 0
           IsObstacle: 0
   - scene: GP_2x1-5 (var.2)
-    colorVariety: 8
+    colorVariety: 7
     matchingPassengerCount: 9
     vehicleCount: 10
     garageVehicleCounts: 05000000
@@ -922,7 +922,7 @@ MonoBehaviour:
           IsInvisible: 1
           IsObstacle: 1
   - scene: GP_1x2x1-5
-    colorVariety: 14
+    colorVariety: 12
     matchingPassengerCount: 14
     vehicleCount: 14
     garageVehicleCounts: 030000000300000005000000
@@ -1007,7 +1007,7 @@ MonoBehaviour:
           IsInvisible: 1
           IsObstacle: 1
   - scene: GP_1x2x1-6
-    colorVariety: 10
+    colorVariety: 9
     matchingPassengerCount: 12
     vehicleCount: 14
     garageVehicleCounts: 
@@ -1092,7 +1092,7 @@ MonoBehaviour:
           IsInvisible: 0
           IsObstacle: 0
   - scene: GP_1x2x1-5 (var.2)
-    colorVariety: 10
+    colorVariety: 9
     matchingPassengerCount: 13
     vehicleCount: 15
     garageVehicleCounts: 040000000300000004000000
@@ -1177,7 +1177,7 @@ MonoBehaviour:
           IsInvisible: 1
           IsObstacle: 1
   - scene: GP_1x1x2-6
-    colorVariety: 18
+    colorVariety: 14
     matchingPassengerCount: 18
     vehicleCount: 20
     garageVehicleCounts: 030000000300000003000000
@@ -1354,7 +1354,7 @@ MonoBehaviour:
           IsInvisible: 0
           IsObstacle: 0
   - scene: GP_1x1-4
-    colorVariety: 8
+    colorVariety: 7
     matchingPassengerCount: 8
     vehicleCount: 9
     garageVehicleCounts: 0200000002000000
@@ -1400,7 +1400,7 @@ MonoBehaviour:
           IsInvisible: 1
           IsObstacle: 1
   - scene: GP_1x1-3 (var.2)
-    colorVariety: 4
+    colorVariety: 3
     matchingPassengerCount: 4
     vehicleCount: 4
     garageVehicleCounts: 02000000
@@ -1471,7 +1471,7 @@ MonoBehaviour:
           IsInvisible: 1
           IsObstacle: 1
   - scene: GP_2x2-5
-    colorVariety: 5
+    colorVariety: 4
     matchingPassengerCount: 6
     vehicleCount: 7
     garageVehicleCounts: 
@@ -1555,7 +1555,7 @@ MonoBehaviour:
           IsInvisible: 0
           IsObstacle: 0
   - scene: GP_1x3-5 (var.2)
-    colorVariety: 5
+    colorVariety: 4
     matchingPassengerCount: 6
     vehicleCount: 8
     garageVehicleCounts: 
