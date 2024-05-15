@@ -59,6 +59,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3aeb5bd9339e4ba393693dc0d1adbbb4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  imageColorModifier: {fileID: 3668220584599714382}
 --- !u!1001 &7824591786204388285
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -199,3 +200,15 @@ RectTransform:
     type: 3}
   m_PrefabInstance: {fileID: 7824591786204388285}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &3668220584599714382 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 6809068708945830387, guid: 8256749568e85ad4aacae1163616c464,
+    type: 3}
+  m_PrefabInstance: {fileID: 7824591786204388285}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 30e8d930125d0464ea49148a7d0d267d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
