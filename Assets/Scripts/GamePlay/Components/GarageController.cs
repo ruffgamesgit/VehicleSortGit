@@ -10,7 +10,7 @@ namespace GamePlay.Components
     {
         public EventHandler<ParkingLot> OnVehicleReleased; 
         public ParkingLot neighborParkingLot;
-        [SerializeField] private TextMeshPro vehicleCountTxt;
+        [SerializeField] private TextMeshProUGUI vehicleCountTxt;
         [HideInInspector] public int vehicleNeed;
         private List<Vehicle> _vehicles = new List<Vehicle>();
 
