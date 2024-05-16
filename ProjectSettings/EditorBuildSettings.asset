@@ -120,6 +120,6 @@ EditorBuildSettings:
     path: Assets/Scenes/GameplayScenes/5/GP_5-4.unity
     guid: 7032e113f8bc07a4daa0df9c4e05db12
   - enabled: 1
-    path: Assets/Scenes/GameplayScenes/5/GP_5x1-5.unity
+    path: Assets/Scenes/GameplayScenes/4x1/GP_4x1-5.unity
     guid: c4439c1a41166a44fbac5d1330395ed7
   m_configObjects: {}

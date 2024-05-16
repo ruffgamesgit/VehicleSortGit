@@ -61,7 +61,7 @@ namespace GamePlay.Components
             var sequence = DOTween.Sequence();
             sequence.Join(transform.DOScaleY(1.015f, .43f)).SetLoops(-1, LoopType.Yoyo);
             busTopObject.gameObject.SetActive(true);
-            busTopObject.DOScaleZ(1, .2f);
+            busTopObject.DOScaleZ(1.1f, .2f);
             return sequence;
         }
 
