@@ -17911,7 +17911,7 @@ Camera:
   far clip plane: 1000
   field of view: 60
   orthographic: 1
-  orthographic size: 7.1
+  orthographic size: 8
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
@@ -18203,8 +18203,8 @@ MonoBehaviour:
         - {fileID: 1542148886861731890}
         - {fileID: 4850545423184339848}
         isVirtual: 0
-      hasUpperRoad: 0
-      hasLowerRoad: 1
+      hasUpperRoad: 1
+      hasLowerRoad: 0
     - lines:
       - parkingLots:
         - {fileID: 497150896172410157}
