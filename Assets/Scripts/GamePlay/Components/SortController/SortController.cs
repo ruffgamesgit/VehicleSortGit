@@ -429,7 +429,7 @@ namespace GamePlay.Components.SortController
                 var sortData = new ParkingLotSortData()
                 {
                     ParkingLot = parkingLot,
-                    Seat = targetSeats[0],
+                    targetColor = targetSeats[0].GetPassenger().GetColor(),
                     MatchedNeighbors = matchedNeighbors,
                     MatchedSeats = targetSeats,
                     CountToLookFor = 4 - targetSeats.Count
@@ -446,7 +446,7 @@ namespace GamePlay.Components.SortController
         {
             ParkingLotSortData sortOptionData = new()
             {
-                Seat = arg,
+                targetColor = arg.GetPassenger() != null ? arg.GetPassenger().GetColor() : ColorEnum.NONE,
                 ParkingLot = parkingLot
             };
 
@@ -568,7 +568,7 @@ namespace GamePlay.Components.SortController
             for (var i = 0; i < sortData.MatchedSeats.Count; i++)
             {
                 var match = sortData.MatchedSeats[i];
-                var swappingSeat = CheckForSeatToSwap(sortData.ParkingLot, sortData.Seat.GetPassenger().GetColor());
+                var swappingSeat = CheckForSeatToSwap(sortData.ParkingLot, sortData.targetColor);
 
                 if (swappingSeat == null)
                 {
@@ -767,7 +767,7 @@ namespace GamePlay.Components.SortController
         private class ParkingLotSortData
         {
             public ParkingLot ParkingLot = null;
-            public Seat Seat = null;
+            public ColorEnum targetColor = default;
             public int CountToLookFor = 4;
             public List<Seat> MatchedSeats = null;
             public List<ParkingLot> MatchedNeighbors = null;
