@@ -36,8 +36,25 @@ public class VehicleShakerVisual : MonoBehaviour
         _prevPos = transform.position;
     }
 
+    public void Deactivate()
+    {
+        if (moveTween != null) moveTween.Kill();
+        if (moveTween2 != null) moveTween2.Kill();
+        if (moveTween3 != null) moveTween3.Kill();
+        this.enabled = false;
+    }
+
+    public void Activate()
+    {
+        if (moveTween != null) moveTween.Kill();
+        if (moveTween2 != null) moveTween2.Kill();
+        if (moveTween3 != null) moveTween3.Kill();
+        this.enabled = true;
+    }
+
     private void LateUpdate()
     {
+        if(this.enabled == false) return;
         Vector3 tmpLocal = transform.eulerAngles;
         transform.eulerAngles = tmpLocal;
         
@@ -62,10 +79,10 @@ public class VehicleShakerVisual : MonoBehaviour
 
         if (_moving)
         {
-            Vector3 targetRot = Vector3.Lerp(Vector3.up, -_moveDirection, _maxLerpValue);
-
+            Vector3 targetRot = Vector3.Lerp(transform.up, -_moveDirection, _maxLerpValue);
             moveTween3 = DOVirtual.Vector3(transform.up, targetRot, tweenTime - .2f, (v) => transform.up = v);
         }
+        
         else if (!_justOnce)
         {
             _justOnce = true;

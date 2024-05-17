@@ -30,14 +30,14 @@ namespace Services.Sound
         
         private void LoadSoundData()
         {
-            // foreach (var type in Enum.GetNames(typeof(SoundTypeEnum)))
-            // {
-            //     var clip = Resources.Load<AudioClip>($"Sounds/{type}");
-            //     if (clip != null)
-            //     {
-            //         _audioClips.Add(type.ToString(),clip);
-            //     }
-            // }
+            foreach (var type in Enum.GetNames(typeof(SoundTypeEnum)))
+            {
+                var clip = Resources.Load<AudioClip>($"Sounds/{type}");
+                if (clip != null)
+                {
+                    _audioClips.Add(type.ToString(),clip);
+                }
+            }
         }
 
         

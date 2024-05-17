@@ -208,7 +208,7 @@ namespace GamePlay.Components
                     {
                         float duration = GetDurationByDistance(transform.position, to.transform.position);
                         _moveSequence.Append(transform.DOMove(to.transform.position, duration)
-                            .SetEase(isLastMove ? Ease.OutQuad : Ease.Linear));
+                            .SetEase(isLastMove ? Ease.OutBack : Ease.Linear));
                     }
                     else
                     {
@@ -243,7 +243,7 @@ namespace GamePlay.Components
 
                             subSequence.Append(transform.DOMove(targetPositions[i], targetDurations[i])
                                 .SetEase(isFirstMove && i == 0 ? Ease.InBack :
-                                    isLastMove && i == targetPositions.Count - 1 ? Ease.OutQuad : Ease.Linear));
+                                    isLastMove && i == targetPositions.Count - 1 ? Ease.OutBack : Ease.Linear));
                             _moveSequence.Append(subSequence);
 
                             if (i + 2 <= targetPositions.Count)
@@ -299,7 +299,7 @@ namespace GamePlay.Components
 
                     subSequence.Append(transform.DOMove(targetPositions[i], targetDurations[i])
                         .SetEase(isFirstMove && i == 0 ? Ease.InBack :
-                            isLastMove && i == targetPositions.Count - 1 ? Ease.OutQuad : Ease.Linear));
+                            isLastMove && i == targetPositions.Count - 1 ? Ease.OutBack : Ease.Linear));
                     _moveSequence.Append(subSequence);
 
                     if (i + 2 <= targetPositions.Count)

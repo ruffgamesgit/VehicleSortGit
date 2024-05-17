@@ -10,6 +10,7 @@ using System.Threading;
 using Core.Locator;
 using Core.Services;
 using Core.Services.GamePlay;
+using Services.Sound;
 using UnityEngine;
 using UnityEngine.Serialization;
 
@@ -22,6 +23,7 @@ namespace GamePlay.Components.SortController
         private FillController _fillController;
         private ParkingLot _lastClickedParkingLot;
         private IGamePlayService _gamePlayService;
+        private ISoundService _soundService;
         private LevelData _levelData;
 
         private readonly SemaphoreSlim _semaphore = new(1, 1);
@@ -32,8 +34,9 @@ namespace GamePlay.Components.SortController
         private void Awake()
         {
             if (ServiceLocator.Instance == null) return;
-            _fillController = GetComponent<FillController>();
+            _soundService = ServiceLocator.Instance.Resolve<ISoundService>();
             _gamePlayService = ServiceLocator.Instance.Resolve<IGamePlayService>();
+            _fillController = GetComponent<FillController>();
             _levelData = _gamePlayService.GetCurrentLevelData();
             InitializeParkingLots();
             InitializeFeeders();
@@ -155,6 +158,8 @@ namespace GamePlay.Components.SortController
                     {
                         if (path[^1] == parkingLot)
                         {
+                            // POSITIVE TAPTIC 
+                            // POSITIVE SOUND
                             var fromParkingLot = _lastClickedParkingLot;
                             _lastClickedParkingLot = null;
                             parkingLot.SetWillOccupied();
@@ -206,7 +211,7 @@ namespace GamePlay.Components.SortController
                         }
                     }
                 }
-
+                //NEGATIVE TAPTIC
                 HighlightPossibleParkingLots(false, null);
                 _lastClickedParkingLot.GetCurrentVehicle()?.SetHighlight(false);
                 _lastClickedParkingLot = null;
@@ -215,6 +220,8 @@ namespace GamePlay.Components.SortController
             {
                 if (!parkingLot.IsEmpty())
                 {
+                    //POSITIVE TAPTIC 
+                    //POSITIVE SOUND
                     _lastClickedParkingLot = parkingLot;
                     HighlightPossibleParkingLots(true, _lastClickedParkingLot);
                     _lastClickedParkingLot.GetCurrentVehicle()?.SetHighlight(true);
@@ -248,16 +255,10 @@ namespace GamePlay.Components.SortController
                     {
                         break;
                     }
-
-                    var vehicle = parkingLot.GetCurrentVehicle();
-                    if (vehicle != null && !vehicle.IsCompleted())
-                    {
-                        SortParkingLotAlgorithmNew(parkingLot);
-                    }
-                    else
-                    {
-                        _semaphore.Release();
-                    }
+                    
+                    SortParkingLotAlgorithmNew(parkingLot);
+                    
+                  
                 }
                 else
                 {
@@ -354,6 +355,7 @@ namespace GamePlay.Components.SortController
                 if (parkingLot == null) return;
                 var currentVehicle = parkingLot.GetCurrentVehicle();
                 if (currentVehicle == null) return;
+                if(currentVehicle.IsCompleted())return;
 
 
                 var parkingLotPosition = parkingLot.GetParkingLotPosition();
