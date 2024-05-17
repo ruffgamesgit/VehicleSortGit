@@ -31,37 +31,37 @@ namespace GamePlay.Components.SortController
 
         private void Awake()
         {
-            if(ServiceLocator.Instance == null) return;
+            if (ServiceLocator.Instance == null) return;
             _fillController = GetComponent<FillController>();
             _gamePlayService = ServiceLocator.Instance.Resolve<IGamePlayService>();
             _levelData = _gamePlayService.GetCurrentLevelData();
             InitializeParkingLots();
             InitializeFeeders();
             _fillController.FillVehicles(gridData.gridGroups, _levelData.vehicleCount, _levelData.colorVariety,
-                _levelData.matchingPassengerCount,garages);
+                _levelData.matchingPassengerCount, garages);
             ActivateFeeders();
         }
-        
+
         private void ActivateFeeders()
         {
-            if(garages.Count == 0)return;
+            if (garages.Count == 0) return;
             for (int i = 0; i < garages.Count; i++)
             {
-                garages[i].OnVehicleReleased += (obj,pLot) => SortParkingLot(pLot);
+                garages[i].OnVehicleReleased += (obj, pLot) => SortParkingLot(pLot);
                 garages[i].Initialize();
             }
         }
-        
+
         private void InitializeFeeders()
         {
-            if(garages.Count == 0)return;
-    
+            if (garages.Count == 0) return;
+
             for (int i = 0; i < garages.Count; i++)
             {
                 garages[i].vehicleNeed = _levelData.garageVehicleCounts[i];
             }
         }
-        
+
         private void InitializeParkingLots()
         {
             int gridGroupIndex = 0;
@@ -86,7 +86,7 @@ namespace GamePlay.Components.SortController
                         parkingLot.Initialize(isParkingLotInvisible, isParkingLotObstacle, isEmptyAtStart,
                             parkingLotPosition);
                         parkingLot.OnParkingLotClicked += OnParkingLotClicked;
-                        parkingLot.OnEmptied += (obj,arg) => CheckWaitingVehiclesThatCompleted();
+                        parkingLot.OnEmptied += (obj, arg) => CheckWaitingVehiclesThatCompleted();
 
                         parkingLotIndex++;
                     }
@@ -115,7 +115,7 @@ namespace GamePlay.Components.SortController
                                 {
                                     if (path[^1] == parkingLot)
                                     {
-                                        parkingLot.SetPossibleTargetHighLight(true,true);
+                                        parkingLot.SetPossibleTargetHighLight(true, true);
                                         continue;
                                     }
                                 }
@@ -124,14 +124,13 @@ namespace GamePlay.Components.SortController
                         }
                         else
                         {
-                            parkingLot.SetPossibleTargetHighLight(false,false);
+                            parkingLot.SetPossibleTargetHighLight(false, false);
                         }
-                       
                     }
                 }
             }
         }
-        
+
         private async void OnParkingLotClicked(object sender, Vehicle arg)
         {
             var parkingLot = (ParkingLot)sender;
@@ -140,7 +139,7 @@ namespace GamePlay.Components.SortController
                 if (_lastClickedParkingLot != null)
                 {
                     _lastClickedParkingLot.GetCurrentVehicle()?.SetHighlight(false);
-                    HighlightPossibleParkingLots(false ,null);
+                    HighlightPossibleParkingLots(false, null);
                     _lastClickedParkingLot = null;
                 }
 
@@ -159,7 +158,7 @@ namespace GamePlay.Components.SortController
                             parkingLot.SetWillOccupied();
                             var vehicle = _lastClickedParkingLot.GetCurrentVehicle();
                             _lastClickedParkingLot.GetCurrentVehicle()?.SetHighlight(false);
-                            HighlightPossibleParkingLots(false ,null);
+                            HighlightPossibleParkingLots(false, null);
                             _lastClickedParkingLot.SetEmpty();
                             _lastClickedParkingLot = null;
                             ParkingLot from = null;
@@ -195,7 +194,7 @@ namespace GamePlay.Components.SortController
                                 if (_lastClickedParkingLot == neighbor)
                                 {
                                     neighbor.GetCurrentVehicle().SetHighlight(false);
-                                    HighlightPossibleParkingLots(false ,null); 
+                                    HighlightPossibleParkingLots(false, null);
                                     _lastClickedParkingLot = null;
                                 }
                             }
@@ -205,7 +204,8 @@ namespace GamePlay.Components.SortController
                         }
                     }
                 }
-                HighlightPossibleParkingLots(false ,null);
+
+                HighlightPossibleParkingLots(false, null);
                 _lastClickedParkingLot.GetCurrentVehicle()?.SetHighlight(false);
                 _lastClickedParkingLot = null;
             }
@@ -244,7 +244,7 @@ namespace GamePlay.Components.SortController
                         continue;
                     }
                 }
-                
+
                 _semaphore.Release();
             }
 
@@ -372,7 +372,6 @@ namespace GamePlay.Components.SortController
                         if (!Monitor.IsEntered(_lock)) SortAffectedParkingLots();
                     }
                 }
-                
             }
             catch (Exception e)
             {
@@ -589,15 +588,16 @@ namespace GamePlay.Components.SortController
             if (!sortData.ParkingLot.CheckIfCompleted(gridData))
             {
                 InsertItemToQueue(sortData.ParkingLot);
-            } 
+            }
+
             foreach (var neighbor in checkAfterAnimationNeighbors)
             {
-                if (!neighbor.CheckIfCompleted(gridData)) 
+                if (!neighbor.CheckIfCompleted(gridData))
                 {
                     EnqueueItem(neighbor);
                 }
             }
-           
+
 
             if (!Monitor.IsEntered(_lock)) SortAffectedParkingLots();
         }
@@ -745,20 +745,17 @@ namespace GamePlay.Components.SortController
         {
             for (int i = 0; i < garages.Count; i++)
             {
-                garages[i].OnVehicleReleased -= (obj,pLot) => SortParkingLot(pLot);
+                garages[i].OnVehicleReleased -= (obj, pLot) => SortParkingLot(pLot);
             }
-            
+
             foreach (var gridGroup in gridData.gridGroups)
             {
                 foreach (var line in gridGroup.lines)
                 {
                     foreach (var parkingLot in line.parkingLots)
                     {
-                        
                         parkingLot.OnParkingLotClicked -= OnParkingLotClicked;
-                        parkingLot.OnEmptied -= (obj,arg) => CheckWaitingVehiclesThatCompleted();
-
-                   
+                        parkingLot.OnEmptied -= (obj, arg) => CheckWaitingVehiclesThatCompleted();
                     }
                 }
             }
