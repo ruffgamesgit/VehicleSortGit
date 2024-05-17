@@ -29,7 +29,7 @@ namespace GamePlay.UI
             canvasGroup.interactable = true;
             canvasGroup.DOFade(1, 0.5f).SetDelay(1f).OnComplete(() =>
             {
-                _soundService.PlaySound(SoundTypeEnum.LevelFail);
+                _soundService.PlaySound(SoundTypeEnum.LoseSound);
             });
         }
 

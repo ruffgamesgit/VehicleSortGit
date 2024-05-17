@@ -32,10 +32,9 @@ namespace GamePlay.UI
             canvasGroup.interactable = true;
             if(confetti != null)
                 confetti.SetActive(true);
-            _soundService.PlaySound(SoundTypeEnum.Confetti);
             canvasGroup.DOFade(1, 0.5f).OnComplete(() =>
             {
-                _soundService.PlaySound(SoundTypeEnum.LevelSuccess);
+                _soundService.PlaySound(SoundTypeEnum.WinSound);
             }).SetDelay(1f);
         }
 

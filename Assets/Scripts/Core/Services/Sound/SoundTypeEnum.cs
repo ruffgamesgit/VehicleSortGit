@@ -5,5 +5,6 @@ namespace Services.Sound
         PositiveCarSelectSound,
         PassengerMoveSound,
         WinSound,
+        LoseSound,
     }
 }
