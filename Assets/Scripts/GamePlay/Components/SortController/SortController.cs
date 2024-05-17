@@ -160,7 +160,6 @@ namespace GamePlay.Components.SortController
                         { 
                             Taptic.Medium();
                             _soundService.PlaySound(SoundTypeEnum.PositiveCarSelectSound); 
-                            
                             var fromParkingLot = _lastClickedParkingLot;
                             _lastClickedParkingLot = null;
                             parkingLot.SetWillOccupied();

@@ -16,6 +16,7 @@ namespace GamePlay.UI
         
         [SerializeField] private LoseScreenController _loseScreenController;
         [SerializeField] private WinScreenController _winScreenController;
+        [SerializeField] private SettingsController _settingsController;
         
         
         [SerializeField] private Button nextLevelBtn;
@@ -27,6 +28,8 @@ namespace GamePlay.UI
             SetLevelText();
             SetButtonBehaviours();
         }
+        
+        
 
         private void OnLevelFinished(object sender, LevelFinishedType e)
         {
@@ -60,12 +63,12 @@ namespace GamePlay.UI
 
         private void OpenSettingsScreen()
         {
-            Debug.Log("Setting Screen Open");
+            _settingsController.Activate();
         }
 
         private void CloseSettingScreen()
         {
-            Debug.Log("Close Setting Screen");
+            _settingsController.Deactivate();
         }
         
         private void SetLevelText()
@@ -84,10 +87,10 @@ namespace GamePlay.UI
             {
                 _gamePlayService.LoadPrevious();
             });
-            // settingsBtn.onClick.AddListener(() =>
-            // {
-            //     OpenSettingsScreen();
-            // });
+            settingsBtn.onClick.AddListener(() =>
+            {
+                OpenSettingsScreen();
+            });
         }
 
         private void OnDestroy()
