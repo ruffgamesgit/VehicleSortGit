@@ -5,6 +5,7 @@ using Core.Services;
 using Core.Services.Analytics;
 using Core.Services.GamePlay;
 using Services.Analytics;
+using Services.Sound;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -43,7 +44,8 @@ namespace Core.Launcher
         private static void InitializeServices()
         {
             ServiceLocator.Initialize();
-            
+            SoundService soundService = new SoundService(InstantiateSoundServiceContainer());
+            ServiceLocator.Instance.Register<ISoundService>(soundService);
             AnalyticsService analyticsService = new AnalyticsService();
             ServiceLocator.Instance.Register<IAnalyticsService>(analyticsService);
             GamePlayService gamePlayService = new GamePlayService();
@@ -65,13 +67,13 @@ namespace Core.Launcher
         //     return container.AddComponent<MaxSDKServiceContainer>();
         // }
         //
-        // private static SoundServiceContainer InstantiateSoundServiceContainer()
-        // {
-        //     var container = new GameObject("SoundServiceContainer");
-        //     SetDontDestroyOnLoad(container);
-        //     return container.AddComponent<SoundServiceContainer>();
-        // }
-        //
+        private static SoundServiceContainer InstantiateSoundServiceContainer()
+        {
+            var container = new GameObject("SoundServiceContainer");
+            SetDontDestroyOnLoad(container);
+            return container.AddComponent<SoundServiceContainer>();
+        }
+        
         private static void SetDontDestroyOnLoad(GameObject gameObject)
         {
             DontDestroyOnLoad(gameObject);

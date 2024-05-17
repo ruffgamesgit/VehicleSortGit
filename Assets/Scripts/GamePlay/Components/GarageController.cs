@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using DG.Tweening;
 using TMPro;
 using UnityEngine;
@@ -30,6 +31,11 @@ namespace GamePlay.Components
             vehicleCountTxt.text = _vehicles.Count.ToString();
         }
 
+        public bool IsEmpty()
+        {
+            return _vehicles.Count == 0;
+        }
+        
         private void OnNeighborEmptied(object sender, EventArgs e)
         {
             if (_vehicles.Count == 0) return;

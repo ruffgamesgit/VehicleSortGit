@@ -25,8 +25,8 @@ namespace GamePlay.Components.SortController
         private LevelData _levelData;
 
         private readonly SemaphoreSlim _semaphore = new(1, 1);
+        private readonly SemaphoreSlim _mainSemaphore = new(1, 1);
         private readonly ConcurrentQueue<ParkingLot> _affectedSortQueue = new();
-        private readonly object _lock = new();
 
 
         private void Awake()
@@ -155,12 +155,14 @@ namespace GamePlay.Components.SortController
                     {
                         if (path[^1] == parkingLot)
                         {
-                            parkingLot.SetWillOccupied();
-                            var vehicle = _lastClickedParkingLot.GetCurrentVehicle();
-                            _lastClickedParkingLot.GetCurrentVehicle()?.SetHighlight(false);
-                            HighlightPossibleParkingLots(false, null);
-                            _lastClickedParkingLot.SetEmpty();
+                            var fromParkingLot = _lastClickedParkingLot;
                             _lastClickedParkingLot = null;
+                            parkingLot.SetWillOccupied();
+                            var vehicle = fromParkingLot.GetCurrentVehicle();
+                            fromParkingLot.GetCurrentVehicle()?.SetHighlight(false);
+                            HighlightPossibleParkingLots(false, null);
+                            fromParkingLot.SetEmpty();
+
                             ParkingLot from = null;
 
                             int counter = 0;
@@ -225,61 +227,124 @@ namespace GamePlay.Components.SortController
             var vehicle = parkingLot.GetCurrentVehicle();
             if (vehicle == null) return;
             InsertItemToQueue(parkingLot);
-            if (!Monitor.IsEntered(_lock)) SortAffectedParkingLots();
+            SortAffectedParkingLots();
         }
+
+        private object _lock = new();
 
         private async void SortAffectedParkingLots()
         {
-            Monitor.Enter(_lock);
+            if (!Monitor.TryEnter(_lock))
+            {
+                return;
+            }
+
             while (_affectedSortQueue.Count > 0)
             {
                 await _semaphore.WaitAsync();
                 if (_affectedSortQueue.TryDequeue(out var parkingLot))
                 {
-                    if (this == null) break;
+                    if (this == null)
+                    {
+                        break;
+                    }
+
                     var vehicle = parkingLot.GetCurrentVehicle();
                     if (vehicle != null && !vehicle.IsCompleted())
                     {
                         SortParkingLotAlgorithmNew(parkingLot);
-                        continue;
+                    }
+                    else
+                    {
+                        _semaphore.Release();
                     }
                 }
-
-                _semaphore.Release();
+                else
+                {
+                    _semaphore.Release();
+                }
             }
 
             Monitor.Exit(_lock);
-            await _semaphore.WaitAsync();
-            try
+
+            List<UniTask> sortTasks = new List<UniTask>();
+            foreach (var group in gridData.gridGroups)
             {
-                List<UniTask> sortTasks = new List<UniTask>();
-                foreach (var group in gridData.gridGroups)
+                foreach (var line in group.lines)
                 {
-                    foreach (var line in group.lines)
+                    foreach (var parkingLot in line.parkingLots)
                     {
-                        foreach (var parkingLot in line.parkingLots)
+                        if (!parkingLot.IsInvisible() && !parkingLot.IsEmpty())
                         {
-                            if (!parkingLot.IsInvisible() && !parkingLot.IsEmpty())
+                            var vehicle = parkingLot.GetCurrentVehicle();
+                            var task = vehicle.SortByType(false);
+                            sortTasks.Add(task);
+                        }
+                    }
+                }
+            }
+
+            await UniTask.WhenAll(sortTasks);
+        }
+
+        private bool IsGameFailed()
+        {
+            foreach (var group in gridData.gridGroups)
+            {
+                foreach (var line in group.lines)
+                {
+                    foreach (var parkingLot in line.parkingLots)
+                    {
+                        if (parkingLot.IsObstacle() || parkingLot.IsInvisible()) continue;
+                        if (parkingLot.IsEmpty()) return false;
+
+                        var vehicle = parkingLot.GetCurrentVehicle();
+                        foreach (var seat in vehicle.GetSeats())
+                        {
+                            if (seat.GetPassenger() == null || seat.GetPassenger().GetColor() == ColorEnum.NONE)
+                                continue;
+                            if (CalculateSortingOptions(parkingLot, seat, parkingLot.FindNeighbors(group.lines)) !=
+                                null)
                             {
-                                var vehicle = parkingLot.GetCurrentVehicle();
-                                var task = vehicle.SortByType(false);
-                                sortTasks.Add(task);
+                                return false;
                             }
                         }
                     }
                 }
+            }
 
-                await UniTask.WhenAll(sortTasks);
-            }
-            catch (Exception e)
+            return true;
+        }
+
+        private bool IsGameCompleted()
+        {
+            foreach (var group in gridData.gridGroups)
             {
-                Console.WriteLine(e);
-                throw;
+                foreach (var line in group.lines)
+                {
+                    foreach (var parkingLot in line.parkingLots)
+                    {
+                        if (parkingLot.IsObstacle() || parkingLot.IsInvisible()) continue;
+                        if (parkingLot.IsEmpty()) continue;
+
+                        var vehicle = parkingLot.GetCurrentVehicle();
+                        if (!vehicle.IsAllEmpty())
+                        {
+                            return false;
+                        }
+                    }
+                }
             }
-            finally
+
+            foreach (var garage in garages)
             {
-                _semaphore.Release();
+                if (!garage.IsEmpty())
+                {
+                    return false;
+                }
             }
+
+            return true;
         }
 
         private async void SortParkingLotAlgorithmNew(ParkingLot parkingLot)
@@ -287,12 +352,23 @@ namespace GamePlay.Components.SortController
             try
             {
                 if (parkingLot == null) return;
-                if (parkingLot.GetCurrentVehicle() == null) return;
+                var currentVehicle = parkingLot.GetCurrentVehicle();
+                if (currentVehicle == null) return;
 
 
                 var parkingLotPosition = parkingLot.GetParkingLotPosition();
                 var neighborParkingLots =
                     parkingLot.FindNeighbors(gridData.gridGroups[parkingLotPosition.GetGridGroupIndex()].lines);
+                if (!currentVehicle.IsAllEmpty())
+                    foreach (var neighbor in neighborParkingLots)
+                    {
+                        if (neighbor.GetCurrentVehicle() == null) continue;
+                        if (neighbor.GetCurrentVehicle().IsAllEmpty())
+                        {
+                            EnqueueItem(neighbor);
+                        }
+                    }
+
                 neighborParkingLots = neighborParkingLots.ExtractUnSortableParkingLots();
 
                 if (neighborParkingLots.Count == 0)
@@ -369,7 +445,7 @@ namespace GamePlay.Components.SortController
                     else
                     {
                         InsertItemToQueue(targetSort.SecondNeighborMatch);
-                        if (!Monitor.IsEntered(_lock)) SortAffectedParkingLots();
+                        SortAffectedParkingLots();
                     }
                 }
             }
@@ -380,9 +456,26 @@ namespace GamePlay.Components.SortController
             }
             finally
             {
+                if (!isGameFinished && _affectedSortQueue.Count == 0)
+                {
+                    if (IsGameCompleted())
+                    {
+                        isGameFinished = true;
+                        _gamePlayService.LevelFinished(LevelFinishedType.Complete);
+                    }
+
+                    if (IsGameFailed())
+                    {
+                        isGameFinished = true;
+                        _gamePlayService.LevelFinished(LevelFinishedType.Fail);
+                    }
+                }
+
                 _semaphore.Release();
             }
         }
+
+        private bool isGameFinished;
 
         private ParkingLotSortData GetOneTypeFromNeighbor(ParkingLot parkingLot, List<ParkingLot> neighbors)
         {
@@ -599,7 +692,7 @@ namespace GamePlay.Components.SortController
             }
 
 
-            if (!Monitor.IsEntered(_lock)) SortAffectedParkingLots();
+            SortAffectedParkingLots();
         }
 
         private void CheckWaitingVehiclesThatCompleted()
@@ -618,6 +711,11 @@ namespace GamePlay.Components.SortController
                         parkingLot.CheckIfCompleted(gridData);
                     }
                 }
+            }
+
+            if (_lastClickedParkingLot != null)
+            {
+                HighlightPossibleParkingLots(true, _lastClickedParkingLot);
             }
         }
 

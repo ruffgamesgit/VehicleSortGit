@@ -30,9 +30,6 @@ EditorBuildSettings:
     path: Assets/Scenes/GameplayScenes/1x1/GP_1x1-5.unity
     guid: cdf6d1bc1b4e9f544ba21af341b60450
   - enabled: 1
-    path: Assets/Scenes/GameplayScenes/1x1/GP_1x1-8.unity
-    guid: f90ecb9a63ad9db4ba7a0ae60b6ee88b
-  - enabled: 1
     path: Assets/Scenes/GameplayScenes/1x1x1/GP_1x1x1-5.unity
     guid: ab69052c9da1f3447aee8576670d5d01
   - enabled: 1
@@ -77,9 +74,6 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/GameplayScenes/2x1/GP_2x1-5.unity
     guid: 9b23110c73e54dd4eaf05b817f94c314
-  - enabled: 1
-    path: Assets/Scenes/GameplayScenes/2x1/GP_2x1-8.unity
-    guid: 4d840e8df76db9d479bc1483302cc48d
   - enabled: 1
     path: Assets/Scenes/GameplayScenes/2x1x1/GP_2x1x1-4.unity
     guid: 2f455d2698dd33840ac8ec418a35a44d

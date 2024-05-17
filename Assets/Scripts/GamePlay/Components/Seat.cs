@@ -87,8 +87,11 @@ namespace GamePlay.Components
             
             _sequence.OnComplete(() =>
             {
-                _passenger.transform.position = transform.position;
-                _passenger.SetMeshesParent();
+                if (_passenger != null)
+                {
+                    _passenger.transform.position = transform.position;
+                    _passenger.SetMeshesParent();
+                }
                 _isAnimationOn = false;
                 ucs.TrySetResult();
             });

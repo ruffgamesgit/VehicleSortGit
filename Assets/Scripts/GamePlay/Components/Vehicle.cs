@@ -101,7 +101,7 @@ namespace GamePlay.Components
         {
             if (IsAllEmpty()) return;
 
-            await UniTask.WaitUntil(() =>!IsAnimationOn());
+            await UniTask.WaitUntil(() => !IsAnimationOn());
             HashSet<Seat> swappingAnimationList = new HashSet<Seat>();
             if (HasEmptySeat())
             {
@@ -164,7 +164,6 @@ namespace GamePlay.Components
 
         private void ReverseSeats()
         {
-            if (IsAllEmpty()) return;
             if (!HasEmptySeat() && GetExistingColors().AreAllValuesEqual())
             {
                 goto rotatePassengers;
@@ -176,10 +175,12 @@ namespace GamePlay.Components
             seats.AnimateSeatChanges(false);
 
             rotatePassengers:
-            foreach (var seat in seats)
-            {
-                seat.RotatePassengers();
-            }
+            
+            if (!IsAllEmpty())
+                foreach (var seat in seats)
+                {
+                    seat.RotatePassengers();
+                }
         }
 
         public Sequence MoveAnimation(GridData gridData, UniTaskCompletionSource ucs, ParkingLot from, ParkingLot to,
