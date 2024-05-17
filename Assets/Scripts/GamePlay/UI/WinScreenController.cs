@@ -40,6 +40,7 @@ namespace GamePlay.UI
 
         private void NextButtonClick()
         {
+            _soundService.PlaySound(SoundTypeEnum.ButtonClickedSound);
             _gamePlayService.LoadLevel();
         }
     }
