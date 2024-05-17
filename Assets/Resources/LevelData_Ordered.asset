@@ -295,8 +295,8 @@ MonoBehaviour:
           IsObstacle: 1
   - scene: GP_1x1-5
     colorVariety: 5
-    matchingPassengerCount: 6
-    vehicleCount: 10
+    matchingPassengerCount: 9
+    vehicleCount: 9
     garageVehicleCounts: 0300000003000000
     levelDataGridGroups:
     - lines:

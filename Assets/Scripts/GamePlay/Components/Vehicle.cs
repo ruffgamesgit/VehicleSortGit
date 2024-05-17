@@ -1,11 +1,14 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using Core.Locator;
 using Cysharp.Threading.Tasks;
 using DG.Tweening;
 using GamePlay.Components.SortController;
 using GamePlay.Data;
 using GamePlay.Data.Grid;
 using GamePlay.Extension;
+using Services.Sound;
 using UnityEngine;
 
 namespace GamePlay.Components
@@ -22,6 +25,12 @@ namespace GamePlay.Components
         private Sequence _moveSequence;
         private Sequence _goOutSequence;
         private Sequence _vehicleCompleteIdleSequence;
+        private ISoundService _soundService;
+
+        private void Start()
+        {
+            _soundService = ServiceLocator.Instance.Resolve<ISoundService>();
+        }
 
         public Dictionary<ColorEnum, int> GetExistingColors()
         {
@@ -54,7 +63,7 @@ namespace GamePlay.Components
             _isCompleted = true;
         }
 
-        public Sequence OnBusIsCompleted()
+        private Sequence OnBusIsCompleted()
         {
             if (busTopObject.gameObject.activeInHierarchy) return null;
 
@@ -62,6 +71,7 @@ namespace GamePlay.Components
             sequence.Join(transform.DOScaleY(1.015f, .43f)).SetLoops(-1, LoopType.Yoyo);
             busTopObject.gameObject.SetActive(true);
             busTopObject.DOScaleZ(1.1f, .2f);
+            _soundService.PlaySound(SoundTypeEnum.VehicleLeavingSound);
             return sequence;
         }
 

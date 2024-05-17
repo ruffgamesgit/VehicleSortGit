@@ -159,7 +159,7 @@ namespace GamePlay.Components.SortController
                         if (path[^1] == parkingLot)
                         { 
                             Taptic.Medium();
-                            _soundService.PlaySound(SoundTypeEnum.PositiveCarSelectSound); 
+                            _soundService.PlaySound(SoundTypeEnum.ButtonClickedSound); 
                             var fromParkingLot = _lastClickedParkingLot;
                             _lastClickedParkingLot = null;
                             parkingLot.SetWillOccupied();
@@ -221,7 +221,7 @@ namespace GamePlay.Components.SortController
                 if (!parkingLot.IsEmpty())
                 { 
                     Taptic.Medium();
-                    _soundService.PlaySound(SoundTypeEnum.PositiveCarSelectSound); 
+                    _soundService.PlaySound(SoundTypeEnum.ButtonClickedSound); 
                     _lastClickedParkingLot = parkingLot;
                     HighlightPossibleParkingLots(true, _lastClickedParkingLot);
                     _lastClickedParkingLot.GetCurrentVehicle()?.SetHighlight(true);

@@ -2,9 +2,10 @@ namespace Services.Sound
 {
     public enum SoundTypeEnum
     {
-        PositiveCarSelectSound,
+        ButtonClickedSound,
         PassengerMoveSound,
         WinSound,
         LoseSound,
+        VehicleLeavingSound,
     }
 }
