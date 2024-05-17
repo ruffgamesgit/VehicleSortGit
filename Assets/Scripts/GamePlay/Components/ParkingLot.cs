@@ -53,8 +53,9 @@ namespace GamePlay.Components
                     DOVirtual.DelayedCall(0.2f, () =>
                     {
                         onComplete?.Invoke();
+                        _isInvisible = false;
                     });
-                    _isInvisible = false;
+                   
                 }).SetDelay(0.15f);
                 
             }

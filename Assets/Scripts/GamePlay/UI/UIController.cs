@@ -51,14 +51,14 @@ namespace GamePlay.UI
 
         private void OpenFailScreen()
         {
-            CloseSettingScreen();
             _loseScreenController.Activate();
+            CloseSettingScreen();
         }
 
         private void OpenWinScreen()
         {
-            CloseSettingScreen();
             _winScreenController.Activate();
+            CloseSettingScreen();
         }
 
         private void OpenSettingsScreen()
