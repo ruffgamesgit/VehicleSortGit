@@ -2,6 +2,7 @@ using System;
 
 using Core.Locator;
 using Core.Services.GamePlay;
+using Cysharp.Threading.Tasks;
 using DG.Tweening;
 using Services.Sound;
 using UnityEngine;
@@ -30,12 +31,15 @@ namespace GamePlay.UI
         {
             canvasGroup.blocksRaycasts = true;
             canvasGroup.interactable = true;
-            if(confetti != null)
-                confetti.SetActive(true);
-            canvasGroup.DOFade(1, 0.5f).OnComplete(() =>
+            var sequence = DOTween.Sequence();
+            sequence.Insert(1f,canvasGroup.DOFade(1, 0.5f));
+            sequence.InsertCallback(0.5f,() =>
             {
+                if(confetti != null)
+                    confetti.SetActive(true);
                 _soundService.PlaySound(SoundTypeEnum.WinSound);
-            }).SetDelay(1f);
+            });
+            
         }
 
         private void NextButtonClick()

@@ -510,8 +510,8 @@ MonoBehaviour:
           IsInvisible: 0
           IsObstacle: 0
   - scene: GP_2x1-5 (var.2)
-    colorVariety: 9
-    matchingPassengerCount: 10
+    colorVariety: 8
+    matchingPassengerCount: 12
     vehicleCount: 13
     garageVehicleCounts: 08000000
     levelDataGridGroups:
@@ -948,7 +948,7 @@ MonoBehaviour:
           IsInvisible: 1
           IsObstacle: 1
   - scene: GP_4-5
-    colorVariety: 12
+    colorVariety: 9
     matchingPassengerCount: 18
     vehicleCount: 20
     garageVehicleCounts: 0600000006000000
