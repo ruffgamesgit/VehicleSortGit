@@ -15,7 +15,16 @@ namespace Core.Services.GamePlay
         private const string LevelDataPath = "LevelData_Ordered";
         private const string LastLevelKey = "LastLevel";
         private readonly System.Random _random = new();
-        
+        private bool isSettingEnabled = false;
+        public void SettingsEnabled(bool active)
+        {
+            isSettingEnabled = active;
+        }
+
+        public bool IsSettingEnabled()
+        {
+            return isSettingEnabled;
+        }
         public event EventHandler<LevelFinishedType> LevelFinishedEvent;
 
         private List<LevelData> _levelData;
@@ -42,6 +51,7 @@ namespace Core.Services.GamePlay
 
         public void LevelFinished(LevelFinishedType type)
         {
+            isSettingEnabled = true;
             switch (type)
             {
                 case LevelFinishedType.Fail:
@@ -87,6 +97,8 @@ namespace Core.Services.GamePlay
                 string sceneName = _levelData[_currentLevel].scene;
                 SceneManager.LoadScene(sceneName);
             }
+
+            isSettingEnabled = false;
             _levelStartTime = Time.realtimeSinceStartup;
         }
 

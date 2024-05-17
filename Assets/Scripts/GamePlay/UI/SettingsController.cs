@@ -1,4 +1,5 @@
 using Core.Locator;
+using Core.Services.GamePlay;
 using DG.Tweening;
 using Services.Sound;
 using UnityEngine;
@@ -19,20 +20,25 @@ namespace GamePlay.UI
         [SerializeField] private CanvasGroup canvasGroup;
         
         private ISoundService _soundService;
+        private IGamePlayService _gamePlayService;
+        private Sequence _sequence;
         private void Awake()
         {
             canvasGroup = GetComponent<CanvasGroup>();
             _soundService = ServiceLocator.Instance.Resolve<ISoundService>();
+            _gamePlayService = ServiceLocator.Instance.Resolve<IGamePlayService>();
             SetSettingsStates();
             
             hapticButton.onClick.AddListener(() =>
             {
                 _soundService.SetHapticEnabled(!Taptic.tapticOn);
+                _soundService.PlaySound(SoundTypeEnum.PassengerMoveSound);
                 SetSettingsStates();
             });
             soundButton.onClick.AddListener(() =>
             {
                 _soundService.SetSoundEnabled(!_soundService.IsSoundEnabled());
+                _soundService.PlaySound(SoundTypeEnum.PassengerMoveSound);
                 SetSettingsStates();
             });
             exitButton.onClick.AddListener(()=> {
@@ -43,19 +49,27 @@ namespace GamePlay.UI
 
         public void Activate()
         {
+            _sequence?.Kill(true);
+            _gamePlayService.SettingsEnabled(true);
             canvasGroup.blocksRaycasts = true;
             canvasGroup.interactable = true;
             _soundService.PlaySound(SoundTypeEnum.PassengerMoveSound);
-            canvasGroup.DOFade(1, 0.5f);
+            _sequence = DOTween.Sequence();
+            _sequence.Join(canvasGroup.DOFade(1, 0.5f));
         }
 
         public void Deactivate()
         {
-            canvasGroup.DOFade(0, 0.25f).OnComplete(() =>
+            if (canvasGroup.alpha == 0) return;
+            _sequence?.Kill(true);
+            _sequence = DOTween.Sequence();
+
+            _sequence.Join(canvasGroup.DOFade(0, 0.25f).OnComplete(() =>
             {
                 canvasGroup.blocksRaycasts = false;
                 canvasGroup.interactable = false;
-            });
+                _gamePlayService.SettingsEnabled(false);
+            }));
         }
 
         private void SetSettingsStates()

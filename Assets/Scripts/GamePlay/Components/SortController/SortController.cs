@@ -136,6 +136,7 @@ namespace GamePlay.Components.SortController
 
         private async void OnParkingLotClicked(object sender, Vehicle arg)
         {
+            if(_gamePlayService.IsSettingEnabled()) return;
             var parkingLot = (ParkingLot)sender;
             if (parkingLot == null)
             {

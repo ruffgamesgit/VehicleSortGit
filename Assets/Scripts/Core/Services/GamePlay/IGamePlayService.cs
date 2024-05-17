@@ -6,6 +6,8 @@ namespace Core.Services.GamePlay
 {
     public interface IGamePlayService : IService
     {
+        public bool IsSettingEnabled();
+        public void SettingsEnabled(bool active);
         public event EventHandler<LevelFinishedType> LevelFinishedEvent;
         public void LevelFinished(LevelFinishedType type);
         public LevelData GetCurrentLevelData();

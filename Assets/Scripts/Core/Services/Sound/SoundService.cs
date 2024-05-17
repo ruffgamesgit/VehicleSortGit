@@ -24,8 +24,8 @@ namespace Services.Sound
 
         private void SetHaptic()
         {
-            //var hapticEnabled = PlayerPrefs.GetInt(HapticEnabledKey, 1) == 1;
-            //Taptic.tapticOn = hapticEnabled;
+            var hapticEnabled = PlayerPrefs.GetInt(HapticEnabledKey, 1) == 1;
+            Taptic.tapticOn = hapticEnabled;
         }
         
         private void LoadSoundData()
@@ -62,8 +62,8 @@ namespace Services.Sound
 
         public void SetSoundEnabled(bool value)
         {
-            //_isSoundEnabled = value;    
-           // PlayerPrefs.SetInt(SoundEnabledKey, value ? 1 : 0);
+            _isSoundEnabled = value;    
+            PlayerPrefs.SetInt(SoundEnabledKey, value ? 1 : 0);
         }
 
         public bool IsHapticEnabled()
@@ -73,9 +73,9 @@ namespace Services.Sound
         
         public void SetHapticEnabled(bool value)
         {
-           // _isHapticEnabled = value;    
-            //Taptic.tapticOn = value;
-            //PlayerPrefs.SetInt(HapticEnabledKey, value ? 1 : 0);
+            _isHapticEnabled = value;    
+            Taptic.tapticOn = value;
+            PlayerPrefs.SetInt(HapticEnabledKey, value ? 1 : 0);
         }
     }
 }
