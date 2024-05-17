@@ -30,28 +30,28 @@ namespace Services.Sound
         
         private void LoadSoundData()
         {
-            // foreach (var type in Enum.GetNames(typeof(SoundTypeEnum)))
-            // {
-            //     var clip = Resources.Load<AudioClip>($"Sounds/{type}");
-            //     if (clip != null)
-            //     {
-            //         _audioClips.Add(type.ToString(),clip);
-            //     }
-            // }
+            foreach (var type in Enum.GetNames(typeof(SoundTypeEnum)))
+            {
+                var clip = Resources.Load<AudioClip>($"Sounds/{type}");
+                if (clip != null)
+                {
+                    _audioClips.Add(type.ToString(),clip);
+                }
+            }
         }
 
         
         public void PlaySound(SoundTypeEnum type)
         {
-            // if(!_isSoundEnabled) return;
-            // if (_audioClips.TryGetValue(type.ToString(), out var clip))
-            // {
-            //     _container.Play(clip);
-            // }
-            // else
-            // {
-            //     Debug.LogError($"The {type} is not present in the dictionary");
-            // }
+            if(!_isSoundEnabled) return;
+            if (_audioClips.TryGetValue(type.ToString(), out var clip))
+            {
+                _container.Play(clip);
+            }
+            else
+            {
+                Debug.LogError($"The {type} is not present in the dictionary");
+            }
             
         }
 

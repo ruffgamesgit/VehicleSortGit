@@ -1,7 +1,10 @@
+using System;
 using Cysharp.Threading.Tasks;
 using DG.Tweening;
 using GamePlay.Data;
 using System.Collections.Generic;
+using Core.Locator;
+using Services.Sound;
 using UnityEngine;
 
 namespace GamePlay.Components
@@ -13,6 +16,12 @@ namespace GamePlay.Components
         private bool _isAnimationOn;
         private Sequence _sequence;
         private const float TWEEN_DURATION = .3f;
+        private ISoundService _soundService;
+
+        private void Start()
+        {
+            _soundService = ServiceLocator.Instance.Resolve<SoundService>();
+        }
 
         public void Occupy(Passenger passenger)
         {
@@ -78,6 +87,7 @@ namespace GamePlay.Components
             _sequence = DOTween.Sequence();
             for (int i = 0; i < passengerMeshes.Count; i++)
             {
+                _soundService.PlaySound(SoundTypeEnum.PassengerMoveSound);
                 Transform meshTr = passengerMeshes[i];
                 meshTr.SetParent(transform);
                 Vector3 targetPos = _passenger.GetOffsetByIndex(i);

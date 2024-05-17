@@ -157,9 +157,10 @@ namespace GamePlay.Components.SortController
                     if (path is { Count: > 0 })
                     {
                         if (path[^1] == parkingLot)
-                        {
-                            // POSITIVE TAPTIC 
-                            // POSITIVE SOUND
+                        { 
+                            Taptic.Medium();
+                            _soundService.PlaySound(SoundTypeEnum.PositiveCarSelectSound); 
+                            
                             var fromParkingLot = _lastClickedParkingLot;
                             _lastClickedParkingLot = null;
                             parkingLot.SetWillOccupied();
@@ -211,7 +212,7 @@ namespace GamePlay.Components.SortController
                         }
                     }
                 }
-                //NEGATIVE TAPTIC
+                Taptic.Heavy();
                 HighlightPossibleParkingLots(false, null);
                 _lastClickedParkingLot.GetCurrentVehicle()?.SetHighlight(false);
                 _lastClickedParkingLot = null;
@@ -219,9 +220,9 @@ namespace GamePlay.Components.SortController
             else
             {
                 if (!parkingLot.IsEmpty())
-                {
-                    //POSITIVE TAPTIC 
-                    //POSITIVE SOUND
+                { 
+                    Taptic.Medium();
+                    _soundService.PlaySound(SoundTypeEnum.PositiveCarSelectSound); 
                     _lastClickedParkingLot = parkingLot;
                     HighlightPossibleParkingLots(true, _lastClickedParkingLot);
                     _lastClickedParkingLot.GetCurrentVehicle()?.SetHighlight(true);
