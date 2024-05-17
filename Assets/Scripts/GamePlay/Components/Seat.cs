@@ -20,7 +20,7 @@ namespace GamePlay.Components
 
         private void Start()
         {
-            _soundService = ServiceLocator.Instance.Resolve<SoundService>();
+            _soundService = ServiceLocator.Instance.Resolve<ISoundService>();
         }
 
         public void Occupy(Passenger passenger)
@@ -72,7 +72,7 @@ namespace GamePlay.Components
             return _isAnimationOn;
         }
 
-        public void TakePassengerWithAnimation(UniTaskCompletionSource ucs, bool instant)
+        public void TakePassengerWithAnimation(UniTaskCompletionSource ucs, bool instant, bool withSound = true)
         {
             if (_passenger == null)
             {
@@ -83,18 +83,21 @@ namespace GamePlay.Components
             _sequence?.Kill(true);
             _isAnimationOn = true;
             List<Transform> passengerMeshes = _passenger.GetMeshTransforms();
-            
+
             _sequence = DOTween.Sequence();
             for (int i = 0; i < passengerMeshes.Count; i++)
             {
-                _soundService.PlaySound(SoundTypeEnum.PassengerMoveSound);
                 Transform meshTr = passengerMeshes[i];
                 meshTr.SetParent(transform);
                 Vector3 targetPos = _passenger.GetOffsetByIndex(i);
-                _sequence.Insert(i * 0.1f,
-                    meshTr.transform.DOLocalJump(targetPos, 1, 1, TWEEN_DURATION).SetEase(Ease.OutQuad));
+                Tween jumpTween = meshTr.transform.DOLocalJump(targetPos, 1, 1, TWEEN_DURATION).SetEase(Ease.OutQuad);
+                if (withSound)
+                {
+                    jumpTween.OnStart(() => _soundService.PlaySound(SoundTypeEnum.PassengerMoveSound));
+                }
+                _sequence.Insert(i * 0.1f, jumpTween);
             }
-            
+
             _sequence.OnComplete(() =>
             {
                 if (_passenger != null)
@@ -102,6 +105,7 @@ namespace GamePlay.Components
                     _passenger.transform.position = transform.position;
                     _passenger.SetMeshesParent();
                 }
+
                 _isAnimationOn = false;
                 ucs.TrySetResult();
             });
@@ -112,7 +116,7 @@ namespace GamePlay.Components
 
         public void RotatePassengers()
         {
-            if(_passenger == null) return;
+            if (_passenger == null) return;
             List<Transform> passengerMeshes = _passenger.GetMeshTransforms();
             foreach (var meshTr in passengerMeshes)
             {

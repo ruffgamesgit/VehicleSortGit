@@ -158,7 +158,7 @@ namespace GamePlay.Components
 
             if (swappingAnimationList.Count > 0)
             {
-                await swappingAnimationList.ToList().AnimateSeatChanges(instant);
+                await swappingAnimationList.ToList().AnimateSeatChanges(instant,false);
             }
         }
 
@@ -172,7 +172,7 @@ namespace GamePlay.Components
             seats.Reverse(0, seats.Count);
             seats[^1].Swap(seats[0]);
             seats[^2].Swap(seats[1]);
-            seats.AnimateSeatChanges(false);
+            seats.AnimateSeatChanges(false, false);
 
             rotatePassengers:
             

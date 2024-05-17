@@ -4,6 +4,7 @@ using Events.Level.EventArgs;
 using GamePlay.Data.Grid;
 using Services.Analytics.Data;
 using Services.Analytics.Extensions;
+using Services.Sound;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 

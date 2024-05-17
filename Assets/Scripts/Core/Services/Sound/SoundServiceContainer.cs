@@ -16,7 +16,7 @@ namespace Services.Sound
         }
 
         public void Play(AudioClip clip)
-        {
+        { 
             _audioSource.PlayOneShot(clip);
         }
  
