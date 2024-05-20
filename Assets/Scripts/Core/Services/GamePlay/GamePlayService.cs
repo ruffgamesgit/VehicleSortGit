@@ -16,6 +16,12 @@ namespace Core.Services.GamePlay
         private const string LastLevelKey = "LastLevel";
         private readonly System.Random _random = new();
         private bool isSettingEnabled = false;
+        private List<LevelData> _levelData;
+        private LevelData _currentLevelData;
+        private int _currentLevel;
+        private float _levelStartTime;
+        
+        
         public void SettingsEnabled(bool active)
         {
             isSettingEnabled = active;
@@ -26,11 +32,7 @@ namespace Core.Services.GamePlay
             return isSettingEnabled;
         }
         public event EventHandler<LevelFinishedType> LevelFinishedEvent;
-
-        private List<LevelData> _levelData;
-        private int _currentLevel;
-        private float _levelStartTime;
-    
+        
         public GamePlayService()
         {
             _levelData = Resources.Load<LevelDataScriptable>(LevelDataPath).levelData;
@@ -74,7 +76,7 @@ namespace Core.Services.GamePlay
 
         public LevelData GetCurrentLevelData()
         {
-            return _levelData[GetCurrentLevel()];
+            return _currentLevelData;
         }
 
         public int GetCurrentLevel()
@@ -89,12 +91,14 @@ namespace Core.Services.GamePlay
             if (_currentLevel > _levelData.Count -1)
             {
                 int rand = _random.Next(3, _levelData.Count - 1);
-                string sceneName = _levelData[rand].scene;
+                _currentLevelData = _levelData[rand];
+                string sceneName = _currentLevelData.scene;
                 SceneManager.LoadScene(sceneName);
             }
             else
             {
-                string sceneName = _levelData[_currentLevel].scene;
+                _currentLevelData = _levelData[_currentLevel];
+                string sceneName = _currentLevelData.scene;
                 SceneManager.LoadScene(sceneName);
             }
 
