@@ -8,18 +8,18 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using Core.Locator;
-using Core.Services;
 using Core.Services.GamePlay;
 using Services.Sound;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 namespace GamePlay.Components.SortController
 {
     public class SortController : MonoBehaviour
     {
+        public int targetGridGroupIndex = 1;
         [SerializeField] private GridData gridData;
         [SerializeField] private List<GarageController> garages;
+        [SerializeField] private List<ParkingLot> spawnedLots = new List<ParkingLot>();
         private FillController _fillController;
         private ParkingLot _lastClickedParkingLot;
         private IGamePlayService _gamePlayService;
@@ -43,6 +43,11 @@ namespace GamePlay.Components.SortController
             _fillController.FillVehicles(gridData.gridGroups, _levelData.vehicleCount, _levelData.colorVariety,
                 _levelData.matchingPassengerCount, garages);
             ActivateFeeders();
+        }
+
+        private void Start()
+        {
+            CheckForThePaths();
         }
 
         private void ActivateFeeders()
@@ -76,13 +81,13 @@ namespace GamePlay.Components.SortController
                     int parkingLotIndex = 0;
                     foreach (var parkingLot in line.parkingLots)
                     {
-                        var isParkingLotInvisible = _levelData.levelDataGridGroups[gridGroupIndex].lines[gridLineIndex]
+                        bool isParkingLotInvisible = _levelData.levelDataGridGroups[gridGroupIndex].lines[gridLineIndex]
                             .ParkingLots[parkingLotIndex]
                             .IsInvisible;
-                        var isParkingLotObstacle = _levelData.levelDataGridGroups[gridGroupIndex].lines[gridLineIndex]
+                        bool isParkingLotObstacle = _levelData.levelDataGridGroups[gridGroupIndex].lines[gridLineIndex]
                             .ParkingLots[parkingLotIndex]
                             .IsObstacle;
-                        var isEmptyAtStart = _levelData.levelDataGridGroups[gridGroupIndex].lines[gridLineIndex]
+                        bool isEmptyAtStart = _levelData.levelDataGridGroups[gridGroupIndex].lines[gridLineIndex]
                             .ParkingLots[parkingLotIndex]
                             .IsEmpty;
                         var parkingLotPosition = new ParkingLotPosition(gridGroupIndex, gridLineIndex, parkingLotIndex);
@@ -90,6 +95,10 @@ namespace GamePlay.Components.SortController
                             parkingLotPosition);
                         parkingLot.OnParkingLotClicked += OnParkingLotClicked;
                         parkingLot.OnEmptied += (obj, arg) => CheckWaitingVehiclesThatCompleted();
+
+                        if (!isEmptyAtStart && !isParkingLotInvisible && !isParkingLotObstacle &&
+                            !spawnedLots.Contains(parkingLot))
+                            spawnedLots.Add(parkingLot);
 
                         parkingLotIndex++;
                     }
@@ -103,129 +112,176 @@ namespace GamePlay.Components.SortController
 
         private void HighlightPossibleParkingLots(bool isActivate, ParkingLot selectedParkingLot)
         {
-            foreach (var group in gridData.gridGroups)
+            // foreach (var group in gridData.gridGroups)
+            // {
+            //     foreach (var line in group.lines)
+            //     {
+            //         foreach (var parkingLot in line.parkingLots)
+            //         {
+            //             if (isActivate)
+            //             {
+            //                 if (parkingLot.IsWalkable())
+            //                 {
+            //                     var path = gridData.FindPath(selectedParkingLot, parkingLot);
+            //                     if (path is { Count: > 0 })
+            //                     {
+            //                         if (path[^1] == parkingLot &&
+            //                             parkingLot.GetParkingLotPosition().GetGridGroupIndex() == targetGridGroupIndex)
+            //                         {
+            //                             parkingLot.SetPossibleTargetHighLight(true, true);
+            //                             continue;
+            //                         }
+            //                     }
+            //                 }
+            //             }
+            //             else
+            //             {
+            //                 parkingLot.SetPossibleTargetHighLight(false, false);
+            //             }
+            //         }
+            //     }
+            // }
+        }
+
+
+        private async void OnParkingLotClicked(object sender, Vehicle arg)
+        {
+            if (_gamePlayService.IsSettingEnabled()) return;
+            var firstClickedLot = (ParkingLot)sender;
+
+            // if (firstClickedLot == null)
+            // {
+            //     if (_lastClickedParkingLot != null)
+            //     {
+            //         _lastClickedParkingLot.GetCurrentVehicle()?.SetHighlight(false);
+            //         HighlightPossibleParkingLots(false, null);
+            //         _lastClickedParkingLot = null;
+            //     }
+            //
+            //     return;
+            // }
+
+            if (!firstClickedLot.IsEmpty())
             {
-                foreach (var line in group.lines)
+                Taptic.Medium();
+                _soundService.PlaySound(SoundTypeEnum.ButtonClickedSound);
+                ParkingLot targetLot = GetTargetLot();
+                if (targetLot == null) return;
+                ParkingLot fromLot = firstClickedLot;
+                _lastClickedParkingLot = fromLot;
+
+                HighlightPossibleParkingLots(true, _lastClickedParkingLot);
+                _lastClickedParkingLot.GetCurrentVehicle()?.SetHighlight(true);
+
+                var path = gridData.FindPath(_lastClickedParkingLot, targetLot);
+                if (path is { Count: > 0 })
                 {
-                    foreach (var parkingLot in line.parkingLots)
+                    if (path[^1] == targetLot)
                     {
-                        if (isActivate)
+                        Taptic.Medium();
+                        _soundService.PlaySound(SoundTypeEnum.ButtonClickedSound);
+                        var fromParkingLot = _lastClickedParkingLot;
+                        _lastClickedParkingLot = null;
+                        targetLot.SetWillOccupied();
+                        var vehicle = fromParkingLot.GetCurrentVehicle();
+                        fromParkingLot.GetCurrentVehicle()?.SetHighlight(false);
+                        HighlightPossibleParkingLots(false, null);
+                        fromParkingLot.SetEmpty();
+
+                        ParkingLot from = null;
+
+                        int counter = 0;
+                        foreach (var pLot in path)
                         {
-                            if (parkingLot.IsWalkable())
+                            if (pLot != null)
                             {
-                                var path = gridData.FindPath(selectedParkingLot, parkingLot);
-                                if (path is { Count: > 0 })
+                                if (from == null)
                                 {
-                                    if (path[^1] == parkingLot)
-                                    {
-                                        parkingLot.SetPossibleTargetHighLight(true, true);
-                                        continue;
-                                    }
+                                    from = pLot;
                                 }
-                                //parkingLot.SetPossibleTargetHighLight(true,false);
+                                else
+                                {
+                                    UniTaskCompletionSource ucs = new UniTaskCompletionSource();
+                                    pLot.OccupyAnimation(gridData, vehicle, ucs, from, counter == 0,
+                                        pLot == firstClickedLot);
+                                    counter++;
+                                    from = pLot;
+                                    await ucs.Task;
+                                }
                             }
                         }
-                        else
+
+                        targetLot.Occupy(vehicle, false);
+                        var targetNeighbors =
+                            targetLot.FindNeighbors(gridData
+                                .gridGroups[firstClickedLot.GetParkingLotPosition().GetGridGroupIndex()].lines);
+
+
+                        targetNeighbors = targetNeighbors.ExtractUnSortableParkingLots(); // WRONG CHANGE LATER 
+                        foreach (var neighbor in targetNeighbors)
                         {
-                            parkingLot.SetPossibleTargetHighLight(false, false);
+                            if (_lastClickedParkingLot == neighbor)
+                            {
+                                neighbor.GetCurrentVehicle().SetHighlight(false);
+                                HighlightPossibleParkingLots(false, null);
+                                _lastClickedParkingLot = null;
+                            }
                         }
+
+
+                        _lastClickedParkingLot = null;
+                        SortParkingLot(targetLot);
+                        
                     }
                 }
             }
         }
 
-        private async void OnParkingLotClicked(object sender, Vehicle arg)
+        ParkingLot GetTargetLot()
         {
-            if(_gamePlayService.IsSettingEnabled()) return;
-            var parkingLot = (ParkingLot)sender;
-            if (parkingLot == null)
+            ParkingLot targetLot = null;
+            for (int i = 0; i < gridData.gridGroups[targetGridGroupIndex].lines[0].parkingLots.Count; i++)
             {
-                if (_lastClickedParkingLot != null)
-                {
-                    _lastClickedParkingLot.GetCurrentVehicle()?.SetHighlight(false);
-                    HighlightPossibleParkingLots(false, null);
-                    _lastClickedParkingLot = null;
-                }
+                targetLot = gridData.gridGroups[targetGridGroupIndex].lines[0].parkingLots[i];
 
-                return;
+                if (targetLot is not null && targetLot.IsEmpty() && targetLot.IsWalkable())
+                {
+                    return targetLot;
+                }
             }
 
-            if (_lastClickedParkingLot != null)
+            return targetLot;
+        }
+
+        void CheckForThePaths()
+        {
+            List<ParkingLot> lots = new();
+            lots.AddRange(spawnedLots);
+
+            for (int index = 0; index < lots.Count; index++)
             {
-                if (parkingLot.GetCurrentVehicle() == null)
-                {
-                    var path = gridData.FindPath(_lastClickedParkingLot, parkingLot);
-                    if (path is { Count: > 0 })
-                    {
-                        if (path[^1] == parkingLot)
-                        { 
-                            Taptic.Medium();
-                            _soundService.PlaySound(SoundTypeEnum.ButtonClickedSound); 
-                            var fromParkingLot = _lastClickedParkingLot;
-                            _lastClickedParkingLot = null;
-                            parkingLot.SetWillOccupied();
-                            var vehicle = fromParkingLot.GetCurrentVehicle();
-                            fromParkingLot.GetCurrentVehicle()?.SetHighlight(false);
-                            HighlightPossibleParkingLots(false, null);
-                            fromParkingLot.SetEmpty();
-
-                            ParkingLot from = null;
-
-                            int counter = 0;
-                            foreach (var pLot in path)
-                            {
-                                if (pLot != null)
-                                {
-                                    if (from == null)
-                                    {
-                                        from = pLot;
-                                    }
-                                    else
-                                    {
-                                        UniTaskCompletionSource ucs = new UniTaskCompletionSource();
-                                        pLot.OccupyAnimation(gridData, vehicle, ucs, from, counter == 0,
-                                            pLot == parkingLot);
-                                        counter++;
-                                        from = pLot;
-                                        await ucs.Task;
-                                    }
-                                }
-                            }
-
-                            parkingLot.Occupy(vehicle, false);
-                            var targetNeighbors =
-                                parkingLot.FindNeighbors(
-                                    gridData.gridGroups[parkingLot.GetParkingLotPosition().GetGridGroupIndex()].lines);
-                            targetNeighbors = targetNeighbors.ExtractUnSortableParkingLots(); // WRONG CHANGE LATER 
-                            foreach (var neighbor in targetNeighbors)
-                            {
-                                if (_lastClickedParkingLot == neighbor)
-                                {
-                                    neighbor.GetCurrentVehicle().SetHighlight(false);
-                                    HighlightPossibleParkingLots(false, null);
-                                    _lastClickedParkingLot = null;
-                                }
-                            }
-
-                            SortParkingLot(parkingLot);
-                            return;
-                        }
-                    }
-                }
-                Taptic.Heavy();
-                HighlightPossibleParkingLots(false, null);
-                _lastClickedParkingLot.GetCurrentVehicle()?.SetHighlight(false);
-                _lastClickedParkingLot = null;
+                ParkingLot lot = lots[index];
+                if (lot.GetCurrentVehicle() == null)
+                    lots.Remove(lot);
             }
-            else
+
+            ParkingLot to = GetTargetLot();
+
+            for (int index = 0; index < lots.Count; index++)
             {
-                if (!parkingLot.IsEmpty())
-                { 
-                    Taptic.Medium();
-                    _soundService.PlaySound(SoundTypeEnum.ButtonClickedSound); 
-                    _lastClickedParkingLot = parkingLot;
-                    HighlightPossibleParkingLots(true, _lastClickedParkingLot);
-                    _lastClickedParkingLot.GetCurrentVehicle()?.SetHighlight(true);
+                ParkingLot activeLot = lots[index];
+                List<ParkingLot> path = gridData.FindPath(activeLot, to);
+
+                if (activeLot.GetCurrentVehicle() is null) continue;
+
+                if (path is { Count: > 0 } && path[^1] == to)
+                {
+                    activeLot.GetCurrentVehicle().DisableBusTopObject();
+                }
+
+                else
+                {
+                    activeLot.GetCurrentVehicle().EnableBusTopObject();
                 }
             }
         }
@@ -234,8 +290,10 @@ namespace GamePlay.Components.SortController
         {
             var vehicle = parkingLot.GetCurrentVehicle();
             if (vehicle == null) return;
+            if (parkingLot.GetParkingLotPosition().GetGridGroupIndex() != targetGridGroupIndex) return;
             InsertItemToQueue(parkingLot);
             SortAffectedParkingLots();
+            CheckForThePaths();
         }
 
         private object _lock = new();
@@ -256,10 +314,8 @@ namespace GamePlay.Components.SortController
                     {
                         break;
                     }
-                    
+
                     SortParkingLotAlgorithmNew(parkingLot);
-                    
-                  
                 }
                 else
                 {
@@ -356,23 +412,24 @@ namespace GamePlay.Components.SortController
                 if (parkingLot == null) return;
                 var currentVehicle = parkingLot.GetCurrentVehicle();
                 if (currentVehicle == null) return;
-                if(currentVehicle.IsCompleted())return;
+                if (currentVehicle.IsCompleted()) return;
 
 
                 var parkingLotPosition = parkingLot.GetParkingLotPosition();
-                var neighborParkingLots =
-                    parkingLot.FindNeighbors(gridData.gridGroups[parkingLotPosition.GetGridGroupIndex()].lines);
+                var neighborParkingLots = SortExtensions.FindAllLineNeighbors(parkingLotPosition, gridData, parkingLot);
+
+
                 if (!currentVehicle.IsAllEmpty())
                     foreach (var neighbor in neighborParkingLots)
                     {
                         if (neighbor.GetCurrentVehicle() == null) continue;
+                        if (neighbor.GetParkingLotPosition().GetGridGroupIndex() != targetGridGroupIndex) continue;
+
                         if (neighbor.GetCurrentVehicle().IsAllEmpty())
                         {
                             EnqueueItem(neighbor);
                         }
                     }
-
-                neighborParkingLots = neighborParkingLots.ExtractUnSortableParkingLots();
 
                 if (neighborParkingLots.Count == 0)
                 {
@@ -450,6 +507,13 @@ namespace GamePlay.Components.SortController
                         InsertItemToQueue(targetSort.SecondNeighborMatch);
                         SortAffectedParkingLots();
                     }
+
+                    foreach (var nb in neighborParkingLots)
+                    {
+                        InsertItemToQueue(nb);
+                    }
+
+                    SortAffectedParkingLots();
                 }
             }
             catch (Exception e)
@@ -476,6 +540,27 @@ namespace GamePlay.Components.SortController
 
                 _semaphore.Release();
             }
+
+            CheckForEmptyLots();
+        }
+
+        void CheckForEmptyLots()
+        {
+            List<ParkingLot> targetLots =
+                new List<ParkingLot>(gridData.gridGroups[targetGridGroupIndex].lines[0].parkingLots);
+
+            for (int i = 0; i < targetLots.Count; i++)
+            {
+                ParkingLot lot = targetLots[i];
+
+                if (lot.GetCurrentVehicle() is not null && lot.GetCurrentVehicle().IsAllEmpty())
+                {
+                    lot.GetCurrentVehicle().Disappear();
+                    lot.SetEmpty();
+                }
+            }
+
+            CheckForThePaths();
         }
 
         private bool isGameFinished;

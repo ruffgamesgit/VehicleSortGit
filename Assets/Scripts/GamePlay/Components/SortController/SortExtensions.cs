@@ -1,13 +1,13 @@
 using System.Collections.Generic;
 using Cysharp.Threading.Tasks;
+using GamePlay.Data;
 using GamePlay.Data.Grid;
 
 namespace GamePlay.Components.SortController
 {
     public static class SortExtensions
     {
-
-        public static UniTask AnimateSeatChanges(this List<Seat> seats, bool instant, bool withAnimation = true) 
+        public static UniTask AnimateSeatChanges(this List<Seat> seats, bool instant, bool withAnimation = true)
         {
             UniTaskCompletionSource mainTaskCompletionSource = new UniTaskCompletionSource();
             List<UniTask> ucsList = new List<UniTask>();
@@ -18,19 +18,16 @@ namespace GamePlay.Components.SortController
                 seats[i].TakePassengerWithAnimation(ucs, instant, withAnimation);
             }
 
-            UniTask.WhenAll(ucsList.ToArray()).ContinueWith(() =>
-            {
-                mainTaskCompletionSource.TrySetResult();
-            });
+            UniTask.WhenAll(ucsList.ToArray()).ContinueWith(() => { mainTaskCompletionSource.TrySetResult(); });
 
             return mainTaskCompletionSource.Task;
         }
-        
+
         public static void Swap(this Seat seat, Seat otherSeat)
         {
             var tempObject1 = seat.GetPassenger();
             var tempObject2 = otherSeat.GetPassenger();
-            
+
             if (tempObject2 == null)
             {
                 seat.SetEmpty();
@@ -45,7 +42,27 @@ namespace GamePlay.Components.SortController
             else
                 otherSeat.Occupy(tempObject1);
         }
-        
+
+        public static List<ParkingLot> FindAllLineNeighbors(ParkingLotPosition parkingLotPosition, GridData gridData,
+            ParkingLot originLot)
+        {
+            List<ParkingLot> neighbors = new List<ParkingLot>();
+
+            int groupIndex = parkingLotPosition.GetGridGroupIndex();
+            int lineIndex = parkingLotPosition.GetGridLineIndex();
+
+            for (int i = 0; i < gridData.gridGroups[groupIndex].lines[lineIndex].parkingLots.Count; i++)
+            {
+                ParkingLot lot = gridData.gridGroups[groupIndex].lines[lineIndex].parkingLots[i];
+                if (lot != originLot && !neighbors.Contains(lot) &&
+                    lot.GetCurrentVehicle() != null &&
+                    !lot.GetCurrentVehicle().IsAllEmpty())
+                    neighbors.Add(lot);
+            }
+
+            return neighbors;
+        }
+
         public static List<ParkingLot> FindNeighbors(this ParkingLot parkingLot, List<GridLine> gridLines)
         {
             List<ParkingLot> neighbors = new List<ParkingLot>();
@@ -78,47 +95,50 @@ namespace GamePlay.Components.SortController
                     // Up neighbor
                     if (y + 1 < gridLines.Count)
                     {
-                            var upLine = gridLines[y + 1];
-                            if (x < upLine.parkingLots.Count)
-                                neighbors.Add(upLine.parkingLots[x]);
+                        var upLine = gridLines[y + 1];
+                        if (x < upLine.parkingLots.Count)
+                            neighbors.Add(upLine.parkingLots[x]);
                     }
 
                     // Down neighbor
                     if (y - 1 >= 0)
                     {
-                            var downLine = gridLines[y - 1];
-                            if (x < downLine.parkingLots.Count)
-                                neighbors.Add(downLine.parkingLots[x]);
+                        var downLine = gridLines[y - 1];
+                        if (x < downLine.parkingLots.Count)
+                            neighbors.Add(downLine.parkingLots[x]);
                     }
                 }
             }
-            
+
             return neighbors.Shuffle();
         }
-        
+
         public static List<ParkingLot> ExtractUnSortableParkingLots(this List<ParkingLot> parkingLots)
         {
-            parkingLots.RemoveAll(lot => lot.IsInvisible() || lot.IsEmpty() || lot.GetCurrentVehicle() != null && lot.GetCurrentVehicle().IsCompleted());
+            parkingLots.RemoveAll(lot =>
+                lot.IsInvisible() || lot.IsEmpty() ||
+                lot.GetCurrentVehicle() != null && lot.GetCurrentVehicle().IsCompleted());
             return parkingLots;
         }
-        
-        
+
+
         public static List<GridLine> GenerateVirtualGrid(this List<GridGroup> gridGroups)
         {
             List<GridLine> virtualizedLines = new List<GridLine>();
             foreach (var group in gridGroups)
             {
-                if(group.hasLowerRoad)
+                if (group.hasLowerRoad)
                     virtualizedLines.Add(GenerateVirtualLine(group.lines[0].parkingLots.Count));
-                
+
                 foreach (var line in group.lines)
                 {
                     virtualizedLines.Add(line);
                 }
-                
-                if(group.hasUpperRoad)
+
+                if (group.hasUpperRoad)
                     virtualizedLines.Add(GenerateVirtualLine(group.lines[0].parkingLots.Count));
             }
+
             GridLine GenerateVirtualLine(int parkingLotCount)
             {
                 var virtualLine = new GridLine
@@ -130,7 +150,6 @@ namespace GamePlay.Components.SortController
             }
 
             return virtualizedLines;
-
         }
     }
 }

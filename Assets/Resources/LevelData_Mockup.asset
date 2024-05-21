@@ -1,0 +1,105 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9280f7846433428eab6f52cd401677ad, type: 3}
+  m_Name: LevelData_Mockup
+  m_EditorClassIdentifier: 
+  levelData:
+  - scene: EMPTY
+    colorVariety: 0
+    matchingPassengerCount: 0
+    vehicleCount: 0
+    garageVehicleCounts: 
+    levelDataGridGroups: []
+  - scene: GP_2x1x2-6
+    colorVariety: 5
+    matchingPassengerCount: 14
+    vehicleCount: 16
+    garageVehicleCounts: 05000000
+    levelDataGridGroups:
+    - lines:
+      - ParkingLots:
+        - IsEmpty: 0
+          IsInvisible: 0
+          IsObstacle: 0
+        - IsEmpty: 0
+          IsInvisible: 0
+          IsObstacle: 0
+        - IsEmpty: 0
+          IsInvisible: 0
+          IsObstacle: 0
+        - IsEmpty: 0
+          IsInvisible: 0
+          IsObstacle: 0
+        - IsEmpty: 0
+          IsInvisible: 0
+          IsObstacle: 0
+        - IsEmpty: 0
+          IsInvisible: 0
+          IsObstacle: 0
+      - ParkingLots:
+        - IsEmpty: 0
+          IsInvisible: 1
+          IsObstacle: 1
+        - IsEmpty: 0
+          IsInvisible: 0
+          IsObstacle: 0
+        - IsEmpty: 0
+          IsInvisible: 0
+          IsObstacle: 0
+        - IsEmpty: 0
+          IsInvisible: 0
+          IsObstacle: 0
+        - IsEmpty: 0
+          IsInvisible: 1
+          IsObstacle: 1
+        - IsEmpty: 0
+          IsInvisible: 1
+          IsObstacle: 1
+      - ParkingLots:
+        - IsEmpty: 0
+          IsInvisible: 1
+          IsObstacle: 1
+        - IsEmpty: 0
+          IsInvisible: 0
+          IsObstacle: 0
+        - IsEmpty: 0
+          IsInvisible: 0
+          IsObstacle: 0
+        - IsEmpty: 0
+          IsInvisible: 1
+          IsObstacle: 1
+        - IsEmpty: 0
+          IsInvisible: 1
+          IsObstacle: 1
+        - IsEmpty: 0
+          IsInvisible: 1
+          IsObstacle: 1
+    - lines:
+      - ParkingLots:
+        - IsEmpty: 1
+          IsInvisible: 0
+          IsObstacle: 0
+        - IsEmpty: 1
+          IsInvisible: 0
+          IsObstacle: 0
+        - IsEmpty: 1
+          IsInvisible: 0
+          IsObstacle: 0
+        - IsEmpty: 1
+          IsInvisible: 0
+          IsObstacle: 0
+        - IsEmpty: 0
+          IsInvisible: 1
+          IsObstacle: 1
+        - IsEmpty: 0
+          IsInvisible: 1
+          IsObstacle: 1

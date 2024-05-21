@@ -12,7 +12,7 @@ namespace Core.Services.GamePlay
 {
     public class GamePlayService : IGamePlayService
     {
-        private const string LevelDataPath = "LevelData_Ordered";
+        private const string LevelDataPath = "LevelData_Mockup";
         private const string LastLevelKey = "LastLevel";
         private readonly System.Random _random = new();
         private bool isSettingEnabled = false;
@@ -90,7 +90,7 @@ namespace Core.Services.GamePlay
             LevelStartAnalyticsEvent();
             if (_currentLevel > _levelData.Count -1)
             {
-                int rand = _random.Next(3, _levelData.Count - 1);
+                int rand = 1;
                 _currentLevelData = _levelData[rand];
                 string sceneName = _currentLevelData.scene;
                 SceneManager.LoadScene(sceneName);

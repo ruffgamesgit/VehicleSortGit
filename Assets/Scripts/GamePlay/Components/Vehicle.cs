@@ -50,7 +50,7 @@ namespace GamePlay.Components
 
         public void SetHighlight(bool active)
         {
-            outline.HandleOutline(active ? 2.7f : 0f);
+           // outline.HandleOutline(active ? 2.7f : 0f);
         }
 
         public bool IsCompleted()
@@ -73,6 +73,29 @@ namespace GamePlay.Components
             busTopObject.DOScaleZ(1.1f, .2f);
             _soundService.PlaySound(SoundTypeEnum.VehicleLeavingSound);
             return sequence;
+        }
+
+        public void Disappear()
+        {
+            transform.DOScale(Vector3.zero, .25f).OnComplete(() =>
+            {
+                Destroy(gameObject);
+            });
+        }
+        
+        public void EnableBusTopObject()
+        {
+            if (busTopObject.gameObject.activeInHierarchy) return;
+            busTopObject.gameObject.SetActive(true);
+            busTopObject.DOScaleZ(1.1f, .2f);
+        }
+
+        public void DisableBusTopObject()
+        {
+            if (!busTopObject.gameObject.activeInHierarchy) return;
+
+            
+            busTopObject.DOScaleZ(.1f, .2f).OnComplete(() => { busTopObject.gameObject.SetActive(false); });
         }
 
         public List<Seat> GetSeats()
@@ -168,7 +191,7 @@ namespace GamePlay.Components
 
             if (swappingAnimationList.Count > 0)
             {
-                await swappingAnimationList.ToList().AnimateSeatChanges(instant,false);
+                await swappingAnimationList.ToList().AnimateSeatChanges(instant, false);
             }
         }
 
@@ -185,7 +208,7 @@ namespace GamePlay.Components
             seats.AnimateSeatChanges(false, false);
 
             rotatePassengers:
-            
+
             if (!IsAllEmpty())
                 foreach (var seat in seats)
                 {

@@ -12,6 +12,7 @@ namespace GamePlay.UI
         private IGamePlayService _gamePlayService;
         [SerializeField] private TextMeshProUGUI levelTxt;
         [SerializeField] private Button settingsBtn;
+        [SerializeField] private Button restartBtn;
         
         
         [SerializeField] private LoseScreenController _loseScreenController;
@@ -66,6 +67,12 @@ namespace GamePlay.UI
             _settingsController.Activate();
         }
 
+        void OnRestartButtonClicked()
+        {
+       _gamePlayService.LoadLevel();
+
+        }
+        
         private void CloseSettingScreen()
         {
             _settingsController.Deactivate();
@@ -90,6 +97,11 @@ namespace GamePlay.UI
             settingsBtn.onClick.AddListener(() =>
             {
                 OpenSettingsScreen();
+            });
+            
+            restartBtn.onClick.AddListener(() =>
+            {
+                OnRestartButtonClicked();
             });
         }
 

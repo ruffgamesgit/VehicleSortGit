@@ -1,14 +1,10 @@
 using System;
 using System.Collections.Generic;
-using Core.Locator;
 using Cysharp.Threading.Tasks;
 using DG.Tweening;
 using GamePlay.Data;
 using GamePlay.Data.Grid;
-using GamePlay.Extension;
-using Services.Sound;
 using UnityEngine;
-using UnityEngine.Rendering.Universal;
 
 namespace GamePlay.Components
 {
@@ -19,12 +15,12 @@ namespace GamePlay.Components
         [SerializeField] private ImageColorModifier imageColorModifier;
         
         private ParkingLotPosition _parkingLotPosition;
-        private Vehicle _currentVehicle;
+        [SerializeField] private Vehicle currentVehicle;
+        [SerializeField] private List<ParkingLot> manuallyAssignedNeighbours = new List<ParkingLot>();
         private bool _isInvisible;
         private bool _isObstacle;
         private bool _isEmptyAtStart;
         private bool _willOccupied;
-
 
         public void Initialize(bool isInvisible, bool isObstacle, bool isEmptyAtStart,
             ParkingLotPosition parkingLotPosition)
@@ -43,58 +39,60 @@ namespace GamePlay.Components
         public void Occupy(Vehicle vehicle, bool moveTransform, Action onComplete = null)
         {
             _willOccupied = false;
-            _currentVehicle = vehicle;
-            _currentVehicle.transform.parent = this.transform;
+            currentVehicle = vehicle;
+            currentVehicle.transform.parent = this.transform;
             if (moveTransform)
             {
                 _isInvisible = true;
-                _currentVehicle.transform.DOMove(transform.position, 0.45f).SetEase(Ease.InOutBack).OnComplete(() =>
+                currentVehicle.transform.DOMove(transform.position, 0.45f).SetEase(Ease.InOutBack).OnComplete(() =>
                 {
                     DOVirtual.DelayedCall(0.2f, () =>
                     {
                         onComplete?.Invoke();
                         _isInvisible = false;
                     });
-                   
                 }).SetDelay(0.15f);
-                
             }
         }
+
 
         public void SetPossibleTargetHighLight(bool activate, bool isPossibleMove)
         {
             imageColorModifier.SetHighlight(activate);
         }
-        
 
-        public Sequence OccupyAnimation(GridData gridData, Vehicle vehicle, UniTaskCompletionSource ucs, ParkingLot from,
+
+        public Sequence OccupyAnimation(GridData gridData, Vehicle vehicle, UniTaskCompletionSource ucs,
+            ParkingLot from,
             bool isFirstMove, bool isLastMove)
         {
             return vehicle.MoveAnimation(gridData, ucs, from, this, isFirstMove, isLastMove);
         }
-        
+
 
         private void OnMouseDown()
         {
             if (_isInvisible) return;
+            if (_parkingLotPosition.GetGridGroupIndex() == 1) return; // FOR MOCK UP
+
             if (IsAnimationOn() || _willOccupied)
             {
                 OnParkingLotClicked?.Invoke(null, null);
                 return;
             }
 
-            OnParkingLotClicked?.Invoke(this, _currentVehicle);
+            OnParkingLotClicked?.Invoke(this, currentVehicle);
         }
 
         private bool IsAnimationOn()
         {
-            if (_currentVehicle == null) return false;
-            return _currentVehicle.IsAnimationOn();
+            if (currentVehicle == null) return false;
+            return currentVehicle.IsAnimationOn();
         }
 
         public Vehicle GetCurrentVehicle()
         {
-            return _currentVehicle;
+            return currentVehicle;
         }
 
         public ParkingLotPosition GetParkingLotPosition()
@@ -109,13 +107,13 @@ namespace GamePlay.Components
 
         public void SetEmpty()
         {
-            _currentVehicle = null;
+            currentVehicle = null;
             OnEmptied?.Invoke(this, null);
         }
 
         public bool IsEmpty()
         {
-            return _currentVehicle == null;
+            return currentVehicle == null;
         }
 
         public bool IsWalkable()
@@ -133,7 +131,7 @@ namespace GamePlay.Components
             return _isObstacle;
         }
 
-  
+
         public bool IsEmptyAtStart()
         {
             return _isEmptyAtStart;
@@ -141,8 +139,8 @@ namespace GamePlay.Components
 
         public bool CheckIfCompleted(GridData gridData)
         {
-            if (_currentVehicle == null) return false;
-            var seats = _currentVehicle.GetSeats();
+            if (currentVehicle == null) return false;
+            var seats = currentVehicle.GetSeats();
 
             foreach (var seat in seats)
             {
@@ -153,10 +151,11 @@ namespace GamePlay.Components
                     return false;
             }
 
-            if (_currentVehicle.CompletedAnimation(gridData, this))
+            if (currentVehicle.CompletedAnimation(gridData, this))
             {
                 SetEmpty();
             }
+
             return true;
         }
     }

@@ -10,6 +10,7 @@ namespace GamePlay.Extension
 {
     public static class PathFinder
     {
+        
         public static List<ParkingLot> FindPath(this GridData gridData, ParkingLot from, ParkingLot to)
         {
             int GetGridLineOffset(ParkingLotPosition position)
