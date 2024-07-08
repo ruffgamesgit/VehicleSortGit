@@ -1,6 +1,6 @@
 {
   "com.lionstudios.release.adjust.unity-sdk": {
-    "version": "4.34.1",
+    "version": "4.37.0",
     "dependencies": null
   },
   "com.lionstudios.release.bundle": {
@@ -208,7 +208,7 @@
     }
   },
   "com.lionstudios.release.facebook.unity-sdk": {
-    "version": "14.1.0",
+    "version": "17.0.1",
     "dependencies": null
   },
   "com.lionstudios.release.firebase.bundle": {

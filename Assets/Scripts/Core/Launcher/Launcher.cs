@@ -16,30 +16,12 @@ namespace Core.Launcher
         private static readonly HashSet<GameObject> DontDestroyOnLoadObjects = new ();
         
         #region Initialize
-        #if UNITY_EDITOR
-        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
-        public static void Initialize()
+        public void Awake()
         {
             Debug.Log("ServicesInitializeEditor");
             Application.targetFrameRate = 60;
             InitializeServices();
         }
-       
-        #else
-        public void Awake()
-        {
-            Debug.Log("ServicesInitialize");
-            Application.targetFrameRate = Screen.currentResolution.refreshRate;
-            InitializeServices();
-        }
-        
-        private void Start()
-        {
-            Debug.Log("ByteBrewInitialize");
-            //ByteBrew.InitializeByteBrew();   
-        }
-        #endif
-
         
         private static void InitializeServices()
         {

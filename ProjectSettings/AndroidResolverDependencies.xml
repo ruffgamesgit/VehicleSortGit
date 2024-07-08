@@ -7,11 +7,11 @@
     <package>com.android.support:customtabs:25.3.1</package>
     <package>com.android.support:support-v4:25.3.1</package>
     <package>com.applovin:applovin-sdk:12.4.3</package>
-    <package>com.facebook.android:facebook-applinks:[14.1, 15)</package>
-    <package>com.facebook.android:facebook-core:[14.1, 15)</package>
-    <package>com.facebook.android:facebook-gamingservices:[14.1, 15)</package>
-    <package>com.facebook.android:facebook-login:[14.1, 15)</package>
-    <package>com.facebook.android:facebook-share:[14.1, 15)</package>
+    <package>com.facebook.android:facebook-applinks:[17.0.0,18)</package>
+    <package>com.facebook.android:facebook-core:[17.0.0,18)</package>
+    <package>com.facebook.android:facebook-gamingservices:[17.0.0,18)</package>
+    <package>com.facebook.android:facebook-login:[17.0.0,18)</package>
+    <package>com.facebook.android:facebook-share:[17.0.0,18)</package>
     <package>com.google.android.gms:play-services-ads-identifier:17.0.0</package>
     <package>com.google.android.gms:play-services-base:18.2.0</package>
     <package>com.google.android.ump:user-messaging-platform:2.+</package>

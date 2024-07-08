@@ -1,0 +1,36 @@
+pluginManagement {
+    repositories {
+        **ARTIFACTORYREPOSITORY**
+        gradlePluginPortal()
+        google()
+        mavenCentral()
+    }
+}
+
+include ':launcher', ':unityLibrary'
+**INCLUDES**
+
+dependencyResolutionManagement {
+    repositoriesMode.set(RepositoriesMode.PREFER_SETTINGS)
+    repositories {
+        **ARTIFACTORYREPOSITORY**
+        google()
+        mavenCentral()
+// Android Resolver Repos Start
+        def unityProjectPath = $/file:///**DIR_UNITYPROJECT**/$.replace("\\", "/")
+        maven {
+            url "https://repo.maven.apache.org/maven2" // Assets/ByteBrewSDK/Editor/ByteBrewDependencies.xml:7
+        }
+        maven {
+            url "https://maven.google.com" // Assets/ByteBrewSDK/Editor/ByteBrewDependencies.xml:7, Assets/ByteBrewSDK/Editor/ByteBrewDependencies.xml:12, Assets/ByteBrewSDK/Editor/ByteBrewDependencies.xml:17, Assets/ByteBrewSDK/Editor/ByteBrewDependencies.xml:22, Assets/ByteBrewSDK/Editor/ByteBrewDependencies.xml:27
+        }
+        maven {
+            url (unityProjectPath + "/Assets/GeneratedLocalRepo/Firebase/m2repository") // Packages/com.lionstudios.release.firebase.core/Firebase/Editor/AppDependencies.xml:22, Packages/com.lionstudios.release.firebase.crashlytics/Firebase/Editor/CrashlyticsDependencies.xml:20, Packages/com.lionstudios.release.firebase.remote-config/Firebase/Editor/RemoteConfigDependencies.xml:20, Packages/com.lionstudios.release.firebase.analytics/Firebase/Editor/AnalyticsDependencies.xml:18
+        }
+        mavenLocal()
+// Android Resolver Repos End
+        flatDir {
+            dirs "${project(':unityLibrary').projectDir}/libs"
+        }
+    }
+}
