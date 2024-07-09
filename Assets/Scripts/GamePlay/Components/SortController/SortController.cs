@@ -463,6 +463,7 @@ namespace GamePlay.Components.SortController
                 {
                     if (IsGameCompleted())
                     {
+                        MoveAllVehiclesOnLevelComplete();
                         isGameFinished = true;
                         _gamePlayService.LevelFinished(LevelFinishedType.Complete);
                     }
@@ -478,6 +479,22 @@ namespace GamePlay.Components.SortController
             }
         }
 
+        private void MoveAllVehiclesOnLevelComplete()
+        {
+            foreach (var group in gridData.gridGroups)
+            {
+                foreach (var line in group.lines)
+                {
+                    foreach (var parkingLot in line.parkingLots)
+                    {
+                        var currentVehicle = parkingLot.GetCurrentVehicle();
+                        if(currentVehicle != null)
+                            currentVehicle.CompletedAnimation(gridData, parkingLot);
+                    }
+                }
+            }
+        }
+        
         private bool isGameFinished;
 
         private ParkingLotSortData GetOneTypeFromNeighbor(ParkingLot parkingLot, List<ParkingLot> neighbors)

@@ -19,7 +19,7 @@ namespace Core.Launcher
         public void Awake()
         {
             Debug.Log("ServicesInitializeEditor");
-            Application.targetFrameRate = 60;
+            Application.targetFrameRate = (int)Screen.currentResolution.refreshRateRatio.value;
             InitializeServices();
         }
         

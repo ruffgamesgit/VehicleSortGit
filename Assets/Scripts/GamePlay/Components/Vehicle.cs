@@ -112,6 +112,7 @@ namespace GamePlay.Components
             if (IsAllEmpty()) return;
 
             await UniTask.WaitUntil(() => !IsAnimationOn());
+            if(!gameObject) return;
             HashSet<Seat> swappingAnimationList = new HashSet<Seat>();
             if (HasEmptySeat())
             {
