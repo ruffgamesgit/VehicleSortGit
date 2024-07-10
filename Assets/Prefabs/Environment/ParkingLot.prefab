@@ -99,7 +99,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3aeb5bd9339e4ba393693dc0d1adbbb4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  imageColorModifier: {fileID: 0}
 --- !u!1001 &6320038586047263502
 PrefabInstance:
   m_ObjectHideFlags: 0

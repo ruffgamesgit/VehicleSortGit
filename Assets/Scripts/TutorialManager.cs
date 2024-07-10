@@ -38,7 +38,7 @@ public class TutorialManager : MonoBehaviour
         if (_firstTween.IsPlaying())
             _firstTween.Pause();
 
-        firstHand.gameObject.SetActive(false);
+        firstHand?.gameObject.SetActive(false);
         PerformSecondStep();
     }
 

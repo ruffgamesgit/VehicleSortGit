@@ -3,6 +3,7 @@ using Cysharp.Threading.Tasks;
 using DG.Tweening;
 using GamePlay.Data;
 using GamePlay.Data.Grid;
+using UnityEditor;
 using UnityEngine;
 
 namespace GamePlay.Components
@@ -11,15 +12,15 @@ namespace GamePlay.Components
     {
         public EventHandler<Vehicle> OnParkingLotClicked;
         public EventHandler OnEmptied;
-        [SerializeField] private ImageColorModifier imageColorModifier;
-        
+
         private ParkingLotPosition _parkingLotPosition;
         private Vehicle _currentVehicle;
         private bool _isInvisible;
         private bool _isObstacle;
         private bool _isEmptyAtStart;
         private bool _willOccupied;
-
+        [SerializeField] private MeshRenderer _modelMeshRenderer;
+        private static readonly int BaseColorID = Shader.PropertyToID("_BaseColor");
 
         public void Initialize(bool isInvisible, bool isObstacle, bool isEmptyAtStart,
             ParkingLotPosition parkingLotPosition)
@@ -33,6 +34,8 @@ namespace GamePlay.Components
             }
 
             _parkingLotPosition = parkingLotPosition;
+            _modelMeshRenderer = GetComponentInChildren<MeshRenderer>();
+            //  SetPossibleTargetHighLight(false, false);
         }
 
         public void Occupy(Vehicle vehicle, bool moveTransform, Action onComplete = null)
@@ -50,24 +53,26 @@ namespace GamePlay.Components
                         onComplete?.Invoke();
                         _isInvisible = false;
                     });
-                   
                 }).SetDelay(0.15f);
-                
             }
         }
 
         public void SetPossibleTargetHighLight(bool activate, bool isPossibleMove)
         {
-            imageColorModifier.SetHighlight(activate);
-        }
-        
+            Material material = _modelMeshRenderer.materials[1];
 
-        public Sequence OccupyAnimation(GridData gridData, Vehicle vehicle, UniTaskCompletionSource ucs, ParkingLot from,
+            Color color = material.GetColor(BaseColorID);
+            color.a = activate ? 100 / 255f : 0; // Alpha values are between 0 and 1, so divide by 255.
+            material.SetColor(BaseColorID, color);
+        }
+
+        public Sequence OccupyAnimation(GridData gridData, Vehicle vehicle, UniTaskCompletionSource ucs,
+            ParkingLot from,
             bool isFirstMove, bool isLastMove)
         {
             return vehicle.MoveAnimation(gridData, ucs, from, this, isFirstMove, isLastMove);
         }
-        
+
 
         private void OnMouseDown()
         {
@@ -128,7 +133,7 @@ namespace GamePlay.Components
             return _isObstacle;
         }
 
-  
+
         public bool IsEmptyAtStart()
         {
             return _isEmptyAtStart;
@@ -152,6 +157,7 @@ namespace GamePlay.Components
             {
                 SetEmpty();
             }
+
             return true;
         }
     }

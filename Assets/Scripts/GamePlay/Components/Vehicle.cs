@@ -32,7 +32,6 @@ namespace GamePlay.Components
         private void Start()
         {
             _soundService = ServiceLocator.Instance.Resolve<ISoundService>();
-            //  transform.GetComponentInParent<ParkingLot>().OnParkingLotClicked += OnParkingLotClicked;
         }
 
         public void StartIdleAnimation()
