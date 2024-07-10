@@ -7,24 +7,32 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Ground_Outer
-  m_Shader: {fileID: 4800000, guid: b0adf79d9562c1946a22aa9ecf387742, type: 3}
+  m_Name: Road
+  m_Shader: {fileID: -6465566751694194690, guid: ef3afcf964a41b246becf8464757aab0,
+    type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
-  m_ValidKeywords: []
+  m_ValidKeywords:
+  - _BLENDING_TEXTURE_SETTINGS
   m_InvalidKeywords: []
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
   m_CustomRenderQueue: -1
-  stringTagMap: {}
-  disabledShaderPasses: []
+  stringTagMap:
+    RenderType: Opaque
+  disabledShaderPasses:
+  - SHADOWCASTER
   m_LockedProperties: 
   m_SavedProperties:
     serializedVersion: 3
     m_TexEnvs:
     - _BaseMap:
         m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Base_Texture:
+        m_Texture: {fileID: 2800000, guid: 210ee9b4a24c7ce4b829d09ed127b55e, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _BumpMap:
@@ -51,6 +59,10 @@ Material:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
+    - _Matcap_Texture:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     - _MetallicGlossMap:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
@@ -64,6 +76,10 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _SpecGlossMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Triplanar_Texture:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
@@ -85,14 +101,19 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
+    - TRIPLANAR_SETTINGS: 0
     - _AlphaClip: 0
     - _AlphaCutoff: 0.5
+    - _AlphaToMask: 0
     - _Angle: 270
+    - _BLENDING_TEXTURE_SETTINGS: 1
     - _Blend: 0
-    - _Blur: 1
+    - _Blur: 0.061
     - _BumpScale: 1
+    - _COLOR_INNER: 0
+    - _CastShadows: 0
     - _Circle_Blur: 0.79
-    - _Circle_Int: 1
+    - _Circle_Int: 0
     - _Circle_Size: 0.65
     - _ClearCoatMask: 0
     - _ClearCoatSmoothness: 0
@@ -102,35 +123,58 @@ Material:
     - _DetailNormalMapScale: 1
     - _DstBlend: 0
     - _EnvironmentReflections: 1
+    - _FRESNEL_EFFECT_SETTINGS: 0
+    - _FalloffThreshold: 1
     - _GlossMapScale: 0
     - _Glossiness: 0
     - _GlossyReflections: 0
     - _HeightOffset: 0
+    - _Hue: 0
     - _Invert_Circle: 0
-    - _LinearDouble: 0
+    - _LinearDouble: 1
+    - _MATCAP_SETTINGS: 0
     - _MainTex_Opacity: 0
+    - _Matcap_Strengh: 0
     - _Metallic: 0
     - _OcclusionStrength: 1
     - _Parallax: 0.005
+    - _Power_In: 1
+    - _Power_Out: 1
     - _QueueControl: 0
     - _QueueOffset: 0
     - _ReceiveShadows: 1
+    - _Saturation: 0
+    - _ShadingMultiplier: 1
     - _Shininess: 0.01
     - _Smoothness: 0
     - _SmoothnessTextureChannel: 0
     - _SpecularHighlights: 1
     - _SrcBlend: 1
     - _Surface: 0
+    - _Threshold: 1
+    - _Triplanar_Tiling: 0
     - _Unlit: 0
+    - _VERTEXCOLOR_SETTINGS: 0
+    - _Value: 0
+    - _VertexColorPower: 0.5
     - _Vignette_Int: 0
+    - _White_Balance: 0
     - _WorkflowMode: 1
+    - _ZTest: 4
     - _ZWrite: 1
+    - _ZWriteControl: 0
     m_Colors:
-    - _BaseColor: {r: 0.5529412, g: 0.5921569, b: 0.79215693, a: 1}
+    - B_Color: {r: 1, g: 1, b: 1, a: 1}
+    - G_Color: {r: 0.4431373, g: 0.4784314, b: 0.63529414, a: 1}
+    - R_Color: {r: 0.49803925, g: 0.427451, b: 0.5882353, a: 1}
+    - _BaseColor: {r: 1, g: 1, b: 1, a: 1}
     - _Color: {r: 0.55294114, g: 0.5921568, b: 0.79215693, a: 1}
     - _Color1: {r: 0, g: 0, b: 0, a: 0}
-    - _Color2: {r: 0.58431375, g: 0.58431375, b: 0.58431375, a: 0}
+    - _Color2: {r: 0.41960788, g: 0.34901962, b: 0.46274513, a: 0}
+    - _Color_In: {r: 1, g: 0.003921569, b: 0.003921569, a: 1}
+    - _Color_Out: {r: 0.3843137, g: 1, b: 0.2117647, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
+    - _Matcap_Color: {r: 1, g: 1, b: 1, a: 1}
     - _SpecColor: {r: 0.19999996, g: 0.19999996, b: 0.19999996, a: 1}
     - _SpecularColor: {r: 0, g: 0, b: 0, a: 1}
     - _StartPosition: {r: 0, g: 0, b: 0, a: 0}
@@ -148,4 +192,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d0353a89b1f911e48b9e16bdc9f2e058, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  version: 5
+  version: 7
