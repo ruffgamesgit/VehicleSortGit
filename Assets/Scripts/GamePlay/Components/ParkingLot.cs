@@ -1,14 +1,9 @@
 using System;
-using System.Collections.Generic;
-using Core.Locator;
 using Cysharp.Threading.Tasks;
 using DG.Tweening;
 using GamePlay.Data;
 using GamePlay.Data.Grid;
-using GamePlay.Extension;
-using Services.Sound;
 using UnityEngine;
-using UnityEngine.Rendering.Universal;
 
 namespace GamePlay.Components
 {

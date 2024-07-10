@@ -136,7 +136,7 @@ namespace GamePlay.Components.SortController
 
         private async void OnParkingLotClicked(object sender, Vehicle arg)
         {
-            if(_gamePlayService.IsSettingEnabled()) return;
+            if (_gamePlayService.IsSettingEnabled()) return;
             var parkingLot = (ParkingLot)sender;
             if (parkingLot == null)
             {
@@ -158,14 +158,17 @@ namespace GamePlay.Components.SortController
                     if (path is { Count: > 0 })
                     {
                         if (path[^1] == parkingLot)
-                        { 
+                        {
+                            Debug.Log("Selected lot is EMPTY, can move towards to the lot");
                             Taptic.Medium();
-                            _soundService.PlaySound(SoundTypeEnum.ButtonClickedSound); 
+                            _soundService.PlaySound(SoundTypeEnum.ButtonClickedSound);
                             var fromParkingLot = _lastClickedParkingLot;
                             _lastClickedParkingLot = null;
                             parkingLot.SetWillOccupied();
                             var vehicle = fromParkingLot.GetCurrentVehicle();
+                            vehicle.StopIdleAnimationSequence();
                             fromParkingLot.GetCurrentVehicle()?.SetHighlight(false);
+                            fromParkingLot.GetCurrentVehicle()?.StopIdleAnimationSequence();
                             HighlightPossibleParkingLots(false, null);
                             fromParkingLot.SetEmpty();
 
@@ -212,21 +215,26 @@ namespace GamePlay.Components.SortController
                         }
                     }
                 }
+
                 Taptic.Heavy();
+                Debug.Log("Selected lot has another vehicle, cannot move there");
                 HighlightPossibleParkingLots(false, null);
                 _lastClickedParkingLot.GetCurrentVehicle()?.SetHighlight(false);
+                _lastClickedParkingLot.GetCurrentVehicle()?.StopIdleAnimationSequence();
+                _lastClickedParkingLot.GetCurrentVehicle()?.OnMovementBlocked();
                 _lastClickedParkingLot = null;
             }
             else
             {
-                if (!parkingLot.IsEmpty())
-                { 
-                    Taptic.Medium();
-                    _soundService.PlaySound(SoundTypeEnum.ButtonClickedSound); 
-                    _lastClickedParkingLot = parkingLot;
-                    HighlightPossibleParkingLots(true, _lastClickedParkingLot);
-                    _lastClickedParkingLot.GetCurrentVehicle()?.SetHighlight(true);
-                }
+                if (parkingLot.IsEmpty()) return;
+                Debug.Log("NEW lot selected, and it has vehicle");
+                Taptic.Medium();
+                _soundService.PlaySound(SoundTypeEnum.ButtonClickedSound);
+                _lastClickedParkingLot = parkingLot;
+                HighlightPossibleParkingLots(true, _lastClickedParkingLot);
+                    
+                _lastClickedParkingLot.GetCurrentVehicle()?.SetHighlight(true);
+                _lastClickedParkingLot.GetCurrentVehicle()?.StartIdleAnimation();
             }
         }
 
@@ -256,10 +264,8 @@ namespace GamePlay.Components.SortController
                     {
                         break;
                     }
-                    
+
                     SortParkingLotAlgorithmNew(parkingLot);
-                    
-                  
                 }
                 else
                 {
@@ -356,7 +362,7 @@ namespace GamePlay.Components.SortController
                 if (parkingLot == null) return;
                 var currentVehicle = parkingLot.GetCurrentVehicle();
                 if (currentVehicle == null) return;
-                if(currentVehicle.IsCompleted())return;
+                if (currentVehicle.IsCompleted()) return;
 
 
                 var parkingLotPosition = parkingLot.GetParkingLotPosition();

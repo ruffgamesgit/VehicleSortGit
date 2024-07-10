@@ -21,15 +21,47 @@ namespace GamePlay.Components
         [SerializeField] private List<Seat> seats = new List<Seat>(4);
         [SerializeField] private Outline outline;
         [SerializeField] private Transform busTopObject;
+        [SerializeField] private GameObject cloudObj;
         private bool _isCompleted = false;
         private Sequence _moveSequence;
         private Sequence _goOutSequence;
         private Sequence _vehicleCompleteIdleSequence;
         private ISoundService _soundService;
+        private Sequence _sq;
 
         private void Start()
         {
             _soundService = ServiceLocator.Instance.Resolve<ISoundService>();
+            //  transform.GetComponentInParent<ParkingLot>().OnParkingLotClicked += OnParkingLotClicked;
+        }
+
+        public void StartIdleAnimation()
+        {
+            _sq = DOTween.Sequence();
+
+            _sq.Append(transform.DOScale(transform.lossyScale * 1.05f, .12f).SetLoops(2, LoopType.Yoyo));
+            _sq.Append(transform
+                .DOMoveY(transform.position.y + .05f, .35f)
+                .SetLoops(-1, LoopType.Yoyo));
+
+            _sq.Play();
+        }
+
+        public void OnMovementBlocked()
+        {
+  
+            Sequence seq = DOTween.Sequence();
+            seq.Append(transform.DOMoveZ(transform.position.z + .1f, .125f).SetEase(Ease.InOutBounce));
+            seq.Append(transform.DOMoveZ(transform.position.z - .1f, .125f));
+            seq.Append(transform.DOLocalMoveZ(0, .125f));
+
+            seq.Play();
+        }
+
+        public void StopIdleAnimationSequence()
+        {
+            _sq?.Kill();
+            transform.localPosition = Vector3.zero;
         }
 
         public Dictionary<ColorEnum, int> GetExistingColors()
@@ -58,7 +90,7 @@ namespace GamePlay.Components
             return _isCompleted;
         }
 
-        public void SetCompleted()
+        private void SetCompleted()
         {
             _isCompleted = true;
         }
@@ -169,7 +201,7 @@ namespace GamePlay.Components
 
             if (swappingAnimationList.Count > 0)
             {
-                await swappingAnimationList.ToList().AnimateSeatChanges(instant,false);
+                await swappingAnimationList.ToList().AnimateSeatChanges(instant, false);
             }
         }
 
@@ -186,7 +218,7 @@ namespace GamePlay.Components
             seats.AnimateSeatChanges(false, false);
 
             rotatePassengers:
-            
+
             if (!IsAllEmpty())
                 foreach (var seat in seats)
                 {
