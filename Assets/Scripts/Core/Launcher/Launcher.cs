@@ -16,7 +16,9 @@ namespace Core.Launcher
         private static readonly HashSet<GameObject> DontDestroyOnLoadObjects = new ();
         
         #region Initialize
-        public void Awake()
+        
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
+        public static void Initialize()
         {
             Debug.Log("ServicesInitializeEditor");
             Application.targetFrameRate = (int)Screen.currentResolution.refreshRateRatio.value;

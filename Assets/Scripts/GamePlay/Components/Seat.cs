@@ -17,7 +17,7 @@ namespace GamePlay.Components
         private Sequence _sequence;
         private const float TWEEN_DURATION = .3f;
         private ISoundService _soundService;
-
+        
         private void Start()
         {
             _soundService = ServiceLocator.Instance.Resolve<ISoundService>();
@@ -125,4 +125,11 @@ namespace GamePlay.Components
             }
         }
     }
+}
+
+[Serializable]
+public class ColorData
+{
+    public ColorEnum colorEnum;
+    public Color matColor;
 }

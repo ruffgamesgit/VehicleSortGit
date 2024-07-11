@@ -11,12 +11,15 @@ namespace GamePlay.Components
         private ColorEnum _color;
         private Dictionary<int, Vector3> _offsetDictionary = new Dictionary<int, Vector3>();
         const float PLACEMENT_OFFSET_MULTIPLIER = 1.6f; // Some magic mysterious golden ratio stuff
+        private MaterialPropertyBlock _propertyBlock;
+        private static readonly int Color1 = Shader.PropertyToID("_Color");
 
         private void Awake()
         {
+            _propertyBlock = new MaterialPropertyBlock();
             CalculateOffsets();
         }
-        
+
         public ColorEnum GetColor()
         {
             return _color;
@@ -24,10 +27,21 @@ namespace GamePlay.Components
 
         public void SetColor(ColorEnum passengerColor)
         {
+            // _color = passengerColor;
+            // foreach (var mesh in meshTransforms)
+            // {
+            //     mesh.GetComponent<MeshRenderer>().material.color = passengerColor.GetColorCode();
+            // }
+
             _color = passengerColor;
-            foreach (var t in meshTransforms)
+            Color color = passengerColor.GetColorCode();
+
+            foreach (Transform mesh in meshTransforms)
             {
-                t.GetComponent<MeshRenderer>().material.color = passengerColor.GetColorCode();
+                MeshRenderer meshRenderer = mesh.GetComponent<MeshRenderer>();
+                meshRenderer.GetPropertyBlock(_propertyBlock);
+                _propertyBlock.SetColor(Color1, color);
+                meshRenderer.SetPropertyBlock(_propertyBlock);
             }
         }
 

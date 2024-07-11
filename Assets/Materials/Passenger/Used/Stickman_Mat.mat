@@ -7,14 +7,15 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Bus_Color1
-  m_Shader: {fileID: 4800000, guid: 9dda5d0975625ee42b9889ef2a5e6eed, type: 3}
+  m_Name: Stickman_Mat
+  m_Shader: {fileID: 4800000, guid: 8339bf4b67f35304bae9e96343416a8a, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
-  m_ValidKeywords: []
+  m_ValidKeywords:
+  - _VERTEXANIM_ON
   m_InvalidKeywords: []
   m_LightmapFlags: 4
-  m_EnableInstancingVariants: 1
+  m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
   m_CustomRenderQueue: -1
   stringTagMap: {}
@@ -23,7 +24,7 @@ Material:
   m_SavedProperties:
     serializedVersion: 3
     m_TexEnvs:
-    - _AO:
+    - _AO_Tex:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
@@ -52,14 +53,18 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MainTex:
-        m_Texture: {fileID: 2800000, guid: 809c1f47de1df3541b2bcbace3586688, type: 3}
+        m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _Matcap:
-        m_Texture: {fileID: 2800000, guid: 78137fed555ead64ea22c0dffa580c3b, type: 3}
+        m_Texture: {fileID: 2800000, guid: 18fabf0c21195cd4581f13e570f59fa9, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MetallicGlossMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _NormalTex:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
@@ -76,10 +81,6 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _texcoord:
-        m_Texture: {fileID: 0}
-        m_Scale: {x: 1, y: 1}
-        m_Offset: {x: 0, y: 0}
-    - _texcoord2:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
@@ -104,6 +105,7 @@ Material:
     - _BumpScale: 1
     - _ClearCoatMask: 0
     - _ClearCoatSmoothness: 0
+    - _ColorDif_Divider: 0
     - _Cull: 2
     - _Cutoff: 0.5
     - _DetailAlbedoMapScale: 1
@@ -114,11 +116,11 @@ Material:
     - _Glossiness: 0
     - _GlossyReflections: 0
     - _MC_Rotator: 0
-    - _MatCap_SS_Int: 0
+    - _MatCap_SS_Int: 1
     - _Metallic: 0
     - _OcclusionStrength: 1
     - _Parallax: 0.005
-    - _QueueControl: 0
+    - _QueueControl: -1
     - _QueueOffset: 0
     - _ReceiveShadows: 1
     - _Smoothness: 0
@@ -126,22 +128,21 @@ Material:
     - _SpecularHighlights: 1
     - _SrcBlend: 1
     - _Surface: 0
-    - _Width: 0
+    - _VertexAnim: 1
     - _WorkflowMode: 1
     - _ZWrite: 1
-    - _colorDif: 1
-    - _colorDif_Back: 0.8
+    - _useRedChannel: 0
     m_Colors:
-    - _BaseColor: {r: 0.735849, g: 0.48494634, b: 0.07404764, a: 1}
-    - _BiasScalePower: {r: 0, g: 3, b: 5, a: 0}
-    - _Color: {r: 0.654902, g: 0.6392157, b: 0.7294118, a: 1}
+    - _BaseColor: {r: 1, g: 1, b: 1, a: 1}
+    - _BiasScalePower: {r: 0, g: 1, b: 5, a: 0}
+    - _Color: {r: 0.97204924, g: 0, b: 1, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
-    - _FresnelColor: {r: 0, g: 0, b: 0, a: 1}
-    - _MatCap_SS: {r: 0.05, g: 0.2, b: 0, a: 0}
+    - _FresnelColor: {r: 0, g: 0, b: 0, a: 0}
+    - _MatCap_SS: {r: 0.9, g: 1, b: 0, a: 0}
     - _SpecColor: {r: 0.19999996, g: 0.19999996, b: 0.19999996, a: 1}
-    - _matcapColor: {r: 0, g: 0, b: 0, a: 0}
+    - _matcapColor: {r: 0.16037738, g: 0.16037738, b: 0.16037738, a: 1}
   m_BuildTextureStacks: []
---- !u!114 &4488917128604269791
+--- !u!114 &2598592270597608293
 MonoBehaviour:
   m_ObjectHideFlags: 11
   m_CorrespondingSourceObject: {fileID: 0}
