@@ -39,9 +39,9 @@ namespace GamePlay.Components
             foreach (Transform mesh in meshTransforms)
             {
                 MeshRenderer meshRenderer = mesh.GetComponent<MeshRenderer>();
-                meshRenderer.GetPropertyBlock(_propertyBlock);
+                meshRenderer.GetPropertyBlock(_propertyBlock,0);
                 _propertyBlock.SetColor(Color1, color);
-                meshRenderer.SetPropertyBlock(_propertyBlock);
+                meshRenderer.SetPropertyBlock(_propertyBlock,0);
             }
         }
 

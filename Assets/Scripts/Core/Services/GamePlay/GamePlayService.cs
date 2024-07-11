@@ -12,6 +12,7 @@ namespace Core.Services.GamePlay
 {
     public class GamePlayService : IGamePlayService
     {
+        public event EventHandler OnVehicleMoved; 
         private const string LevelDataPath = "LevelData_Ordered";
         private const string LastLevelKey = "LastLevel";
         private readonly System.Random _random = new();
@@ -104,6 +105,11 @@ namespace Core.Services.GamePlay
 
             isSettingEnabled = false;
             _levelStartTime = Time.realtimeSinceStartup;
+        }
+
+        public void TriggerOnVehicleMove()
+        {
+            OnVehicleMoved?.Invoke(this,null);
         }
 
         public void LoadPrevious()

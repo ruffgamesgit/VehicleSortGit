@@ -19,7 +19,7 @@ namespace GamePlay.Components
         private bool _isObstacle;
         private bool _isEmptyAtStart;
         private bool _willOccupied;
-        [SerializeField] private MeshRenderer _modelMeshRenderer;
+        private MeshRenderer _modelMeshRenderer;
         private static readonly int BaseColorID = Shader.PropertyToID("_BaseColor");
 
         public void Initialize(bool isInvisible, bool isObstacle, bool isEmptyAtStart,

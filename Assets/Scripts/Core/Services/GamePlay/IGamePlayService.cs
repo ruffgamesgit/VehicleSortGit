@@ -8,11 +8,13 @@ namespace Core.Services.GamePlay
     {
         public bool IsSettingEnabled();
         public void SettingsEnabled(bool active);
+        public event EventHandler OnVehicleMoved; 
         public event EventHandler<LevelFinishedType> LevelFinishedEvent;
         public void LevelFinished(LevelFinishedType type);
         public LevelData GetCurrentLevelData();
         public int GetCurrentLevel();
         public void LoadLevel();
+        public void TriggerOnVehicleMove();
 
         public void LoadPrevious();
         public void LoadNext();

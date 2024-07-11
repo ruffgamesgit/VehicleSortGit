@@ -31,24 +31,22 @@ namespace GamePlay.Components
 
         private void Start()
         {
+            SetHighlight(false);
             _soundService = ServiceLocator.Instance.Resolve<ISoundService>();
         }
 
         public void StartIdleAnimation()
         {
             _sq = DOTween.Sequence();
-
-            _sq.Append(transform.DOScale(transform.lossyScale * 1.05f, .12f).SetLoops(2, LoopType.Yoyo));
-            _sq.Append(transform
-                .DOMoveY(transform.position.y + .05f, .35f)
-                .SetLoops(-1, LoopType.Yoyo));
+            transform.DOScale(transform.lossyScale * 1.05f, .12f).SetLoops(2, LoopType.Yoyo);
+            _sq.Append(transform.DOMoveY(transform.position.y + .05f, .35f).SetLoops(2, LoopType.Yoyo));
+            _sq.SetLoops(-1, LoopType.Restart);
 
             _sq.Play();
         }
 
         public void OnMovementBlocked()
         {
-  
             Sequence seq = DOTween.Sequence();
             seq.Append(transform.DOMoveZ(transform.position.z + .1f, .125f).SetEase(Ease.InOutBounce));
             seq.Append(transform.DOMoveZ(transform.position.z - .1f, .125f));
@@ -143,7 +141,7 @@ namespace GamePlay.Components
             if (IsAllEmpty()) return;
 
             await UniTask.WaitUntil(() => !IsAnimationOn());
-            if(!gameObject) return;
+            if (!gameObject) return;
             HashSet<Seat> swappingAnimationList = new HashSet<Seat>();
             if (HasEmptySeat())
             {

@@ -11,25 +11,42 @@ namespace GamePlay.UI
     {
         private IGamePlayService _gamePlayService;
         [SerializeField] private TextMeshProUGUI levelTxt;
+        [SerializeField] private TextMeshProUGUI moveCountTxt;
         [SerializeField] private Button settingsBtn;
-        
-        
+
         [SerializeField] private LoseScreenController _loseScreenController;
         [SerializeField] private WinScreenController _winScreenController;
         [SerializeField] private SettingsController _settingsController;
-        
-        
+
+
         [SerializeField] private Button nextLevelBtn;
         [SerializeField] private Button previousLevelBtn;
+        private int _maxMoveCount;
+
         private void Awake()
         {
             _gamePlayService = ServiceLocator.Instance.Resolve<IGamePlayService>();
             _gamePlayService.LevelFinishedEvent += OnLevelFinished;
+            _gamePlayService.OnVehicleMoved += OnVehicleMoved;
+
+            _maxMoveCount = _gamePlayService.GetCurrentLevelData().moveCount;
+            moveCountTxt.text = _maxMoveCount.ToString();
+
             SetLevelText();
             SetButtonBehaviours();
         }
-        
-        
+
+        private void OnVehicleMoved(object sender, EventArgs e)
+        {
+            DecreaseMoveCountText();
+        }
+
+        void DecreaseMoveCountText()
+        {
+            _maxMoveCount--;
+            if (_maxMoveCount <= 0)   _gamePlayService.LevelFinished(LevelFinishedType.Fail);
+            moveCountTxt.text = _maxMoveCount.ToString();
+        }
 
         private void OnLevelFinished(object sender, LevelFinishedType e)
         {
@@ -70,32 +87,24 @@ namespace GamePlay.UI
         {
             _settingsController.Deactivate();
         }
-        
+
         private void SetLevelText()
         {
-            levelTxt.text ="LV " +_gamePlayService.GetCurrentLevel();
+            levelTxt.text = "LV " + _gamePlayService.GetCurrentLevel();
         }
 
         private void SetButtonBehaviours()
         {
-            nextLevelBtn.onClick.AddListener(() =>
-            {
-                _gamePlayService.LoadNext();
-            });
-            
-            previousLevelBtn.onClick.AddListener(() =>
-            {
-                _gamePlayService.LoadPrevious();
-            });
-            settingsBtn.onClick.AddListener(() =>
-            {
-                OpenSettingsScreen();
-            });
+            nextLevelBtn.onClick.AddListener(() => { _gamePlayService.LoadNext(); });
+
+            previousLevelBtn.onClick.AddListener(() => { _gamePlayService.LoadPrevious(); });
+            settingsBtn.onClick.AddListener(() => { OpenSettingsScreen(); });
         }
 
         private void OnDestroy()
         {
             _gamePlayService.LevelFinishedEvent -= OnLevelFinished;
+            _gamePlayService.OnVehicleMoved -= OnVehicleMoved;
         }
     }
 }
