@@ -32,18 +32,21 @@ namespace GamePlay.UI
         public void Activate(LevelFailedType failedType, Action onRevive = null)
         {
             _onRevive = onRevive;
-            loseScreenCanvasGroup.blocksRaycasts = true;
-            loseScreenCanvasGroup.interactable = true;
+            
 
             switch (failedType)
             {
                 case LevelFailedType.Move:
+                    reviveScreenCanvasGroup.blocksRaycasts = true;
+                    reviveScreenCanvasGroup.interactable = true;
                     reviveScreenCanvasGroup.DOFade(1, 0.5f).SetDelay(1f).OnComplete(() =>
                     {
                         _soundService.PlaySound(SoundTypeEnum.LoseSound);
                     });
                     break;
                 case LevelFailedType.Space:
+                    loseScreenCanvasGroup.blocksRaycasts = true;
+                    loseScreenCanvasGroup.interactable = true;
                     loseScreenCanvasGroup.DOFade(1, 0.5f).SetDelay(1f).OnComplete(() =>
                     {
                         _soundService.PlaySound(SoundTypeEnum.LoseSound);
@@ -53,7 +56,18 @@ namespace GamePlay.UI
                     throw new ArgumentOutOfRangeException(nameof(failedType), failedType, null);
             }
         }
-
+        
+        public void Deactivate()
+        {
+            reviveScreenCanvasGroup.blocksRaycasts = false;
+            reviveScreenCanvasGroup.interactable = false;
+            reviveScreenCanvasGroup.DOFade(0, 0.15f).SetDelay(1f);
+            
+            loseScreenCanvasGroup.blocksRaycasts = false;
+            loseScreenCanvasGroup.interactable = false;
+            loseScreenCanvasGroup.DOFade(0, 0.15f).SetDelay(1f);
+        }
+        
         private void GiveUpButtonClick()
         {
             _gamePlayService.LoadLevel();

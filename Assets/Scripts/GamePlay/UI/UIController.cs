@@ -49,7 +49,7 @@ namespace GamePlay.UI
         async void DecreaseMoveCountText()
         {
             if (_maxMoveCount <= 0) return;
-            
+
             _maxMoveCount--;
             if (_maxMoveCount <= 0)
             {
@@ -92,13 +92,13 @@ namespace GamePlay.UI
                     };
                     args.Fire(AdEventType.RewardedVideo);
                 }
-                
+
                 void OnSuccess()
                 {
                     _maxMoveCount += 10;
                     moveCountTxt.text = _maxMoveCount.ToString();
-                    Destroy(_loseScreenController.gameObject);
-                    
+                    _loseScreenController.Deactivate();
+
                     AdRewardArgs args = new AdRewardArgs()
                     {
                         Placement = "revive_move_count_rv",
@@ -107,12 +107,12 @@ namespace GamePlay.UI
                     };
                     args.Fire();
                 }
-                
+
                 var maxSdkService = ServiceLocator.Instance.Resolve<IMaxSDKService>();
-                
+
                 maxSdkService.ShowRewardedAd(OnDisplayed, OnSuccess);
             }
-            
+
             _loseScreenController.Activate(failType, OnRevive);
             CloseSettingScreen();
         }
