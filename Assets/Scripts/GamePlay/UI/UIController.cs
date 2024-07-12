@@ -23,6 +23,7 @@ namespace GamePlay.UI
         [SerializeField] private Button nextLevelBtn;
         [SerializeField] private Button previousLevelBtn;
         private int _maxMoveCount;
+        private LevelFailedType _failedType;
 
         private void Awake()
         {
@@ -51,13 +52,13 @@ namespace GamePlay.UI
             {
                 await Task.Delay(1000);
                 if (!_gamePlayService.IsSucceeded())
-                    _gamePlayService.LevelFinished(LevelFinishedType.Fail);
+                    _gamePlayService.LevelFinished(LevelFinishedType.Fail, LevelFailedType.OutOfMoveCount);
             }
 
             moveCountTxt.text = _maxMoveCount.ToString();
         }
 
-        private void OnLevelFinished(object sender, LevelFinishedType e)
+        private void OnLevelFinished(object sender, LevelFinishedType e, LevelFailedType failedType = LevelFailedType.OutOfEmptyLots)
         {
             switch (e)
             {
@@ -75,9 +76,9 @@ namespace GamePlay.UI
             }
         }
 
-        private void OpenFailScreen()
+        private void OpenFailScreen(LevelFailedType failedType = LevelFailedType.OutOfEmptyLots)
         {
-            _loseScreenController.Activate();
+            _loseScreenController.Activate(failedType);
             CloseSettingScreen();
         }
 
