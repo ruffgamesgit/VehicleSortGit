@@ -44,11 +44,11 @@ namespace Services.Max
                 //InitializeMRecAds();
                 //MaxSdk.ShowMediationDebugger();
                 // Initialize Adjust SDK
-            }; 
-            
+            };
+
             MaxSdk.SetCreativeDebuggerEnabled(false);
             MaxSdk.SetSdkKey(MaxSdkKey);
-            MaxSdk.InitializeSdk();
+            //  MaxSdk.InitializeSdk();
         }
 
         #region Interstitial Ad Methods
@@ -402,7 +402,7 @@ namespace Services.Max
                     Debug.Log("Hiding banner ad...");
                 }
             }
-            
+
             _isBannerShowing = show;
         }
 
