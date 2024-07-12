@@ -15,24 +15,26 @@ namespace GamePlay.UI
         [SerializeField] private CanvasGroup reviveScreenCanvasGroup;
         [SerializeField] private Button retryButton;
         [SerializeField] private Button reviveButton;
+        [SerializeField] private Button reviveRetryButton;
 
         private IGamePlayService _gamePlayService;
         private ISoundService _soundService;
 
         private Action _onRevive;
-        
+
         private void Awake()
         {
             _gamePlayService = ServiceLocator.Instance.Resolve<IGamePlayService>();
             _soundService = ServiceLocator.Instance.Resolve<ISoundService>();
             retryButton.onClick.AddListener(GiveUpButtonClick);
             reviveButton.onClick.AddListener(ReviveButtonClicked);
+            reviveRetryButton.onClick.AddListener(GiveUpButtonClick);
         }
 
         public void Activate(LevelFailedType failedType, Action onRevive = null)
         {
             _onRevive = onRevive;
-            
+
 
             switch (failedType)
             {
@@ -56,18 +58,18 @@ namespace GamePlay.UI
                     throw new ArgumentOutOfRangeException(nameof(failedType), failedType, null);
             }
         }
-        
+
         public void Deactivate()
         {
             reviveScreenCanvasGroup.blocksRaycasts = false;
             reviveScreenCanvasGroup.interactable = false;
             reviveScreenCanvasGroup.DOFade(0, 0.15f).SetDelay(1f);
-            
+
             loseScreenCanvasGroup.blocksRaycasts = false;
             loseScreenCanvasGroup.interactable = false;
             loseScreenCanvasGroup.DOFade(0, 0.15f).SetDelay(1f);
         }
-        
+
         private void GiveUpButtonClick()
         {
             _gamePlayService.LoadLevel();
