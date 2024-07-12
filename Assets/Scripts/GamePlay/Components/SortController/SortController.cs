@@ -18,7 +18,6 @@ namespace GamePlay.Components.SortController
 {
     public class SortController : MonoBehaviour
     {
-        public event Action EventA; 
         [SerializeField] private GridData gridData;
         [SerializeField] private List<GarageController> garages;
         private FillController _fillController;

@@ -1,4 +1,5 @@
 using System;
+using System.Threading.Tasks;
 using Core.Locator;
 using Core.Services.GamePlay;
 using TMPro;
@@ -41,10 +42,18 @@ namespace GamePlay.UI
             DecreaseMoveCountText();
         }
 
-        void DecreaseMoveCountText()
+        async void DecreaseMoveCountText()
         {
+            if (_maxMoveCount <= 0) return;
+            
             _maxMoveCount--;
-            if (_maxMoveCount <= 0)   _gamePlayService.LevelFinished(LevelFinishedType.Fail);
+            if (_maxMoveCount <= 0)
+            {
+                await Task.Delay(1000);
+                if (!_gamePlayService.IsSucceeded())
+                    _gamePlayService.LevelFinished(LevelFinishedType.Fail);
+            }
+
             moveCountTxt.text = _maxMoveCount.ToString();
         }
 

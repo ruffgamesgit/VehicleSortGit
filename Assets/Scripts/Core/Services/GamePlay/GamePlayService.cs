@@ -5,6 +5,7 @@ using GamePlay.Data.Grid;
 using Services.Analytics.Data;
 using Services.Analytics.Extensions;
 using Services.Sound;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -12,7 +13,7 @@ namespace Core.Services.GamePlay
 {
     public class GamePlayService : IGamePlayService
     {
-        public event EventHandler OnVehicleMoved; 
+        public event EventHandler OnVehicleMoved;
         private const string LevelDataPath = "LevelData_Ordered";
         private const string LastLevelKey = "LastLevel";
         private readonly System.Random _random = new();
@@ -21,8 +22,8 @@ namespace Core.Services.GamePlay
         private LevelData _currentLevelData;
         private int _currentLevel;
         private float _levelStartTime;
-        
-        
+        private bool _isSucceeded;
+
         public void SettingsEnabled(bool active)
         {
             isSettingEnabled = active;
@@ -32,8 +33,9 @@ namespace Core.Services.GamePlay
         {
             return isSettingEnabled;
         }
+
         public event EventHandler<LevelFinishedType> LevelFinishedEvent;
-        
+
         public GamePlayService()
         {
             _levelData = Resources.Load<LevelDataScriptable>(LevelDataPath).levelData;
@@ -62,6 +64,7 @@ namespace Core.Services.GamePlay
                     LevelFinishedEvent?.Invoke(this, LevelFinishedType.Fail);
                     break;
                 case LevelFinishedType.Complete:
+                    _isSucceeded = true;
                     LevelCompleteAnalyticsEvent();
                     ResetAttemptCount();
                     _currentLevel++;
@@ -89,7 +92,7 @@ namespace Core.Services.GamePlay
         {
             IncreaseAttemptCount();
             LevelStartAnalyticsEvent();
-            if (_currentLevel > _levelData.Count -1)
+            if (_currentLevel > _levelData.Count - 1)
             {
                 int rand = _random.Next(3, _levelData.Count - 1);
                 _currentLevelData = _levelData[rand];
@@ -109,7 +112,7 @@ namespace Core.Services.GamePlay
 
         public void TriggerOnVehicleMove()
         {
-            OnVehicleMoved?.Invoke(this,null);
+            OnVehicleMoved?.Invoke(this, null);
         }
 
         public void LoadPrevious()
@@ -121,9 +124,14 @@ namespace Core.Services.GamePlay
 
         public void LoadNext()
         {
-            if(_currentLevel == _levelData.Count -1)return;
+            if (_currentLevel == _levelData.Count - 1) return;
             _currentLevel++;
             LoadLevel();
+        }
+
+        public bool IsSucceeded()
+        {
+            return _isSucceeded;
         }
 
         private void LevelStartAnalyticsEvent()

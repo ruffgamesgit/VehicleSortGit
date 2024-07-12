@@ -18,6 +18,7 @@ namespace Core.Services.GamePlay
 
         public void LoadPrevious();
         public void LoadNext();
+        public bool IsSucceeded();
 
     }
 }
