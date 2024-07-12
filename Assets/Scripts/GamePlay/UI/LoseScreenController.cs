@@ -1,3 +1,4 @@
+using System;
 using Core.Locator;
 using Core.Services.GamePlay;
 using DG.Tweening;
@@ -18,35 +19,42 @@ namespace GamePlay.UI
         private IGamePlayService _gamePlayService;
         private ISoundService _soundService;
 
+        private Action _onRevive;
+        
         private void Awake()
         {
             _gamePlayService = ServiceLocator.Instance.Resolve<IGamePlayService>();
             _soundService = ServiceLocator.Instance.Resolve<ISoundService>();
-            retryButton.onClick.AddListener(NextButtonClick);
-            reviveButton.onClick.AddListener(NextButtonClick);
+            retryButton.onClick.AddListener(GiveUpButtonClick);
+            reviveButton.onClick.AddListener(ReviveButtonClicked);
         }
 
-        public void Activate(LevelFailedType failedType)
+        public void Activate(LevelFailedType failedType, Action onRevive = null)
         {
+            _onRevive = onRevive;
             loseScreenCanvasGroup.blocksRaycasts = true;
             loseScreenCanvasGroup.interactable = true;
-            if (failedType == LevelFailedType.OutOfEmptyLots)
+
+            switch (failedType)
             {
-                loseScreenCanvasGroup.DOFade(1, 0.5f).SetDelay(1f).OnComplete(() =>
-                {
-                    _soundService.PlaySound(SoundTypeEnum.LoseSound);
-                });
-            }
-            else
-            {
-                reviveScreenCanvasGroup.DOFade(1, 0.5f).SetDelay(1f).OnComplete(() =>
-                {
-                    _soundService.PlaySound(SoundTypeEnum.LoseSound);
-                });
+                case LevelFailedType.Move:
+                    reviveScreenCanvasGroup.DOFade(1, 0.5f).SetDelay(1f).OnComplete(() =>
+                    {
+                        _soundService.PlaySound(SoundTypeEnum.LoseSound);
+                    });
+                    break;
+                case LevelFailedType.Space:
+                    loseScreenCanvasGroup.DOFade(1, 0.5f).SetDelay(1f).OnComplete(() =>
+                    {
+                        _soundService.PlaySound(SoundTypeEnum.LoseSound);
+                    });
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(failedType), failedType, null);
             }
         }
 
-        private void NextButtonClick()
+        private void GiveUpButtonClick()
         {
             _gamePlayService.LoadLevel();
             _soundService.PlaySound(SoundTypeEnum.ButtonClickedSound);
@@ -54,6 +62,7 @@ namespace GamePlay.UI
 
         private void ReviveButtonClicked()
         {
+            _onRevive?.Invoke();
         }
     }
 }

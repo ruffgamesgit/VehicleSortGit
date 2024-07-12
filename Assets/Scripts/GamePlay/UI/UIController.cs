@@ -2,6 +2,10 @@ using System;
 using System.Threading.Tasks;
 using Core.Locator;
 using Core.Services.GamePlay;
+using LionStudios.Suite.Analytics.Events.EventArgs;
+using Services.Analytics.Data.Args.Advertising;
+using Services.Analytics.Extensions;
+using Services.Max;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -23,7 +27,6 @@ namespace GamePlay.UI
         [SerializeField] private Button nextLevelBtn;
         [SerializeField] private Button previousLevelBtn;
         private int _maxMoveCount;
-        private LevelFailedType _failedType;
 
         private void Awake()
         {
@@ -52,18 +55,18 @@ namespace GamePlay.UI
             {
                 await Task.Delay(1000);
                 if (!_gamePlayService.IsSucceeded())
-                    _gamePlayService.LevelFinished(LevelFinishedType.Fail, LevelFailedType.OutOfMoveCount);
+                    OpenFailScreen(LevelFailedType.Move);
             }
 
             moveCountTxt.text = _maxMoveCount.ToString();
         }
 
-        private void OnLevelFinished(object sender, LevelFinishedType e, LevelFailedType failedType = LevelFailedType.OutOfEmptyLots)
+        private void OnLevelFinished(object sender, LevelFinishedType e)
         {
             switch (e)
             {
                 case LevelFinishedType.Fail:
-                    OpenFailScreen();
+                    OpenFailScreen(LevelFailedType.Space);
                     break;
                 case LevelFinishedType.Complete:
                     OpenWinScreen();
@@ -76,9 +79,41 @@ namespace GamePlay.UI
             }
         }
 
-        private void OpenFailScreen(LevelFailedType failedType = LevelFailedType.OutOfEmptyLots)
+        private void OpenFailScreen(LevelFailedType failType)
         {
-            _loseScreenController.Activate(failedType);
+            void OnRevive()
+            {
+                void OnDisplayed(MaxSdkBase.AdInfo info)
+                {
+                    AdEventArgs args = new AdEventArgs()
+                    {
+                        Network = info.NetworkName, Level = _gamePlayService.GetCurrentLevel(),
+                        Placement = "revive_move_count_rv"
+                    };
+                    args.Fire(AdEventType.RewardedVideo);
+                }
+                
+                void OnSuccess()
+                {
+                    _maxMoveCount += 10;
+                    moveCountTxt.text = _maxMoveCount.ToString();
+                    Destroy(_loseScreenController.gameObject);
+                    
+                    AdRewardArgs args = new AdRewardArgs()
+                    {
+                        Placement = "revive_move_count_rv",
+                        Level = _gamePlayService.GetCurrentLevel(),
+                        Reward = null
+                    };
+                    args.Fire();
+                }
+                
+                var maxSdkService = ServiceLocator.Instance.Resolve<IMaxSDKService>();
+                
+                maxSdkService.ShowRewardedAd(OnDisplayed, OnSuccess);
+            }
+            
+            _loseScreenController.Activate(failType, OnRevive);
             CloseSettingScreen();
         }
 
