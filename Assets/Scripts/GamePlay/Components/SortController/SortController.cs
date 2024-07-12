@@ -136,6 +136,7 @@ namespace GamePlay.Components.SortController
 
         private async void OnParkingLotClicked(object sender, Vehicle arg)
         {
+            if(!_gamePlayService.IsInteractable())return;
             if (_gamePlayService.IsSettingEnabled()) return;
             var parkingLot = (ParkingLot)sender;
             if (parkingLot == null)
@@ -292,8 +293,8 @@ namespace GamePlay.Components.SortController
                     }
                 }
             }
-
             await UniTask.WhenAll(sortTasks);
+            _gamePlayService.SortCompletedTrigger();
         }
 
         private bool IsGameFailed()

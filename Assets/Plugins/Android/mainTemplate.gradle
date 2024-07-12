@@ -10,6 +10,8 @@ dependencies {
     implementation 'com.android.support:cardview-v7:25.3.1' // Facebook.Unity.Editor.AndroidSupportLibraryResolver.addSupportLibraryDependency
     implementation 'com.android.support:customtabs:25.3.1' // Facebook.Unity.Editor.AndroidSupportLibraryResolver.addSupportLibraryDependency
     implementation 'com.android.support:support-v4:25.3.1' // Facebook.Unity.Editor.AndroidSupportLibraryResolver.addSupportLibraryDependency
+    implementation 'com.applovin.mediation:google-adapter:[23.2.0.0]' // Assets/MaxSdk/Mediation/Google/Editor/Dependencies.xml:5
+    implementation 'com.applovin.mediation:google-ad-manager-adapter:[23.2.0.0]' // Assets/MaxSdk/Mediation/GoogleAdManager/Editor/Dependencies.xml:5
     implementation 'com.applovin:applovin-sdk:12.5.0' // Assets/MaxSdk/AppLovin/Editor/Dependencies.xml:4
     implementation 'com.facebook.android:facebook-applinks:[17.0.0,18)' // Packages/com.lionstudios.release.facebook.unity-sdk/Plugins/Editor/Dependencies.xml:6
     implementation 'com.facebook.android:facebook-core:[17.0.0,18)' // Packages/com.lionstudios.release.facebook.unity-sdk/Plugins/Editor/Dependencies.xml:5

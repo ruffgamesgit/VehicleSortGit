@@ -22,7 +22,8 @@ namespace Core.Services.GamePlay
         private LevelData _currentLevelData;
         private int _currentLevel;
         private float _levelStartTime;
-        private bool _isSucceeded;
+        private bool _isInteractable = true;
+        private bool _isSuccess = false;
 
         public void SettingsEnabled(bool active)
         {
@@ -35,6 +36,7 @@ namespace Core.Services.GamePlay
         }
 
         public event EventHandler<LevelFinishedType> LevelFinishedEvent;
+        public event EventHandler SortCompleted;
 
         public GamePlayService()
         {
@@ -64,7 +66,8 @@ namespace Core.Services.GamePlay
                     LevelFinishedEvent?.Invoke(this, LevelFinishedType.Fail);
                     break;
                 case LevelFinishedType.Complete:
-                    _isSucceeded = true;
+                    SetInteractable(false);
+                    _isSuccess = true;
                     LevelCompleteAnalyticsEvent();
                     ResetAttemptCount();
                     _currentLevel++;
@@ -90,6 +93,8 @@ namespace Core.Services.GamePlay
 
         public void LoadLevel()
         {
+            _isSuccess = false;
+            SetInteractable(true);
             IncreaseAttemptCount();
             LevelStartAnalyticsEvent();
             if (_currentLevel > _levelData.Count - 1)
@@ -108,6 +113,11 @@ namespace Core.Services.GamePlay
 
             isSettingEnabled = false;
             _levelStartTime = Time.realtimeSinceStartup;
+        }
+
+        public void SortCompletedTrigger()
+        {
+            SortCompleted?.Invoke(this,null);
         }
 
         public void TriggerOnVehicleMove()
@@ -129,11 +139,20 @@ namespace Core.Services.GamePlay
             LoadLevel();
         }
 
-        public bool IsSucceeded()
+        public bool IsInteractable()
         {
-            return _isSucceeded;
+            return _isInteractable;
         }
 
+        public void SetInteractable(bool value)
+        {
+            _isInteractable = value;
+        }
+        public bool IsSuccess()
+        {
+            return _isSuccess;
+        }
+        
         private void LevelStartAnalyticsEvent()
         {
             LevelEventArgs args = new LevelEventArgs()

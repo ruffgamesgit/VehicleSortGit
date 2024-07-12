@@ -10,15 +10,17 @@ namespace Core.Services.GamePlay
         public void SettingsEnabled(bool active);
         public event EventHandler OnVehicleMoved; 
         public event EventHandler<LevelFinishedType> LevelFinishedEvent;
+        public event EventHandler SortCompleted;
         public void LevelFinished(LevelFinishedType type);
         public LevelData GetCurrentLevelData();
         public int GetCurrentLevel();
         public void LoadLevel();
+        public void SortCompletedTrigger();
         public void TriggerOnVehicleMove();
-
         public void LoadPrevious();
         public void LoadNext();
-        public bool IsSucceeded();
-
+        public bool IsInteractable();
+        public void SetInteractable(bool value);
+        public bool IsSuccess();
     }
 }

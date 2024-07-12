@@ -33,6 +33,7 @@ namespace GamePlay.UI
             _gamePlayService = ServiceLocator.Instance.Resolve<IGamePlayService>();
             _gamePlayService.LevelFinishedEvent += OnLevelFinished;
             _gamePlayService.OnVehicleMoved += OnVehicleMoved;
+            _gamePlayService.SortCompleted += OnSortCompleted;
 
             _maxMoveCount = _gamePlayService.GetCurrentLevelData().moveCount;
             moveCountTxt.text = _maxMoveCount.ToString();
@@ -46,18 +47,21 @@ namespace GamePlay.UI
             DecreaseMoveCountText();
         }
 
-        async void DecreaseMoveCountText()
+
+        private void OnSortCompleted(object sender, EventArgs e)
+        {
+            if (_maxMoveCount <= 0 && !_gamePlayService.IsSuccess())
+            {
+                OpenFailScreen(LevelFailedType.Move);
+                _gamePlayService.SetInteractable(false);
+            }
+        }
+
+        void DecreaseMoveCountText()
         {
             if (_maxMoveCount <= 0) return;
 
             _maxMoveCount--;
-            if (_maxMoveCount <= 0)
-            {
-                await Task.Delay(1000);
-                if (!_gamePlayService.IsSucceeded())
-                    OpenFailScreen(LevelFailedType.Move);
-            }
-
             moveCountTxt.text = _maxMoveCount.ToString();
         }
 
@@ -105,6 +109,7 @@ namespace GamePlay.UI
                         Level = _gamePlayService.GetCurrentLevel(),
                         Reward = null
                     };
+                    _gamePlayService.SetInteractable(true);
                     args.Fire();
                 }
 
@@ -150,6 +155,7 @@ namespace GamePlay.UI
         {
             _gamePlayService.LevelFinishedEvent -= OnLevelFinished;
             _gamePlayService.OnVehicleMoved -= OnVehicleMoved;
+            _gamePlayService.SortCompleted -= OnSortCompleted;
         }
     }
 }

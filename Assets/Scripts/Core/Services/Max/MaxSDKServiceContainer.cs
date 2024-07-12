@@ -38,7 +38,7 @@ namespace Services.Max
                 Debug.Log("MAX SDK Initialized");
 
                 //InitializeInterstitialAds();
-                InitializeRewardedAds();
+                //InitializeRewardedAds();
                 //InitializeRewardedInterstitialAds();
                 //InitializeBannerAds();
                 //InitializeMRecAds();
