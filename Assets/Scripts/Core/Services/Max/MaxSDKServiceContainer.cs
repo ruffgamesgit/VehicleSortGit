@@ -17,7 +17,7 @@ namespace Services.Max
     private const string MRecAdUnitId = "ENTER_IOS_MREC_AD_UNIT_ID_HERE";
 #else // UNITY_ANDROID
         private const string InterstitialAdUnitId = "";
-        private const string RewardedAdUnitId = "";
+        private const string RewardedAdUnitId = "59816f172b8b2ce9";
         private const string RewardedInterstitialAdUnitId = "ENTER_ANDROID_REWARD_INTER_AD_UNIT_ID_HERE";
         private const string BannerAdUnitId = "";
         private const string MRecAdUnitId = "ENTER_ANDROID_MREC_AD_UNIT_ID_HERE";
@@ -38,7 +38,7 @@ namespace Services.Max
                 Debug.Log("MAX SDK Initialized");
 
                 //InitializeInterstitialAds();
-                //InitializeRewardedAds();
+                InitializeRewardedAds();
                 //InitializeRewardedInterstitialAds();
                 //InitializeBannerAds();
                 //InitializeMRecAds();
@@ -48,7 +48,7 @@ namespace Services.Max
 
             MaxSdk.SetCreativeDebuggerEnabled(false);
             MaxSdk.SetSdkKey(MaxSdkKey);
-            //  MaxSdk.InitializeSdk();
+            MaxSdk.InitializeSdk();
         }
 
         #region Interstitial Ad Methods
