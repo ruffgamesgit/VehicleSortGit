@@ -22,6 +22,7 @@ namespace GamePlay.UI
         [SerializeField] private LoseScreenController _loseScreenController;
         [SerializeField] private WinScreenController _winScreenController;
         [SerializeField] private SettingsController _settingsController;
+        [SerializeField] private GameObject gamePlayScreen;
 
 
         [SerializeField] private Button nextLevelBtn;
@@ -36,7 +37,7 @@ namespace GamePlay.UI
             _gamePlayService.SortCompleted += OnSortCompleted;
 
             _maxMoveCount = _gamePlayService.GetCurrentLevelData().moveCount;
-            moveCountTxt.text = _maxMoveCount.ToString();
+            moveCountTxt.text = "Move: " + _maxMoveCount;
 
             SetLevelText();
             SetButtonBehaviours();
@@ -62,7 +63,7 @@ namespace GamePlay.UI
             if (_maxMoveCount <= 0) return;
 
             _maxMoveCount--;
-            moveCountTxt.text = _maxMoveCount.ToString();
+            moveCountTxt.text = "Move: " + _maxMoveCount;
         }
 
         private void OnLevelFinished(object sender, LevelFinishedType e)
@@ -116,16 +117,24 @@ namespace GamePlay.UI
                 var maxSdkService = ServiceLocator.Instance.Resolve<IMaxSDKService>();
 
                 maxSdkService.ShowRewardedAd(OnDisplayed, OnSuccess);
+                SetGamePlayScreenStatus(true);
             }
 
             _loseScreenController.Activate(failType, OnRevive);
             CloseSettingScreen();
+            SetGamePlayScreenStatus(false);
+        }
+
+        public void SetGamePlayScreenStatus(bool activate)
+        {
+            gamePlayScreen.SetActive(activate);
         }
 
         private void OpenWinScreen()
         {
             _winScreenController.Activate();
             CloseSettingScreen();
+            SetGamePlayScreenStatus(false);
         }
 
         private void OpenSettingsScreen()

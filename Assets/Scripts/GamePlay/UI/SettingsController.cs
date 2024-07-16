@@ -12,23 +12,25 @@ namespace GamePlay.UI
         [SerializeField] private Button exitButton;
         [SerializeField] private Button soundButton;
         [SerializeField] private Button hapticButton;
+        [SerializeField] private Button restartButton;
 
         [SerializeField] private GameObject soundActiveState;
         [SerializeField] private GameObject soundInactiveState;
         [SerializeField] private GameObject hapticActiveState;
         [SerializeField] private GameObject hapticInactiveState;
         [SerializeField] private CanvasGroup canvasGroup;
-        
+
         private ISoundService _soundService;
         private IGamePlayService _gamePlayService;
         private Sequence _sequence;
+
         private void Awake()
         {
             canvasGroup = GetComponent<CanvasGroup>();
             _soundService = ServiceLocator.Instance.Resolve<ISoundService>();
             _gamePlayService = ServiceLocator.Instance.Resolve<IGamePlayService>();
             SetSettingsStates();
-            
+
             hapticButton.onClick.AddListener(() =>
             {
                 _soundService.SetHapticEnabled(!Taptic.tapticOn);
@@ -41,9 +43,16 @@ namespace GamePlay.UI
                 _soundService.PlaySound(SoundTypeEnum.PassengerMoveSound);
                 SetSettingsStates();
             });
-            exitButton.onClick.AddListener(()=> {
+            exitButton.onClick.AddListener(() =>
+            {
                 Deactivate();
                 _soundService.PlaySound(SoundTypeEnum.PassengerMoveSound);
+            });
+            restartButton.onClick.AddListener(() =>
+            {
+                _gamePlayService.LoadLevel();
+                _soundService.PlaySound(SoundTypeEnum.PassengerMoveSound);
+                Deactivate();
             });
         }
 
@@ -79,6 +88,5 @@ namespace GamePlay.UI
             hapticActiveState.SetActive(Taptic.tapticOn);
             hapticInactiveState.SetActive(!Taptic.tapticOn);
         }
-        
     }
 }

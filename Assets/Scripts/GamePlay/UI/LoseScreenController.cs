@@ -36,22 +36,21 @@ namespace GamePlay.UI
             _onRevive = onRevive;
 
 
+            _soundService.PlaySound(SoundTypeEnum.LoseSound);
             switch (failedType)
             {
                 case LevelFailedType.Move:
                     reviveScreenCanvasGroup.blocksRaycasts = true;
-                    reviveScreenCanvasGroup.interactable = true;
                     reviveScreenCanvasGroup.DOFade(1, 0.5f).SetDelay(1f).OnComplete(() =>
                     {
-                        _soundService.PlaySound(SoundTypeEnum.LoseSound);
+                        reviveScreenCanvasGroup.interactable = true;
                     });
                     break;
                 case LevelFailedType.Space:
                     loseScreenCanvasGroup.blocksRaycasts = true;
-                    loseScreenCanvasGroup.interactable = true;
                     loseScreenCanvasGroup.DOFade(1, 0.5f).SetDelay(1f).OnComplete(() =>
                     {
-                        _soundService.PlaySound(SoundTypeEnum.LoseSound);
+                        loseScreenCanvasGroup.interactable = true;
                     });
                     break;
                 default:

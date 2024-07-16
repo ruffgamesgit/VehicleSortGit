@@ -582,6 +582,7 @@ namespace GamePlay.Components.SortController
             {
                 var matchingSeats = LookForMatchingTypes(neighbor, arg.GetPassenger().GetColor());
                 if (matchingSeats.Count == 0) continue;
+                if(matchingSeats.Count == 4) continue;
 
                 foreach (var seat in matchingSeats)
                 {
