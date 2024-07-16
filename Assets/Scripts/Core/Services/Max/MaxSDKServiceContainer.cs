@@ -29,7 +29,7 @@ namespace Services.Max
         private int _interstitialRetryAttempt;
         private int _rewardedRetryAttempt;
         private int _rewardedInterstitialRetryAttempt;
-
+        
         void Start()
         {
             MaxSdkCallbacks.OnSdkInitializedEvent += sdkConfiguration =>
