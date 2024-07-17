@@ -163,7 +163,7 @@ namespace Core.Services.GamePlay
             args.Fire(LevelEventTypeEnum.Start);
         }
 
-        private void LevelFailedOrAbandonedAnalyticsEvent(LevelEventTypeEnum type)
+        private void LevelFailedOrAbandonedAnalyticsEvent(LevelEventTypeEnum type, LevelFailedType failType = default)
         {
             LevelEventArgs args = new LevelEventArgs()
             {
@@ -175,6 +175,10 @@ namespace Core.Services.GamePlay
             {
                 { "time_in_level", (int)(Time.realtimeSinceStartup - _levelStartTime) },
             };
+            if (type == LevelEventTypeEnum.Fail)
+            {
+                additionalData.Add("fail_type", failType.ToString());
+            }
 
             args.Fire(type, additionalData);
         }
