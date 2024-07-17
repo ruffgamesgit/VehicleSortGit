@@ -20,6 +20,7 @@ dependencies {
     implementation 'com.facebook.android:facebook-share:[17.0.0,18)' // Packages/com.lionstudios.release.facebook.unity-sdk/Plugins/Editor/Dependencies.xml:8
     implementation 'com.google.android.gms:play-services-ads-identifier:17.0.0' // Assets/ByteBrewSDK/Editor/ByteBrewDependencies.xml:17
     implementation 'com.google.android.gms:play-services-base:18.2.0' // Packages/com.lionstudios.release.firebase.core/Firebase/Editor/AppDependencies.xml:17
+    implementation 'com.google.android.ump:user-messaging-platform:2.+' // Assets/MaxSdk/AppLovin/Editor/Dependencies.xml:5
     implementation 'com.google.firebase:firebase-analytics:21.3.0' // Packages/com.lionstudios.release.firebase.analytics/Firebase/Editor/AnalyticsDependencies.xml:13
     implementation 'com.google.firebase:firebase-analytics-unity:11.5.0' // Packages/com.lionstudios.release.firebase.analytics/Firebase/Editor/AnalyticsDependencies.xml:18
     implementation 'com.google.firebase:firebase-app-unity:11.5.0' // Packages/com.lionstudios.release.firebase.core/Firebase/Editor/AppDependencies.xml:22

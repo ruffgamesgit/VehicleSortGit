@@ -294,7 +294,8 @@ namespace GamePlay.Components.SortController
                 }
             }
             await UniTask.WhenAll(sortTasks);
-            _gamePlayService.SortCompletedTrigger();
+            if(!Monitor.IsEntered(_lock))
+                _gamePlayService.SortCompletedTrigger();
         }
 
         private bool IsGameFailed()

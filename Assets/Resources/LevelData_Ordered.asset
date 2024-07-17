@@ -24,7 +24,7 @@ MonoBehaviour:
     colorVariety: 2
     matchingPassengerCount: 2
     vehicleCount: 2
-    moveCount: 5
+    moveCount: 8
     garageVehicleCounts: 
     levelDataGridGroups:
     - lines:
@@ -71,7 +71,7 @@ MonoBehaviour:
     colorVariety: 4
     matchingPassengerCount: 4
     vehicleCount: 4
-    moveCount: 5
+    moveCount: 8
     garageVehicleCounts: 
     levelDataGridGroups:
     - lines:
@@ -118,7 +118,7 @@ MonoBehaviour:
     colorVariety: 2
     matchingPassengerCount: 2
     vehicleCount: 2
-    moveCount: 5
+    moveCount: 8
     garageVehicleCounts: 01000000
     levelDataGridGroups:
     - lines:
@@ -145,7 +145,7 @@ MonoBehaviour:
     colorVariety: 3
     matchingPassengerCount: 4
     vehicleCount: 4
-    moveCount: 5
+    moveCount: 8
     garageVehicleCounts: 02000000
     levelDataGridGroups:
     - lines:
@@ -191,7 +191,7 @@ MonoBehaviour:
     colorVariety: 7
     matchingPassengerCount: 8
     vehicleCount: 9
-    moveCount: 14
+    moveCount: 17
     garageVehicleCounts: 0200000002000000
     levelDataGridGroups:
     - lines:
@@ -238,7 +238,7 @@ MonoBehaviour:
     colorVariety: 4
     matchingPassengerCount: 6
     vehicleCount: 7
-    moveCount: 8
+    moveCount: 11
     garageVehicleCounts: 
     levelDataGridGroups:
     - lines:
@@ -304,7 +304,7 @@ MonoBehaviour:
     colorVariety: 5
     matchingPassengerCount: 9
     vehicleCount: 9
-    moveCount: 10
+    moveCount: 13
     garageVehicleCounts: 0300000003000000
     levelDataGridGroups:
     - lines:
